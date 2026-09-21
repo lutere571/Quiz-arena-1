@@ -11,7 +11,10 @@
   <!-- TOP HEADER -->
   <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
     <div>
-      <h1 class="font-black text-lg text-amber-400 tracking-wider">🏆 MEGA QUIZ ARENA</h1>
+      <div class="flex items-center gap-2">
+        <h1 class="font-black text-lg text-amber-400 tracking-wider">🏆 MEGA QUIZ ARENA</h1>
+        <span class="text-[10px] bg-emerald-950 border border-emerald-600 text-emerald-300 px-2 py-0.5 rounded font-bold">v2.0 Updated</span>
+      </div>
       <p class="text-xs text-slate-400">Entry: ₹50 • Top 5 Win ₹200 Each</p>
     </div>
     <div class="flex items-center gap-2">
@@ -116,7 +119,7 @@
       </button>
     </section>
 
-    <!-- 4. ADMIN PANEL (Pay ₹200 to Winners) -->
+    <!-- 4. ADMIN CONTROL PANEL -->
     <div id="adminPanel" class="hidden bg-slate-900 border-2 border-amber-500/50 p-5 rounded-2xl shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <h2 class="text-base font-black text-amber-400">👑 Admin Control Panel</h2>
@@ -128,7 +131,7 @@
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Top 5 Winners (Send ₹200 Each)</h3>
           <button onclick="loadAdminPayouts()" class="text-[11px] text-indigo-400 underline">Refresh</button>
         </div>
-        <p class="text-xs text-slate-400">Click "Pay ₹200" to send prize money directly from your account:</p>
+        <p class="text-xs text-slate-400">Click "Pay ₹200" to send prize money directly to the winner's UPI:</p>
         <div id="adminWinnersBox" class="space-y-2"></div>
       </div>
 
@@ -142,7 +145,7 @@
   </main>
 
   <script>
-    // Hard Level Question Bank
+    // HARD LEVEL QUESTION BANK (ENGLISH)
     const masterQuestionBank = [
       { q: "Which enzyme is responsible for unwinding the DNA double helix during replication?", o: ["DNA Helicase", "DNA Polymerase", "RNA Primase", "DNA Ligase"], a: 0 },
       { q: "What is the escape velocity required to break free from Earth's gravitational field?", o: ["7.9 km/s", "11.2 km/s", "15.4 km/s", "9.8 km/s"], a: 1 },
@@ -162,18 +165,17 @@
     ];
 
     const ADMIN_UPI = "7756804720@ybl";
-    const ADMIN_PIN = "103695"; // Naya Admin PIN set ho gaya
+    const REQUIRED_ADMIN_PIN = "103695"; // Strictly locked to 103695
 
     let activeQuestions = [];
     let currentIdx = 0;
     let studentAnswers = {};
-    let timerSeconds = 600; // 10 mins
+    let timerSeconds = 600;
     let timerRef = null;
     let startTime = 0;
     let currentUser = {};
     let awaitingPaymentReturn = false;
 
-    // STEP 1: Click Pay ₹50 & Open Payment App
     function initiatePaymentAndStart() {
       const name = document.getElementById("userName").value.trim();
       const upi = document.getElementById("userUpi").value.trim();
@@ -186,16 +188,13 @@
       currentUser = { name, upi };
       awaitingPaymentReturn = true;
 
-      // Deep link to open GPay/PhonePe directly
       const upiUrl = `upi://pay?pa=${ADMIN_UPI}&pn=Quiz%20Master&am=50&cu=INR&tn=QuizEntryFee`;
       window.location.href = upiUrl;
 
-      // Show temporary processing screen
       document.getElementById("lobbyScreen").classList.add("hidden");
       document.getElementById("paymentProcessingScreen").classList.remove("hidden");
     }
 
-    // STEP 2: Automatic Start when user returns from UPI app
     window.addEventListener("focus", handleAppReturn);
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
@@ -213,7 +212,6 @@
       }
     }
 
-    // STEP 3: Launch Test
     function startQuizDirectly() {
       activeQuestions = generate10RandomQuestions();
       studentAnswers = {};
@@ -346,20 +344,17 @@
       });
     }
 
-    // ==========================================
-    // ADMIN FUNCTIONS (Only You)
-    // ==========================================
     function openAdminModal() {
-      const pin = prompt("Enter 6-digit Admin PIN:");
-      if (pin === ADMIN_PIN) {
+      const enteredPin = prompt("Enter 6-digit Admin PIN:");
+      if (enteredPin === REQUIRED_ADMIN_PIN) {
         document.getElementById("lobbyScreen").classList.add("hidden");
         document.getElementById("quizScreen").classList.add("hidden");
         document.getElementById("resultScreen").classList.add("hidden");
         document.getElementById("adminPanel").classList.remove("hidden");
 
         loadAdminPayouts();
-      } else if (pin !== null) {
-        alert("Wrong Admin PIN!");
+      } else if (enteredPin !== null) {
+        alert("Incorrect PIN! Access denied.");
       }
     }
 
@@ -401,7 +396,7 @@
     }
 
     function resetContestData() {
-      if (confirm("Are you sure you want to clear leaderboard records for the next contest round?")) {
+      if (confirm("Are you sure you want to clear leaderboard records for the next round?")) {
         localStorage.removeItem("quiz_records");
         alert("Records cleared successfully!");
         loadAdminPayouts();
@@ -409,5 +404,5 @@
     }
   </script>
 </body>
-          </html>
-          
+  </html>
+  
