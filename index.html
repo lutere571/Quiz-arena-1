@@ -6,10 +6,10 @@
   <title>CBSE Mega Quiz Arena (Class 6-10) - Win ₹200</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen relative">
 
   <!-- TOP APP BAR -->
-  <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
+  <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-40 flex justify-between items-center shadow-lg">
     <div>
       <div class="flex items-center gap-2">
         <h1 class="font-black text-lg text-amber-400 tracking-wider">🏆 CBSE QUIZ ARENA</h1>
@@ -21,7 +21,7 @@
       <div id="timerDisplay" class="hidden bg-red-600 font-mono font-bold text-white px-3 py-1 rounded-full text-sm animate-pulse">
         10:00
       </div>
-      <button onclick="openAdminModal()" class="bg-slate-800 border border-slate-700 text-xs px-2.5 py-1.5 rounded-lg text-amber-400 font-bold hover:bg-slate-700">
+      <button onclick="openAdminPinModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-3 py-1.5 rounded-lg font-black shadow transition">
         Admin 👑
       </button>
     </div>
@@ -29,7 +29,7 @@
 
   <main class="max-w-md mx-auto p-4 pb-20">
 
-    <!-- 1. REGISTRATION & VERIFICATION -->
+    <!-- 1. REGISTRATION & VERIFICATION (LOBBY) -->
     <section id="lobbyScreen" class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       
       <!-- Rules Card -->
@@ -38,13 +38,13 @@
         <p>• <strong>Subject:</strong> CBSE Class 6th to 10th (Science & Mathematics).</p>
         <p>• 10 Randomized MCQs • Strictly 10 Minutes (600s).</p>
         <p>• Top 5 participants with Highest Score & Fastest Time win ₹200 each.</p>
-        <p>• Test unlocks <strong>ONLY</strong> when UTR is verified against received ₹50 payment.</p>
+        <p>• Quiz unlocks <strong>ONLY</strong> when UTR is verified against received ₹50 payment.</p>
       </div>
 
       <!-- Payment Section -->
       <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center space-y-2.5">
         <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Step 1: Pay ₹50 Entry Fee</h3>
-        <p class="text-xs text-slate-400">Pay ₹50 directly to Admin UPI using PhonePe/GPay/Paytm:</p>
+        <p class="text-xs text-slate-400">Pay ₹50 to Admin UPI using PhonePe / Google Pay / Paytm:</p>
         
         <a href="upi://pay?pa=7756804720@ybl&pn=Quiz%20Master&am=50&cu=INR&tn=CBSEQuizEntry" 
            class="inline-block w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold py-3 rounded-xl shadow-lg text-sm transition">
@@ -65,7 +65,7 @@
         </div>
         <div>
           <label class="block text-xs text-slate-400 mb-1 font-medium">Your UPI ID (For ₹200 Winning Prize)</label>
-          <input id="userUpi" type="text" placeholder="e.g. rahul@oksbi" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-sm text-white outline-none focus:border-amber-400" />
+          <input id="userUpi" type="text" placeholder="e.g. rahul@okhdfcbank" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-sm text-white outline-none focus:border-amber-400" />
         </div>
         <div>
           <label class="block text-xs text-amber-400 mb-1 font-bold">12-Digit Payment UTR / Ref Number *</label>
@@ -73,7 +73,15 @@
           <p class="text-[10px] text-slate-500 mt-1">Must be from the transaction made to 7756804720@ybl.</p>
         </div>
 
-        <button onclick="verifyAndStartTest()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl shadow-lg text-sm tracking-wide mt-2">
+        <!-- ON-SCREEN ERROR NOTIFICATION BANNER -->
+        <div id="utrErrorBanner" class="hidden p-3 rounded-xl bg-red-950/90 border border-red-600 text-red-200 text-xs space-y-1 animate-pulse">
+          <div class="flex items-center gap-1.5 font-bold text-red-400">
+            <span>⚠️</span> <span id="errorTitle">VERIFICATION FAILED</span>
+          </div>
+          <p id="errorDesc" class="text-[11px] leading-relaxed text-red-300"></p>
+        </div>
+
+        <button onclick="verifyAndStartTest()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl shadow-lg text-sm tracking-wide mt-2 transition">
           Verify UTR & Unlock Quiz ⏱️
         </button>
       </div>
@@ -125,27 +133,36 @@
       </button>
     </section>
 
-    <!-- 4. ADMIN CONTROL PANEL (PIN: 103695) -->
-    <div id="adminPanel" class="hidden bg-slate-900 border-2 border-amber-500/50 p-5 rounded-2xl shadow-2xl space-y-4">
+    <!-- 4. ADMIN CONTROL PANEL -->
+    <section id="adminPanel" class="hidden bg-slate-900 border-2 border-amber-500/50 p-5 rounded-2xl shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <h2 class="text-base font-black text-amber-400">👑 Admin Control Panel</h2>
-        <button onclick="closeAdminModal()" class="text-xs text-red-400 font-bold">Close ✖</button>
+        <button onclick="closeAdminPanel()" class="text-xs text-red-400 font-bold bg-slate-800 px-2 py-1 rounded">Close ✖</button>
       </div>
 
-      <!-- UTR AUTHORIZATION SECTION -->
+      <!-- UTR AUTHORIZATION BOX -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
         <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Authorize Received UTR</h3>
-        <p class="text-[11px] text-slate-400">GPay/PhonePe par ₹50 aane ke baad uska 12-digit UTR yahan paste karein:</p>
+        <p class="text-[11px] text-slate-400">GPay/PhonePe par ₹50 aane ke baad uska 12-digit UTR yahan approve karein:</p>
         <div class="flex gap-2">
-          <input id="newUtrInput" type="text" maxlength="12" placeholder="12-digit UTR (e.g. 423589123456)" class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white font-mono flex-1 outline-none focus:border-amber-400" />
+          <input id="newUtrInput" type="text" maxlength="12" placeholder="12-digit UTR" class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white font-mono flex-1 outline-none focus:border-amber-400" />
           <button onclick="addAuthorizedUtr()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">
             + Authorize
           </button>
         </div>
-        <div id="utrStats" class="text-[10px] text-slate-400 flex justify-between pt-1">
+        <div class="text-[10px] text-slate-400 flex justify-between pt-1">
           <span>Active UTRs: <strong id="activeUtrCount" class="text-emerald-400">0</strong></span>
           <span>Used UTRs: <strong id="usedUtrCount" class="text-slate-300">0</strong></span>
         </div>
+      </div>
+
+      <!-- FAKE / UNAPPROVED UTR ATTEMPTS LOG -->
+      <div class="bg-slate-950 p-3.5 rounded-xl border border-red-900/40 space-y-2">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xs font-bold text-red-400 uppercase tracking-wider">🚨 Suspicious / Unapproved Attempts</h3>
+          <button onclick="clearInvalidLogs()" class="text-[10px] text-slate-500 underline">Clear</button>
+        </div>
+        <div id="invalidAttemptsBox" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
       </div>
 
       <!-- WINNERS & DISBURSEMENT -->
@@ -163,9 +180,34 @@
           ⚠️ Clear Leaderboard & Reset Quiz
         </button>
       </div>
-    </div>
+    </section>
 
   </main>
+
+  <!-- POPUP: CUSTOM ADMIN PIN MODAL (No browser prompt blocks) -->
+  <div id="adminPinModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-amber-500 p-5 rounded-2xl w-full max-w-xs space-y-4 shadow-2xl">
+      <div class="text-center">
+        <div class="text-2xl">🔐</div>
+        <h3 class="text-sm font-bold text-white mt-1">Admin Authentication</h3>
+        <p class="text-[11px] text-slate-400">Enter your 6-digit Secret PIN</p>
+      </div>
+
+      <div>
+        <input id="adminPinInput" type="password" maxlength="6" placeholder="• • • • • •" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-center text-lg tracking-widest text-amber-400 font-mono outline-none focus:border-amber-400" />
+        <p id="pinErrorMsg" class="text-[11px] text-red-400 text-center mt-1 hidden">Incorrect PIN!</p>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="closeAdminPinModal()" class="w-1/2 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs">
+          Cancel
+        </button>
+        <button onclick="checkAdminPin()" class="w-1/2 bg-amber-500 text-slate-950 font-black py-2 rounded-xl text-xs">
+          Login ➔
+        </button>
+      </div>
+    </div>
+  </div>
 
   <script>
     // CBSE CLASS 6-10 SCIENCE & MATHS QUESTION POOL
@@ -207,39 +249,62 @@
     let startTime = 0;
     let currentUser = {};
 
+    function showBannerError(title, desc) {
+      const banner = document.getElementById("utrErrorBanner");
+      document.getElementById("errorTitle").innerText = title;
+      document.getElementById("errorDesc").innerText = desc;
+      banner.classList.remove("hidden");
+    }
+
+    function hideBannerError() {
+      document.getElementById("utrErrorBanner").classList.add("hidden");
+    }
+
     // 1. STRICT UTR VERIFICATION & UNLOCK
     function verifyAndStartTest() {
+      hideBannerError();
+
       const name = document.getElementById("userName").value.trim();
       const upi = document.getElementById("userUpi").value.trim();
       const utr = document.getElementById("userUtr").value.trim();
 
       if (!name) {
-        alert("Please enter Student Full Name!");
+        showBannerError("MISSING DETAILS", "Please enter Student Full Name before starting!");
         return;
       }
       if (!upi || !upi.includes("@")) {
-        alert("Please enter a valid UPI ID (e.g. name@okhdfcbank) to receive prizes!");
+        showBannerError("INVALID UPI ID", "Please enter a valid UPI ID (e.g. name@okhdfcbank) to receive prize money!");
         return;
       }
 
       if (!/^\d{12}$/.test(utr)) {
-        alert("❌ INVALID UTR FORMAT!\n\nUTR must be exactly 12 numeric digits from your payment receipt.");
+        showBannerError("INVALID FORMAT", "UTR must be exactly 12 numeric digits from your payment receipt (e.g. 423589123456).");
         return;
       }
 
       const usedUtrs = JSON.parse(localStorage.getItem("used_utrs") || "[]");
       if (usedUtrs.includes(utr)) {
-        alert("❌ EXPIRED / ALREADY USED UTR!\n\nThis UTR has already been consumed for a test attempt. Please make a new payment of ₹50 for a new quiz.");
+        showBannerError("EXPIRED / USED UTR", "Yeh UTR pehle hi ek test attempt ke liye use kiya ja chuka hai. Nayi quiz ke liye naya ₹50 payment karke naya UTR enter karein.");
         return;
       }
 
       const approvedUtrs = JSON.parse(localStorage.getItem("approved_utrs") || "[]");
       if (!approvedUtrs.includes(utr)) {
-        alert("❌ PAYMENT NOT VERIFIED ON ADMIN UPI!\n\nThis UTR was not found in received payments for 7756804720@ybl. Agar aapne payment kar diya hai, toh Admin ko approve karne ke liye 1-2 minute ka samay dein.");
+        // Record suspicious/fake attempt in Admin log
+        const invalidLogs = JSON.parse(localStorage.getItem("invalid_attempts") || "[]");
+        invalidLogs.unshift({
+          name: name,
+          upi: upi,
+          utr: utr,
+          time: new Date().toLocaleTimeString()
+        });
+        localStorage.setItem("invalid_attempts", JSON.stringify(invalidLogs.slice(0, 20)));
+
+        showBannerError("PAYMENT NOT VERIFIED ON ADMIN UPI", "Yeh UTR 7756804720@ybl par receive nahi hua hai. Agar aapne payment kar diya hai, toh Admin se verify karwayein.");
         return;
       }
 
-      // Mark UTR as Used immediately
+      // Mark UTR as Used
       const updatedApproved = approvedUtrs.filter(x => x !== utr);
       usedUtrs.push(utr);
       localStorage.setItem("approved_utrs", JSON.stringify(updatedApproved));
@@ -292,83 +357,4 @@
     }
 
     function renderQuestion() {
-      const item = activeQuestions[currentIdx];
-      document.getElementById("questionCount").innerText = `Question ${currentIdx + 1} / 10`;
-      document.getElementById("subjectBadge").innerText = item.sub;
-      document.getElementById("questionText").innerText = item.q;
-
-      const container = document.getElementById("optionsBox");
-      container.innerHTML = "";
-
-      item.o.forEach((option, oIdx) => {
-        const isChecked = studentAnswers[currentIdx] === oIdx;
-        const btn = document.createElement("button");
-        btn.className = `w-full text-left p-3.5 rounded-xl border text-sm transition ${
-          isChecked 
-            ? "bg-amber-400 text-slate-950 font-bold border-amber-300 ring-2 ring-amber-400" 
-            : "bg-slate-950 border-slate-800 text-slate-200 hover:bg-slate-850"
-        }`;
-        btn.innerText = `${String.fromCharCode(65 + oIdx)}. ${option}`;
-        btn.onclick = () => {
-          studentAnswers[currentIdx] = oIdx;
-          renderQuestion();
-        };
-        container.appendChild(btn);
-      });
-
-      document.getElementById("prevBtn").disabled = currentIdx === 0;
-      if (currentIdx === 9) {
-        document.getElementById("nextBtn").classList.add("hidden");
-        document.getElementById("submitBtn").classList.remove("hidden");
-      } else {
-        document.getElementById("nextBtn").classList.remove("hidden");
-        document.getElementById("submitBtn").classList.add("hidden");
-      }
-    }
-
-    function prevQuestion() { if (currentIdx > 0) { currentIdx--; renderQuestion(); } }
-    function nextQuestion() { if (currentIdx < 9) { currentIdx++; renderQuestion(); } }
-
-    function submitQuiz() {
-      clearInterval(timerRef);
-      const timeTaken = Math.floor((Date.now() - startTime) / 1000);
-
-      let score = 0;
-      activeQuestions.forEach((item, idx) => {
-        if (studentAnswers[idx] === item.a) score++;
-      });
-
-      const records = JSON.parse(localStorage.getItem("quiz_records") || "[]");
-      records.push({
-        name: currentUser.name,
-        upi: currentUser.upi,
-        utr: currentUser.utr,
-        score: score,
-        time: timeTaken
-      });
-      localStorage.setItem("quiz_records", JSON.stringify(records));
-
-      document.getElementById("quizScreen").classList.add("hidden");
-      document.getElementById("timerDisplay").classList.add("hidden");
-      document.getElementById("resultScreen").classList.remove("hidden");
-
-      document.getElementById("scoreSummary").innerText = 
-        `Score: ${score} / 10  |  Time Taken: ${timeTaken} seconds`;
-
-      displayLeaderboard();
-    }
-
-    function displayLeaderboard() {
-      const records = JSON.parse(localStorage.getItem("quiz_records") || "[]");
-      records.sort((a, b) => b.score - a.score || a.time - b.time);
-
-      const top5 = records.slice(0, 5);
-      const container = document.getElementById("winnersList");
-      container.innerHTML = "";
-
-      top5.forEach((item, i) => {
-        const div = document.createElement("div");
-        div.className = "flex justify-between items-center p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs";
-        div.innerHTML = `
-          <div class="flex items-center gap-2.5">
-            <span class="font-
+      const item = activeQuestions[cu
