@@ -4,10 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>CBSE Mega Quiz Arena (Class 6-10)</title>
-  
   <link rel="icon" type="image/png" href="https://img.icons8.com/color/512/trophy.png" />
   <link rel="apple-touch-icon" href="https://img.icons8.com/color/512/trophy.png" />
-  
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen select-none">
@@ -25,7 +23,7 @@
       <div id="testTimerBadge" class="hidden bg-red-600 font-mono font-bold text-white px-3 py-1 rounded-full text-xs animate-pulse">
         10:00
       </div>
-      <button onclick="goToScreen('adminLoginScreen')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-3.5 py-1.5 rounded-lg font-black shadow-lg">
+      <button onclick="goToScreen('adminLoginScreen')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-3 py-1.5 rounded-lg font-black shadow-lg">
         Admin 👑
       </button>
     </div>
@@ -37,22 +35,37 @@
     <section id="lobbyScreen" class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       <div class="bg-indigo-950/60 border border-indigo-500/30 p-3.5 rounded-xl text-xs space-y-1.5 text-indigo-200">
         <p class="font-bold text-amber-300 text-sm">📌 Contest Rules & Security:</p>
-        <p>• <strong>Threshold:</strong> Minimum <strong>20 participants</strong> required to unlock test.</p>
-        <p>• <strong>Waiting Period:</strong> 20 Minutes timer for registrations.</p>
-        <p>• <strong>Anti-Cheat Active:</strong> Test chalu astana tab switch kelyas test disqualify (zero score) hoil.</p>
-        <p>• <strong>100% Refund:</strong> 20 minitāt 20 jan nahi jhale tar ₹50 lagewach refund miltil.</p>
-          </div>
-                <!-- Step 1: Payment -->
-      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center space-y-2">
+        <p>• <strong>Condition:</strong> Minimum <strong>20 participants</strong> required to unlock test.</p>
+        <p>• <strong>Waiting Period:</strong> 20 Minutes server-synchronized timer for all.</p>
+        <p>• <strong>Strict Anti-Cheat:</strong> Google/ChatGPT dekhne ke liye tab switch karne par turant <strong>Disqualification (0 Score)</strong> ho jayega.</p>
+        <p>• <strong>100% Refund:</strong> Agar 20 log nahi jude, toh ₹50 poora refund ho jayega.</p>
+               <!-- Step 1: Payment Options -->
+      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center space-y-3">
         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Step 1: Pay ₹50 Entry Fee</h3>
-        <a href="upi://pay?pa=7756804720@ybl&pn=Quiz%20Master&am=50&cu=INR&tn=CBSEQuizEntry" 
+        
+        <!-- Direct UPI Link -->
+        <a href="upi://pay?pa=7756804720@ybl&pn=CBSE%20Quiz%20Master&am=50&cu=INR&tn=CBSEQuizEntry" 
            class="inline-block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl shadow-lg text-sm transition">
           ⚡ Open UPI App & Pay ₹50
         </a>
-        <p class="text-[11px] text-slate-400">UPI ID: <span class="font-mono text-amber-400 font-bold select-all">7756804720@ybl</span></p>
+
+        <!-- Copy UPI ID Button -->
+        <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-lg border border-slate-700 text-xs">
+          <span class="font-mono text-amber-400 font-bold">7756804720@ybl</span>
+          <button onclick="copyUpiId()" id="copyUpiBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded text-[11px] font-bold">
+            📋 Copy UPI
+          </button>
+        </div>
+
+        <!-- Dynamic QR Code (Pre-filled ₹50) -->
+        <div class="bg-slate-900/60 p-2 rounded-xl border border-slate-800">
+          <p class="text-[10px] text-slate-400 mb-1">Ya QR Code scan karke ₹50 bhejein:</p>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi%3A%2F%2Fpay%3Fpa%3D7756804720%40ybl%26am%3D50%26tn%3DCBSEQuizEntry" 
+               alt="Pay 50 QR" class="mx-auto rounded-lg border border-slate-700" />
+        </div>
       </div>
 
-      <!-- Step 2: Form -->
+      <!-- Step 2: Student Form -->
       <div class="space-y-3">
         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Step 2: Enter Student Info & UTR</h3>
         <div>
@@ -72,8 +85,9 @@
           Submit & Enter Waiting Room ⏱️
         </button>
       </div>
-    </section>
-        <!-- SCREEN 2: 20-MIN WAITING ROOM -->
+  </section>
+    </div>
+          <!-- SCREEN 2: SYNCHRONIZED WAITING ROOM -->
     <section id="waitingScreen" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl text-center space-y-4">
       <div class="inline-block bg-indigo-950/80 border border-indigo-500/40 px-3 py-1 rounded-full text-indigo-300 text-xs font-bold">
         ⏳ LIVE QUIZ LOBBY
@@ -84,16 +98,16 @@
         <p class="text-xs text-slate-400">Quiz starts automatically when 20+ join or waiting timer ends.</p>
       </div>
 
-      <!-- 20-Min Synchronized Timer -->
+      <!-- Server Sync Clock -->
       <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
         <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Time Left in Waiting Room</p>
         <div id="waitingClockDisplay" class="font-mono text-4xl font-black text-amber-400 tracking-wider">
           20:00
         </div>
-        <p class="text-[10px] text-slate-500">Live synced for all phones</p>
+        <p class="text-[10px] text-slate-500">Synchronized server countdown</p>
       </div>
 
-      <!-- Counter -->
+      <!-- Progress Counter -->
       <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
         <div class="flex justify-between items-center text-xs">
           <span class="text-slate-300 font-bold">Participants Joined:</span>
@@ -103,16 +117,21 @@
           <div id="joinProgressBar" class="bg-gradient-to-r from-amber-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
         </div>
         <p id="participantStatusText" class="text-[11px] text-amber-300/90 font-medium">Waiting for registrations...</p>
+        
+        <!-- WhatsApp Invite Button -->
+        <a href="whatsapp://send?text=Bhai%20jaldi%20CBSE%20Mega%20Quiz%20join%20kar!%20Sirf%20kuch%20seats%20bache%20hain:%20https://lutere571.github.io/Quiz-arena-1/Index.html" class="inline-block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs text-center shadow transition mt-2">
+          📲 Invite Friends on WhatsApp
+        </a>
       </div>
 
       <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-left text-xs space-y-1 text-slate-400">
-        <p class="text-white font-bold">⚡ Rules:</p>
-        <p>• Do not close this screen.</p>
-        <p>• 20 participants judtach sarvancha test ekach veles start hoil.</p>
-        <p>• 20 participants nahi jhale tar sampurna ₹50 refund miltil.</p>
+        <p class="text-white font-bold">⚡ Rules for this stage:</p>
+        <p>• Is screen ko band na karein.</p>
+        <p>• 20 log judte hi sabhi ka test ek sath ek hi second par start hoga.</p>
+        <p>• 20 log nahi jude toh 100% ₹50 fees refund ho jayegi.</p>
       </div>
     </section>
-        <!-- SCREEN 3: ACTIVE TEST SCREEN WITH ANTI-CHEAT BANNER -->
+        <!-- SCREEN 3: ACTIVE TEST SCREEN -->
     <section id="quizScreen" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-slate-800">
         <span id="questionCount" class="text-xs font-bold text-amber-400 uppercase tracking-wider">Question 1 / 10</span>
@@ -121,9 +140,9 @@
         </span>
       </div>
 
-      <!-- Anti-Cheat Warning Alert Box -->
+      <!-- Warning Banner -->
       <div id="cheatWarningBox" class="hidden p-2.5 bg-red-900/80 border border-red-500 rounded-xl text-[11px] text-red-200 font-bold text-center">
-        ⚠️ Warning: Tab switch karu naka! Pudhchya veles test Disqualify hoil.
+        ⚠️ Warning: Tab switch detect hua! Agli baar test Disqualify ho jayega.
       </div>
 
       <h2 id="questionText" class="text-base font-bold text-white min-h-[50px] leading-relaxed"></h2>
@@ -166,13 +185,13 @@
       <div class="text-4xl">⚠️</div>
       <h2 class="text-lg font-black text-red-400">Round Cancelled (Low Participation)</h2>
       <p class="text-xs text-slate-300 leading-relaxed">
-        20 minitāt minimum 20 participants jhale nahit, mhanun ha round cancel kela ahe.
+        20 minute me minimum 20 participants nahi jud paye, isliye yeh round cancel kiya gaya hai.
       </p>
 
       <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left space-y-2 text-xs">
         <p class="font-bold text-amber-400">💰 100% Refund Status:</p>
-        <p class="text-slate-300">• Aapla ₹50 fee aaplya UPI ID (<span id="refundUpiDisplay" class="font-mono text-emerald-400 font-bold"></span>) var Admin kadun refund kele jaat ahe.</p>
-        <p class="text-slate-400 text-[11px]">• Verified UTR: <span id="refundUtrDisplay" class="font-mono text-slate-300"></span></p>
+        <p class="text-slate-300">• Aapka ₹50 entry fee aapke UPI ID (<span id="refundUpiDisplay" class="font-mono text-emerald-400 font-bold"></span>) par Admin dwara refund kiya ja raha hai.</p>
+        <p class="text-slate-400 text-[11px]">• Transaction Ref / UTR: <span id="refundUtrDisplay" class="font-mono text-slate-300"></span></p>
       </div>
 
       <button onclick="goToScreen('lobbyScreen')" class="w-full bg-slate-800 text-slate-200 font-bold py-3 rounded-xl text-sm">
@@ -212,7 +231,7 @@
         <button onclick="goToScreen('lobbyScreen')" class="text-xs text-red-400 font-bold bg-slate-800 px-2.5 py-1 rounded">Logout ✖</button>
       </div>
 
-      <!-- State Card -->
+      <!-- Live Sync State Card -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
         <div>
           <p class="text-slate-400">Waiting Time Remaining:</p>
@@ -222,17 +241,9 @@
           <p class="text-slate-400">Approved Players:</p>
           <p class="font-mono text-xl font-black text-emerald-400"><span id="adminApprovedCount">0</span> / 20</p>
         </div>
-          </div>
-                <!-- Pending UTR Approvals -->
-      <div class="bg-slate-950 p-3.5 rounded-xl border border-amber-500/40 space-y-2">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals</h3>
-          <button onclick="fetchAdminRequests()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
-        </div>
-        <div id="pendingUtrList" class="space-y-2 max-h-44 overflow-y-auto"></div>
       </div>
 
-      <!-- Force Buttons -->
+      <!-- Quick Force Buttons -->
       <div class="grid grid-cols-2 gap-2">
         <button onclick="forceStartContest()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs shadow">
           🚀 Force Start Now
@@ -241,8 +252,17 @@
           🛑 Cancel & Refund
         </button>
       </div>
+            <!-- Pending UTR Approvals Section with Fraud / Duplicate Detection -->
+      <div class="bg-slate-950 p-3.5 rounded-xl border border-amber-500/40 space-y-2">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals</h3>
+          <button onclick="fetchAdminRequests()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
+        </div>
+        <p class="text-[11px] text-slate-400">Check ₹50 on PhonePe/GPay & approve to add into round:</p>
+        <div id="pendingUtrList" class="space-y-2 max-h-44 overflow-y-auto"></div>
+      </div>
 
-      <!-- Pending Refunds -->
+      <!-- Pending Refunds Section -->
       <div class="space-y-2 pt-2 border-t border-slate-800">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-red-400 uppercase tracking-wider">💸 Pending Refunds (₹50 Each)</h3>
@@ -250,7 +270,8 @@
         </div>
         <div id="pendingRefundsContainer" class="space-y-2 max-h-40 overflow-y-auto"></div>
       </div>
-            <!-- Winners Payout -->
+
+      <!-- Winners Payout Section -->
       <div class="space-y-2 pt-2 border-t border-slate-800">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🏆 Top 5 Winners (Pay ₹200)</h3>
@@ -259,8 +280,7 @@
         <div id="unpaidWinnersContainer" class="space-y-2"></div>
         <div id="paidWinnersContainer" class="space-y-2 pt-1"></div>
       </div>
-
-      <!-- PERMANENT LIFETIME LEDGER + CSV EXPORT BUTTON -->
+            <!-- PERMANENT LIFETIME LEDGER + CSV EXPORT BUTTON -->
       <div class="space-y-2 pt-2 border-t border-slate-800">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-wider">📜 Permanent Lifetime Records</h3>
@@ -284,6 +304,7 @@
   <script>
     const ADMIN_SECRET = "103695";
 
+    // Cloud Topics
     const REQ_TOPIC = "https://ntfy.sh/cbsequiz_req_7756804720";
     const APP_TOPIC = "https://ntfy.sh/cbsequiz_app_7756804720";
     const STATE_TOPIC = "https://ntfy.sh/cbsequiz_state_7756804720";
@@ -297,7 +318,11 @@
       }
       return r;
     }
-        const cbseQuestions = [
+
+    // Security Handshake Helper (Prevents Fake Approvals)
+    function generateHandshakeToken(utr, round) {
+      return btoa(utr + ":" + round + ":" + ADMIN_SECRET);
+    }    const cbseQuestions = [
       { q: "What is the primary gas produced during photosynthesis?", o: ["Oxygen", "Carbon dioxide", "Nitrogen", "Hydrogen"], a: 0, sub: "Class 6 Science" },
       { q: "What is the smallest prime number?", o: ["2", "1", "3", "0"], a: 0, sub: "Class 6 Maths" },
       { q: "Deficiency of Vitamin A causes which disease?", o: ["Night blindness", "Scurvy", "Rickets", "Beriberi"], a: 0, sub: "Class 6 Science" },
@@ -318,7 +343,7 @@
       { q: "What is Force applied per unit Area called?", o: ["Pressure", "Friction", "Tension", "Momentum"], a: 0, sub: "Class 8 Physics" },
       { q: "Sound cannot travel through which of the following?", o: ["Vacuum", "Water", "Steel", "Air"], a: 0, sub: "Class 8 Physics" },
       { q: "Which metal is so soft that it can be cut with a knife and stored in kerosene?", o: ["Sodium", "Iron", "Copper", "Aluminium"], a: 0, sub: "Class 8 Chemistry" },
-                { q: "Which non-metal is in liquid state at room temperature?", o: ["Bromine", "Chlorine", "Iodine", "Sulphur"], a: 0, sub: "Class 8 Chemistry" },
+      { q: "Which non-metal is in liquid state at room temperature?", o: ["Bromine", "Chlorine", "Iodine", "Sulphur"], a: 0, sub: "Class 8 Chemistry" },
       { q: "What is the square root of 144?", o: ["12", "14", "16", "18"], a: 0, sub: "Class 8 Maths" },
       { q: "What is the cube root of 64?", o: ["4", "8", "6", "2"], a: 0, sub: "Class 8 Maths" },
       { q: "Which cell organelle is called the 'Powerhouse of the cell'?", o: ["Mitochondria", "Ribosome", "Lysosome", "Vacuole"], a: 0, sub: "Class 8 Biology" },
@@ -338,7 +363,7 @@
       { q: "What is the pH value of pure neutral water at 25°C?", o: ["7", "0", "14", "1"], a: 0, sub: "Class 10 Chemistry" },
       { q: "What is the chemical formula of Baking Soda?", o: ["NaHCO₃", "Na₂CO₃", "NaOH", "CaO"], a: 0, sub: "Class 10 Chemistry" },
       { q: "What is the chemical formula of Plaster of Paris?", o: ["CaSO₄·½H₂O", "CaSO₄·2H₂O", "CaCO₃", "CaO"], a: 0, sub: "Class 10 Chemistry" },
-          { q: "Which metal exists in liquid state at room temperature?", o: ["Mercury", "Lead", "Tin", "Zinc"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Which metal exists in liquid state at room temperature?", o: ["Mercury", "Lead", "Tin", "Zinc"], a: 0, sub: "Class 10 Chemistry" },
       { q: "What is the basic functional unit of the human kidney?", o: ["Nephron", "Neuron", "Alveoli", "Villi"], a: 0, sub: "Class 10 Biology" },
       { q: "Which endocrine gland is known as the 'Master Gland'?", o: ["Pituitary gland", "Thyroid", "Adrenal", "Pancreas"], a: 0, sub: "Class 10 Biology" },
       { q: "How many pairs of chromosomes are present in human cells?", o: ["23 pairs", "46 pairs", "22 pairs", "24 pairs"], a: 0, sub: "Class 10 Biology" },
@@ -347,7 +372,9 @@
       { q: "The blue colour of the clear sky is due to:", o: ["Scattering of light", "Refraction of light", "Dispersion of light", "Reflection"], a: 0, sub: "Class 10 Physics" },
       { q: "Electric bulb filament is primarily made of which metal?", o: ["Tungsten", "Nichrome", "Copper", "Silver"], a: 0, sub: "Class 10 Physics" },
       { q: "What is the value of (sin² 45° + cos² 45°)?", o: ["1", "0", "2", "0.5"], a: 0, sub: "Class 10 Maths" },
-      { q: "What is the value of tan 45°?", o: ["1", "0", "√3", "1/√3"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the value of tan 45°?", o: ["1", "0", "√3", "1/√3"], a: 0, sub: "Class 10 Maths" }
+    ];
+        const cbseQuestionsPartB = [
       { q: "What is the formula for the area of a circle?", o: ["πr²", "2πr", "4πr²", "πd"], a: 0, sub: "Class 10 Maths" },
       { q: "What is the discriminant formula for ax² + bx + c = 0?", o: ["b² - 4ac", "b² + 4ac", "4ac - b²", "2b - 4ac"], a: 0, sub: "Class 10 Maths" },
       { q: "What is the first prime number greater than 10?", o: ["11", "13", "12", "15"], a: 0, sub: "Class 6 Maths" },
@@ -358,7 +385,7 @@
       { q: "What is the area of a square whose perimeter is 20 cm?", o: ["25 cm²", "20 cm²", "16 cm²", "100 cm²"], a: 0, sub: "Class 8 Maths" },
       { q: "What is the speed of light in vacuum?", o: ["3 × 10⁸ m/s", "3 × 10⁶ m/s", "3 × 10⁵ km/s", "3 × 10¹⁰ m/s"], a: 0, sub: "Class 10 Physics" },
       { q: "What is the SI unit of Electric Charge?", o: ["Coulomb", "Ampere", "Volt", "Ohm"], a: 0, sub: "Class 10 Physics" },
-          { q: "Which metal is the best conductor of electricity?", o: ["Silver", "Copper", "Gold", "Aluminium"], a: 0, sub: "Class 8 Science" },
+      { q: "Which metal is the best conductor of electricity?", o: ["Silver", "Copper", "Gold", "Aluminium"], a: 0, sub: "Class 8 Science" },
       { q: "Solve for x: 2x + 7 = 15. What is x?", o: ["4", "5", "3", "6"], a: 0, sub: "Class 8 Maths" },
       { q: "What is the chemical formula of ozone gas?", o: ["O₃", "O₂", "O", "O₄"], a: 0, sub: "Class 9 Science" },
       { q: "What is the valency of Carbon in methane (CH₄)?", o: ["4", "2", "3", "1"], a: 0, sub: "Class 9 Chemistry" },
@@ -378,7 +405,7 @@
       { q: "What is the value of sin 90°?", o: ["1", "0", "1/2", "√3/2"], a: 0, sub: "Class 10 Maths" },
       { q: "What is the value of cos 0°?", o: ["1", "0", "1/2", "undefined"], a: 0, sub: "Class 10 Maths" },
       { q: "What is the volume of a cylinder with base radius r and height h?", o: ["πr²h", "2πrh", "1/3 πr²h", "4/3 πr³"], a: 0, sub: "Class 10 Maths" },
-                { q: "What is the total surface area of a sphere of radius r?", o: ["4πr²", "2πr²", "3πr²", "πr²"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the total surface area of a sphere of radius r?", o: ["4πr²", "2πr²", "3πr²", "πr²"], a: 0, sub: "Class 10 Maths" },
       { q: "Mode of data: 2, 3, 3, 4, 5, 3, 6 is:", o: ["3", "4", "2", "5"], a: 0, sub: "Class 10 Maths" },
       { q: "Smallest composite number is:", o: ["4", "2", "1", "6"], a: 0, sub: "Class 10 Maths" },
       { q: "HCF of two consecutive even numbers is:", o: ["2", "1", "4", "0"], a: 0, sub: "Class 10 Maths" },
@@ -397,13 +424,16 @@
       { q: "Device that converts electrical energy into mechanical energy is:", o: ["Electric motor", "Electric generator", "Transformer", "Inverter"], a: 0, sub: "Class 10 Physics" },
       { q: "Metal extracted from Cinnabar ore is:", o: ["Mercury", "Aluminium", "Copper", "Iron"], a: 0, sub: "Class 10 Chemistry" },
       { q: "Functional group present in Alcohols is:", o: ["-OH", "-CHO", "-COOH", "-CO-"], a: 0, sub: "Class 10 Chemistry" },
-      { q: "Percentage of Nitrogen gas in Earth's atmosphere is approx:", o: ["78%", "21%", "0.04%", "1%"], a: 0, sub: "Class 6 Science" },
+      { q: "Percentage of Nitrogen gas in Earth's atmosphere is approx:", o: ["78%", "21%", "0.04%", "1%"], a: 0, sub: "Class 6 Science" }
+    ];
+    cbseQuestions.push(...cbseQuestionsPartB);
+        const cbseQuestionsPartC = [
       { q: "Instrument used to measure atmospheric pressure is:", o: ["Barometer", "Thermometer", "Hygrometer", "Speedometer"], a: 0, sub: "Class 8 Science" },
       { q: "Value of 2 raised to the power 5 (2⁵) is:", o: ["32", "10", "64", "16"], a: 0, sub: "Class 7 Maths" },
       { q: "Circumference of a circle with radius 7 cm (π = 22/7) is:", o: ["44 cm", "88 cm", "154 cm", "22 cm"], a: 0, sub: "Class 7 Maths" },
       { q: "Two angles are supplementary if their sum equals:", o: ["180°", "90°", "360°", "270°"], a: 0, sub: "Class 7 Maths" },
       { q: "Volume of a cube of edge length 3 cm is:", o: ["27 cm³", "9 cm³", "18 cm³", "54 cm³"], a: 0, sub: "Class 8 Maths" },
-          { q: "Diagonal of a square with side 5 cm is:", o: ["5√2 cm", "10 cm", "25 cm", "5 cm"], a: 0, sub: "Class 9 Maths" },
+      { q: "Diagonal of a square with side 5 cm is:", o: ["5√2 cm", "10 cm", "25 cm", "5 cm"], a: 0, sub: "Class 9 Maths" },
       { q: "Maximum probability of any sure event is:", o: ["1", "100", "0.5", "Infinity"], a: 0, sub: "Class 9 Maths" },
       { q: "Sum of first 10 natural numbers is:", o: ["55", "50", "45", "60"], a: 0, sub: "Class 10 Maths" },
       { q: "10th term of AP: 2, 5, 8, 11... is:", o: ["29", "27", "32", "30"], a: 0, sub: "Class 10 Maths" },
@@ -428,7 +458,7 @@
       { q: "What is the commercial unit of electric energy?", o: ["kWh", "Joule", "Watt", "Volt"], a: 0, sub: "Class 10 Physics" },
       { q: "Fleming's Left-Hand Rule is used to find direction of:", o: ["Magnetic force", "Induced current", "Electric field", "Sound"], a: 0, sub: "Class 10 Physics" },
       { q: "Male reproductive gamete in humans is called:", o: ["Sperm", "Ovum", "Zygote", "Embryo"], a: 0, sub: "Class 10 Biology" },
-          { q: "Female reproductive gamete in humans is called:", o: ["Ovum", "Sperm", "Pollen", "Spore"], a: 0, sub: "Class 10 Biology" },
+      { q: "Female reproductive gamete in humans is called:", o: ["Ovum", "Sperm", "Pollen", "Spore"], a: 0, sub: "Class 10 Biology" },
       { q: "What is the SI unit of Electric Potential Difference?", o: ["Volt", "Ampere", "Ohm", "Coulomb"], a: 0, sub: "Class 10 Physics" },
       { q: "Sum of interior angles of a regular quadrilateral is:", o: ["360°", "180°", "540°", "270°"], a: 0, sub: "Class 8 Maths" },
       { q: "Sound pitch is directly determined by its:", o: ["Frequency", "Amplitude", "Speed", "Loudness"], a: 0, sub: "Class 8 Physics" },
@@ -449,6 +479,7 @@
       { q: "Which acid is present in tomato?", o: ["Oxalic acid", "Citric acid", "Tartaric acid", "Acetic acid"], a: 0, sub: "Class 10 Chemistry" },
       { q: "What is the chemical name of Bleaching powder?", o: ["Calcium oxychloride", "Calcium carbonate", "Calcium hydroxide", "Calcium sulphate"], a: 0, sub: "Class 10 Chemistry" }
     ];
+    cbseQuestions.push(...cbseQuestionsPartC);
 
     let activeSet = [];
     let curIdx = 0;
@@ -456,10 +487,12 @@
     let testTimerSec = 600;
     let testTimerHandle = null;
     let testStartTimestamp = 0;
+    let isQuizActive = false;
     let curStudent = {};
     let tabSwitchCount = 0;
+    let cheatGraceTimer = null;
     let lobbyPollInterval = null;
-        function goToScreen(screenId) {
+                             function goToScreen(screenId) {
       ["lobbyScreen", "waitingScreen", "quizScreen", "resultScreen", "cancelledScreen", "adminLoginScreen", "adminDashboardScreen"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add("hidden");
@@ -497,6 +530,21 @@
       }
     }
 
+    function copyUpiId() {
+      navigator.clipboard.writeText("7756804720@ybl").then(() => {
+        const btn = document.getElementById("copyUpiBtn");
+        btn.innerText = "Copied! ✅";
+        setTimeout(() => { btn.innerText = "📋 Copy UPI"; }, 2000);
+      });
+          }
+              // Accidental Refresh Blocker
+    window.addEventListener("beforeunload", (e) => {
+      if (isQuizActive) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    });
+
     async function submitUtrForApproval() {
       const name = document.getElementById("userName").value.trim();
       const upi = document.getElementById("userUpi").value.trim();
@@ -507,12 +555,25 @@
       if (!upi || !upi.includes("@")) { alert("Please enter a valid UPI ID!"); return; }
       if (!/^\d{12}$/.test(utr)) { alert("UTR must be exactly 12 numeric digits!"); return; }
 
+      // Check if duplicate in ledger
+      const ledger = JSON.parse(localStorage.getItem("permanent_all_time_ledger") || "[]");
+      if (ledger.some(x => x.utr === utr)) {
+        alert("❌ Fraud Alert: Yeh UTR pehle hi use ho chuka hai! Kripya naya payment karein.");
+        return;
+      }
+
       curStudent = { name, upi, utr, round };
 
-      let startTime = localStorage.getItem(`quiz_round_start_${round}`);
-      if (!startTime) {
-        startTime = String(Date.now());
-        localStorage.setItem(`quiz_round_start_${round}`, startTime);
+      // Initialize server round start if first
+      let roundStart = localStorage.getItem(`quiz_round_start_${round}`);
+      if (!roundStart) {
+        roundStart = String(Date.now());
+        localStorage.setItem(`quiz_round_start_${round}`, roundStart);
+        // Broadcast universal round start time
+        await fetch(STATE_TOPIC, {
+          method: "POST",
+          body: JSON.stringify({ round, state: "waiting", startTime: roundStart })
+        });
       }
 
       try {
@@ -530,27 +591,49 @@
       } catch (err) {
         alert("Network error. Please try again.");
       }
-        }
-        async function syncLobbyState() {
+    }
+
+    async function syncLobbyState() {
       const round = getRoundId();
 
-      let roundStart = parseInt(localStorage.getItem(`quiz_round_start_${round}`) || String(Date.now()), 10);
-      let elapsedSeconds = Math.floor((Date.now() - roundStart) / 1000);
-      let remainingWaiting = 1200 - elapsedSeconds;
-
-      if (remainingWaiting < 0) remainingWaiting = 0;
-
-      const m = String(Math.floor(remainingWaiting / 60)).padStart(2, '0');
-      const s = String(remainingWaiting % 60).padStart(2, '0');
-      document.getElementById("waitingClockDisplay").innerText = `${m}:${s}`;
-      const admTimer = document.getElementById("adminWaitingTimerDisplay");
-      if (admTimer) admTimer.innerText = `${m}:${s}`;
-
       try {
-        const appRes = await fetch(`${APP_TOPIC}/json?poll=1&since=24h`);
-        const appText = await appRes.text();
-        const approvedStudents = [];
+        const [appRes, stateRes] = await Promise.all([
+          fetch(`${APP_TOPIC}/json?poll=1&since=24h`),
+          fetch(`${STATE_TOPIC}/json?poll=1&since=24h`)
+        ]);
 
+        const appText = await appRes.text();
+        const stateText = await stateRes.text();
+
+        // Calculate universal timer
+        let universalStartTime = null;
+        let remoteState = null;
+        stateText.trim().split("\n").forEach(line => {
+          if (!line) return;
+          try {
+            const obj = JSON.parse(JSON.parse(line).message);
+            if (obj.round === round) {
+              if (obj.startTime) universalStartTime = parseInt(obj.startTime, 10);
+              if (obj.state) remoteState = obj.state;
+            }
+          } catch(e) {}
+        });
+
+        if (!universalStartTime) {
+          universalStartTime = parseInt(localStorage.getItem(`quiz_round_start_${round}`) || String(Date.now()), 10);
+        }
+
+        let elapsedSeconds = Math.floor((Date.now() - universalStartTime) / 1000);
+        let remainingWaiting = 1200 - elapsedSeconds;
+        if (remainingWaiting < 0) remainingWaiting = 0;
+
+        const m = String(Math.floor(remainingWaiting / 60)).padStart(2, '0');
+        const s = String(remainingWaiting % 60).padStart(2, '0');
+        document.getElementById("waitingClockDisplay").innerText = `${m}:${s}`;
+        const admTimer = document.getElementById("adminWaitingTimerDisplay");
+        if (admTimer) admTimer.innerText = `${m}:${s}`;
+
+        const approvedStudents = [];
         appText.trim().split("\n").forEach(line => {
           if (!line) return;
           try {
@@ -569,53 +652,51 @@
         const pct = Math.min(100, Math.floor((count / 20) * 100));
         document.getElementById("joinProgressBar").style.width = `${pct}%`;
 
-        const isSelfApproved = approvedStudents.some(x => x.utr === curStudent.utr);
+        // Check if self is approved with valid secret token
+        const expectedToken = generateHandshakeToken(curStudent.utr, round);
+        const isSelfApproved = approvedStudents.some(x => x.utr === curStudent.utr && x.token === expectedToken);
 
-        const stateRes = await fetch(`${STATE_TOPIC}/json?poll=1&since=2m`);
-        const stateText = await stateRes.text();
-        let remoteState = null;
-        stateText.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const obj = JSON.parse(JSON.parse(line).message);
-            if (obj.round === round) remoteState = obj.state;
-          } catch(e) {}
-        });
-
+        // Auto Start when 20+ and timer 0, or Force Started
         if (remoteState === "started" || (remainingWaiting === 0 && count >= 20)) {
           clearInterval(lobbyPollInterval);
-          if (isSelfApproved) {
-            startQuizSession();
-          }
+          if (isSelfApproved) startQuizSession();
           return;
         }
 
+        // Cancelled and Refund when < 20 and timer 0, or Force Cancelled
         if (remoteState === "cancelled" || (remainingWaiting === 0 && count < 20)) {
           clearInterval(lobbyPollInterval);
           saveRefundsForRound(round, approvedStudents);
           goToScreen("cancelledScreen");
           return;
         }
-
       } catch(e) {}
-    }    // ANTI-CHEAT TAB SWITCH DETECTOR
+  }
+        // 3-SECOND GRACE PERIOD ANTI-CHEAT (Protects from Notification Swipes & Calls)
     document.addEventListener("visibilitychange", () => {
-      const quizScreen = document.getElementById("quizScreen");
-      if (!quizScreen.classList.contains("hidden") && testTimerHandle) {
+      if (isQuizActive && testTimerHandle) {
         if (document.hidden) {
-          tabSwitchCount++;
-          if (tabSwitchCount === 1) {
-            document.getElementById("cheatWarningBox").classList.remove("hidden");
-            alert("⚠️ WARNING: Tab switch detect zala! Pudhchya veles test DISQUALIFY (Zero Score) hoil!");
-          } else if (tabSwitchCount >= 2) {
-            alert("❌ DISQUALIFIED: Multiple tab switches detected. Test auto-submit kela jaat ahe (Score: 0).");
-            finishQuiz(true);
+          cheatGraceTimer = setTimeout(() => {
+            tabSwitchCount++;
+            if (tabSwitchCount === 1) {
+              document.getElementById("cheatWarningBox").classList.remove("hidden");
+              alert("⚠️ WARNING: Tab switch detect hua! Agli baar test DISQUALIFY (Zero Score) ho jayega!");
+            } else if (tabSwitchCount >= 2) {
+              alert("❌ DISQUALIFIED: Multiple tab switches detected. Test auto-submit kela jaat ahe.");
+              finishQuiz(true);
+            }
+          }, 3000); // 3 seconds grace period
+        } else {
+          if (cheatGraceTimer) {
+            clearTimeout(cheatGraceTimer);
+            cheatGraceTimer = null;
           }
         }
       }
     });
 
     function startQuizSession() {
+      isQuizActive = true;
       tabSwitchCount = 0;
       document.getElementById("cheatWarningBox").classList.add("hidden");
 
@@ -696,8 +777,12 @@
     function nextQuestion() { if (curIdx < 9) { curIdx++; displayQuestion(); } }
 
     async function finishQuiz(isDisqualified = false) {
+      isQuizActive = false;
       clearInterval(testTimerHandle);
-      const totalTime = Math.floor((Date.now() - testStartTimestamp) / 1000);
+      
+      // Millisecond Precision for Accurate Tie-breaking
+      const totalTimeMs = Date.now() - testStartTimestamp;
+      const totalTimeSec = (totalTimeMs / 1000).toFixed(2);
 
       let score = 0;
       if (!isDisqualified) {
@@ -712,7 +797,7 @@
         utr: curStudent.utr,
         round: curStudent.round,
         score: score,
-        time: totalTime,
+        time: parseFloat(totalTimeSec),
         status: isDisqualified ? "Disqualified" : "Completed"
       };
 
@@ -733,7 +818,7 @@
       } else {
         document.getElementById("resultEmoji").innerText = "🎉";
         document.getElementById("resultHeading").innerText = "Quiz Completed!";
-        document.getElementById("scoreDisplay").innerText = `Score: ${score} / 10 | Time: ${totalTime} seconds`;
+        document.getElementById("scoreDisplay").innerText = `Score: ${score} / 10 | Time: ${totalTimeSec}s`;
       }
       fetchRoundLeaderboard();
     }
@@ -761,12 +846,17 @@
         });
 
         const pendingMap = new Map();
+        const utrFrequency = {};
+
         reqText.trim().split("\n").forEach(line => {
           if (!line) return;
           try {
             const d = JSON.parse(JSON.parse(line).message);
-            if (d.utr && d.round === currentRound && !approvedUtrs.has(d.utr)) {
-              pendingMap.set(d.utr, d);
+            if (d.utr && d.round === currentRound) {
+              utrFrequency[d.utr] = (utrFrequency[d.utr] || 0) + 1;
+              if (!approvedUtrs.has(d.utr)) {
+                pendingMap.set(d.utr, d);
+              }
             }
           } catch(e) {}
         });
@@ -780,17 +870,24 @@
         }
 
         items.forEach(req => {
+          const isDuplicate = utrFrequency[req.utr] > 1;
           const card = document.createElement("div");
-          card.className = "p-3 bg-slate-900 border border-slate-700 rounded-xl flex justify-between items-center";
+          card.className = `p-3 bg-slate-900 border ${isDuplicate ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-700'} rounded-xl flex justify-between items-center`;
           card.innerHTML = `
             <div>
               <p class="text-white text-xs font-bold">${req.name} <span class="text-slate-400 text-[10px]">(${req.time})</span></p>
               <p class="text-[11px] font-mono text-amber-400 font-bold">UTR: ${req.utr}</p>
               <p class="text-[10px] text-slate-400 font-mono">UPI: ${req.upi}</p>
+              ${isDuplicate ? '<span class="text-[10px] font-bold text-red-400">⚠️ DUPLICATE UTR! DO NOT APPROVE</span>' : ''}
             </div>
-            <button onclick="approveStudent('${req.name}', '${req.upi}', '${req.utr}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-2 rounded-lg shadow">
-              Approve ✅
-            </button>
+            <div class="flex flex-col gap-1.5">
+              <button onclick="approveStudent('${req.name}', '${req.upi}', '${req.utr}')" ${isDuplicate ? 'disabled' : ''} class="${isDuplicate ? 'bg-slate-700 opacity-50 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500'} text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg shadow">
+                Approve ✅
+              </button>
+              <button onclick="rejectStudent('${req.utr}')" class="bg-red-700 hover:bg-red-600 text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg shadow">
+                Reject ❌
+              </button>
+            </div>
           `;
           container.appendChild(card);
         });
@@ -802,9 +899,11 @@
     async function approveStudent(name, upi, utr) {
       try {
         const round = getRoundId();
+        const token = generateHandshakeToken(utr, round);
+
         await fetch(APP_TOPIC, {
           method: "POST",
-          body: JSON.stringify({ name, upi, utr, round, status: "approved" })
+          body: JSON.stringify({ name, upi, utr, round, status: "approved", token: token })
         });
 
         saveToPermanentLedger({
@@ -823,6 +922,22 @@
         renderPermanentLedger();
       } catch (e) {
         alert("Approval failed.");
+      }
+    }
+
+    async function rejectStudent(utr) {
+      if (confirm(`Reject UTR ${utr}?`)) {
+        try {
+          const round = getRoundId();
+          await fetch(APP_TOPIC, {
+            method: "POST",
+            body: JSON.stringify({ utr: utr, round: round, status: "rejected" })
+          });
+          alert("Fake UTR Rejected!");
+          fetchAdminRequests();
+        } catch (e) {
+          alert("Rejection failed.");
+        }
       }
     }
 
@@ -877,7 +992,9 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    }    function saveRefundsForRound(round, students) {
+    }
+
+    function saveRefundsForRound(round, students) {
       let refundList = JSON.parse(localStorage.getItem("pending_refunds_list") || "[]");
       students.forEach(s => {
         if (!refundList.some(r => r.utr === s.utr)) {
@@ -973,7 +1090,8 @@
           } catch(e) {}
         });
 
-        records.sort((a, b) => b.score - a.score || a.time - b.time);
+        // Exact Millisecond Precision Tie-Breaker
+        records.sort((a, b) => b.score - a.score || parseFloat(a.time) - parseFloat(b.time));
         const top5 = records.slice(0, 5);
 
         let stored = JSON.parse(localStorage.getItem(`quiz_payouts_r${round}`) || "[]");
@@ -1024,13 +1142,12 @@
               <span class="font-bold text-slate-200">${w.name}</span>
               <p class="text-[10px] text-slate-400 font-mono">UPI: ${w.upi}</p>
             </div>
-            <span class="bg-emerald-950 border border-emerald-600 text-emerald-300 text-xs font-black px-2 py-0.5 rounded">
+            <span class="bg-emerald-950 border border-emerald-600 text-emerald-300 text-xs font-black px-2.5 py-1 rounded">
               ✅ PAID
             </span>
           `;
           paidContainer.appendChild(card);
         });
-
       } catch(e) {}
     }
 
@@ -1060,7 +1177,7 @@
           } catch(e) {}
         });
 
-        records.sort((a, b) => b.score - a.score || a.time - b.time);
+        records.sort((a, b) => b.score - a.score || parseFloat(a.time) - parseFloat(b.time));
         const top5 = records.slice(0, 5);
 
         const box = document.getElementById("leaderboardBox");
@@ -1086,11 +1203,17 @@
     }
 
     function startFreshNewRound() {
-      if (confirm("Start a Fresh New Round?\n\n• Timer resets to 20 mins.\n• Permanent ledger remains safely archived.\n• Fresh randomized questions for the next round.")) {
+      if (confirm("Start a Fresh New Round?\n\n• Universal timer resets to 20 mins.\n• Permanent ledger remains safely archived.\n• Fresh randomized questions for the next round.")) {
         let currentRound = parseInt(getRoundId(), 10);
         let nextRound = currentRound + 1;
+        const nowStr = String(Date.now());
         localStorage.setItem("quiz_active_round", String(nextRound));
-        localStorage.setItem(`quiz_round_start_${nextRound}`, String(Date.now()));
+        localStorage.setItem(`quiz_round_start_${nextRound}`, nowStr);
+
+        fetch(STATE_TOPIC, {
+          method: "POST",
+          body: JSON.stringify({ round: String(nextRound), state: "waiting", startTime: nowStr })
+        });
 
         updateRoundDisplay();
         fetchAdminRequests();
@@ -1104,6 +1227,5 @@
   </script>
 </body>
 </html>
-
-    
+  
     
