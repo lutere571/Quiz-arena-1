@@ -10,7 +10,7 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen select-none">
 
   <!-- TOP APP BAR -->
   <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
@@ -33,17 +33,16 @@
 
   <main class="max-w-md mx-auto p-4 pb-20">
 
-    <!-- SCREEN 1: LOBBY & PAYMENT -->
+    <!-- SCREEN 1: LOBBY -->
     <section id="lobbyScreen" class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       <div class="bg-indigo-950/60 border border-indigo-500/30 p-3.5 rounded-xl text-xs space-y-1.5 text-indigo-200">
-        <p class="font-bold text-amber-300 text-sm">📌 Contest Rules & Conditions:</p>
-        <p>• <strong>Condition:</strong> Minimum <strong>20 participants</strong> required to unlock test.</p>
-        <p>• <strong>Waiting Period:</strong> 20 Minutes countdown for all to join.</p>
-        <p>• <strong>100% Refund Guarantee:</strong> Agar 20 min me 20 log nahi jude, toh test cancel hoga aur aapka ₹50 refund ho jayega.</p>
-        <p>• <strong>Synchronized Start:</strong> 20 log judne par sabhi ka test ek hi second par ek saath chalu hoga.</p>
-      </div>
-
-      <!-- Step 1: Payment -->
+        <p class="font-bold text-amber-300 text-sm">📌 Contest Rules & Security:</p>
+        <p>• <strong>Threshold:</strong> Minimum <strong>20 participants</strong> required to unlock test.</p>
+        <p>• <strong>Waiting Period:</strong> 20 Minutes timer for registrations.</p>
+        <p>• <strong>Anti-Cheat Active:</strong> Test chalu astana tab switch kelyas test disqualify (zero score) hoil.</p>
+        <p>• <strong>100% Refund:</strong> 20 minitāt 20 jan nahi jhale tar ₹50 lagewach refund miltil.</p>
+          </div>
+                <!-- Step 1: Payment -->
       <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center space-y-2">
         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Step 1: Pay ₹50 Entry Fee</h3>
         <a href="upi://pay?pa=7756804720@ybl&pn=Quiz%20Master&am=50&cu=INR&tn=CBSEQuizEntry" 
@@ -74,52 +73,57 @@
         </button>
       </div>
     </section>
-
-    <!-- SCREEN 2: 20-MIN SYNCHRONIZED WAITING ROOM -->
+        <!-- SCREEN 2: 20-MIN WAITING ROOM -->
     <section id="waitingScreen" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl text-center space-y-4">
       <div class="inline-block bg-indigo-950/80 border border-indigo-500/40 px-3 py-1 rounded-full text-indigo-300 text-xs font-bold">
-        ⏳ LIVE QUIZ ARENA LOBBY
+        ⏳ LIVE QUIZ LOBBY
       </div>
 
       <div class="space-y-1">
-        <h2 class="text-base font-extrabold text-white">Waiting for Participants to Join...</h2>
+        <h2 class="text-base font-extrabold text-white">Waiting for Participants...</h2>
         <p class="text-xs text-slate-400">Quiz starts automatically when 20+ join or waiting timer ends.</p>
       </div>
 
-      <!-- 20-Min Synchronized Timer Display -->
+      <!-- 20-Min Synchronized Timer -->
       <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
         <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Time Left in Waiting Room</p>
         <div id="waitingClockDisplay" class="font-mono text-4xl font-black text-amber-400 tracking-wider">
           20:00
         </div>
-        <p class="text-[10px] text-slate-500">Synchronized across all participants</p>
+        <p class="text-[10px] text-slate-500">Live synced for all phones</p>
       </div>
 
-      <!-- Live Participant Counter (Min 20) -->
+      <!-- Counter -->
       <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
         <div class="flex justify-between items-center text-xs">
           <span class="text-slate-300 font-bold">Participants Joined:</span>
           <span class="font-mono font-black text-amber-400"><span id="liveJoinedCount">0</span> / 20 Required</span>
         </div>
-        <!-- Progress Bar -->
         <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
           <div id="joinProgressBar" class="bg-gradient-to-r from-amber-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
         </div>
-        <p id="participantStatusText" class="text-[11px] text-amber-300/90 font-medium">Waiting for more participants...</p>
+        <p id="participantStatusText" class="text-[11px] text-amber-300/90 font-medium">Waiting for registrations...</p>
       </div>
 
       <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-left text-xs space-y-1 text-slate-400">
-        <p class="text-white font-bold">⚡ Rules for this stage:</p>
-        <p>• Is screen ko band na karein.</p>
-        <p>• Agar 20 min me 20 log jud gaye, toh **test ek sath live chalu hoga**.</p>
-        <p>• Agar 20 log nahi jude, toh test cancel hoga aur aapka ₹50 turant refund kiya jayega.</p>
+        <p class="text-white font-bold">⚡ Rules:</p>
+        <p>• Do not close this screen.</p>
+        <p>• 20 participants judtach sarvancha test ekach veles start hoil.</p>
+        <p>• 20 participants nahi jhale tar sampurna ₹50 refund miltil.</p>
       </div>
     </section>
-        <!-- SCREEN 3: ACTIVE TEST SCREEN (10 MIN STRICT TIMER) -->
+        <!-- SCREEN 3: ACTIVE TEST SCREEN WITH ANTI-CHEAT BANNER -->
     <section id="quizScreen" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-slate-800">
         <span id="questionCount" class="text-xs font-bold text-amber-400 uppercase tracking-wider">Question 1 / 10</span>
-        <span id="subjectBadge" class="text-[10px] bg-indigo-950 border border-indigo-700 text-indigo-300 font-bold px-2 py-0.5 rounded">CBSE</span>
+        <span id="antiCheatBadge" class="text-[10px] bg-red-950 border border-red-600 text-red-300 font-bold px-2 py-0.5 rounded animate-pulse">
+          🛡️ Anti-Cheat Active
+        </span>
+      </div>
+
+      <!-- Anti-Cheat Warning Alert Box -->
+      <div id="cheatWarningBox" class="hidden p-2.5 bg-red-900/80 border border-red-500 rounded-xl text-[11px] text-red-200 font-bold text-center">
+        ⚠️ Warning: Tab switch karu naka! Pudhchya veles test Disqualify hoil.
       </div>
 
       <h2 id="questionText" class="text-base font-bold text-white min-h-[50px] leading-relaxed"></h2>
@@ -134,16 +138,15 @@
         </button>
       </div>
 
-      <button id="submitBtn" onclick="finishQuiz()" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-xl text-sm hidden shadow-lg">
+      <button id="submitBtn" onclick="finishQuiz(false)" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-xl text-sm hidden shadow-lg">
         Submit Quiz Answers ✅
       </button>
     </section>
-
-    <!-- SCREEN 4: RESULT SCREEN -->
+        <!-- SCREEN 4: RESULT SCREEN -->
     <section id="resultScreen" class="hidden space-y-4">
       <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center shadow-xl">
-        <div class="text-4xl mb-2">🎉</div>
-        <h2 class="text-lg font-bold text-white">Quiz Completed!</h2>
+        <div id="resultEmoji" class="text-4xl mb-2">🎉</div>
+        <h2 id="resultHeading" class="text-lg font-bold text-white">Quiz Completed!</h2>
         <p id="scoreDisplay" class="text-sm text-amber-400 mt-2 font-mono font-bold"></p>
         <p class="text-xs text-slate-400 mt-1">Admin will verify rankings and transfer ₹200 to top 5 winners.</p>
       </div>
@@ -158,22 +161,22 @@
       </button>
     </section>
 
-    <!-- SCREEN 5: CONTEST CANCELLED & REFUND NOTICE SCREEN (FOR STUDENTS) -->
+    <!-- SCREEN 5: CANCELLED & REFUND SCREEN -->
     <section id="cancelledScreen" class="hidden bg-slate-900 border-2 border-red-500/60 p-6 rounded-2xl shadow-2xl text-center space-y-4">
       <div class="text-4xl">⚠️</div>
       <h2 class="text-lg font-black text-red-400">Round Cancelled (Low Participation)</h2>
       <p class="text-xs text-slate-300 leading-relaxed">
-        20 minute me minimum 20 participants nahi jud paye, isliye yeh round cancel kar diya gaya hai.
+        20 minitāt minimum 20 participants jhale nahit, mhanun ha round cancel kela ahe.
       </p>
 
       <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left space-y-2 text-xs">
         <p class="font-bold text-amber-400">💰 100% Refund Status:</p>
-        <p class="text-slate-300">• Aapka ₹50 entry fee aapke UPI ID (<span id="refundUpiDisplay" class="font-mono text-emerald-400 font-bold"></span>) par Admin dwara wapas transfer kiya ja raha hai.</p>
-        <p class="text-slate-400 text-[11px]">• Transaction Ref / UTR: <span id="refundUtrDisplay" class="font-mono text-slate-300"></span></p>
+        <p class="text-slate-300">• Aapla ₹50 fee aaplya UPI ID (<span id="refundUpiDisplay" class="font-mono text-emerald-400 font-bold"></span>) var Admin kadun refund kele jaat ahe.</p>
+        <p class="text-slate-400 text-[11px]">• Verified UTR: <span id="refundUtrDisplay" class="font-mono text-slate-300"></span></p>
       </div>
 
       <button onclick="goToScreen('lobbyScreen')" class="w-full bg-slate-800 text-slate-200 font-bold py-3 rounded-xl text-sm">
-        Back to Arena Home
+        Back to Home
       </button>
     </section>
         <!-- SCREEN 6: ADMIN LOGIN -->
@@ -209,7 +212,7 @@
         <button onclick="goToScreen('lobbyScreen')" class="text-xs text-red-400 font-bold bg-slate-800 px-2.5 py-1 rounded">Logout ✖</button>
       </div>
 
-      <!-- Round State Status Card -->
+      <!-- State Card -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
         <div>
           <p class="text-slate-400">Waiting Time Remaining:</p>
@@ -219,39 +222,35 @@
           <p class="text-slate-400">Approved Players:</p>
           <p class="font-mono text-xl font-black text-emerald-400"><span id="adminApprovedCount">0</span> / 20</p>
         </div>
-      </div>
-
-      <!-- Pending UTR Approvals Section -->
+          </div>
+                <!-- Pending UTR Approvals -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-amber-500/40 space-y-2">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals</h3>
           <button onclick="fetchAdminRequests()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
         </div>
-        <p class="text-[11px] text-slate-400">Check ₹50 on PhonePe/GPay & approve to add into round:</p>
         <div id="pendingUtrList" class="space-y-2 max-h-44 overflow-y-auto"></div>
       </div>
 
-      <!-- Manual Force Controls -->
+      <!-- Force Buttons -->
       <div class="grid grid-cols-2 gap-2">
         <button onclick="forceStartContest()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-          🚀 Force Start Quiz Now
+          🚀 Force Start Now
         </button>
         <button onclick="forceCancelRoundAndRefund()" class="bg-red-700 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-          🛑 Cancel & Issue Refunds
+          🛑 Cancel & Refund
         </button>
       </div>
 
-      <!-- SECTION: REFUND PENDING (When <20 or Round Cancelled) -->
-      <div id="refundPanelSection" class="space-y-2 pt-2 border-t border-slate-800">
+      <!-- Pending Refunds -->
+      <div class="space-y-2 pt-2 border-t border-slate-800">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-red-400 uppercase tracking-wider">💸 Pending Refunds (₹50 Each)</h3>
           <span id="refundPendingBadge" class="bg-red-950 border border-red-600 text-red-300 text-[10px] font-black px-2 py-0.5 rounded">0 Pending</span>
         </div>
-        <p class="text-[11px] text-slate-400">Click to return ₹50 directly to student's UPI:</p>
-        <div id="pendingRefundsContainer" class="space-y-2 max-h-44 overflow-y-auto"></div>
+        <div id="pendingRefundsContainer" class="space-y-2 max-h-40 overflow-y-auto"></div>
       </div>
-
-      <!-- SECTION: WINNERS PAYOUT (₹200) -->
+            <!-- Winners Payout -->
       <div class="space-y-2 pt-2 border-t border-slate-800">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🏆 Top 5 Winners (Pay ₹200)</h3>
@@ -261,29 +260,30 @@
         <div id="paidWinnersContainer" class="space-y-2 pt-1"></div>
       </div>
 
-      <!-- SECTION: PERMANENT LIFETIME LEDGER (NEVER ERASED) -->
+      <!-- PERMANENT LIFETIME LEDGER + CSV EXPORT BUTTON -->
       <div class="space-y-2 pt-2 border-t border-slate-800">
         <div class="flex justify-between items-center">
-          <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-wider">📜 Permanent Lifetime Records (All Rounds)</h3>
-          <button onclick="renderPermanentLedger()" class="text-[10px] text-cyan-400 underline font-bold">Refresh</button>
+          <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-wider">📜 Permanent Lifetime Records</h3>
+          <button onclick="exportLedgerToCSV()" class="bg-cyan-700 hover:bg-cyan-600 text-white px-2.5 py-1 rounded text-[10px] font-black shadow flex items-center gap-1">
+            📥 Export Excel / CSV
+          </button>
         </div>
-        <p class="text-[10px] text-slate-500">Every single student who paid ₹50 is recorded here permanently.</p>
-        <div id="permanentLedgerContainer" class="space-y-1.5 max-h-48 overflow-y-auto font-mono text-[10px]"></div>
+        <div id="permanentLedgerContainer" class="space-y-1.5 max-h-44 overflow-y-auto font-mono text-[10px]"></div>
       </div>
 
-      <!-- RESET / START NEW ROUND -->
+      <!-- Start New Round -->
       <div class="pt-3 border-t border-slate-800">
         <button onclick="startFreshNewRound()" class="w-full bg-indigo-900/80 hover:bg-indigo-800 border border-indigo-600 text-indigo-100 font-bold py-3 rounded-xl text-xs shadow-lg transition">
-          🔄 Start Fresh New Round (Archives Ledger & Resets Timer)
+          🔄 Start Fresh New Round (Resets Timer)
         </button>
       </div>
     </section>
 
-      </main>
-          <script>
+  </main>
+
+  <script>
     const ADMIN_SECRET = "103695";
 
-    // Dynamic Cloud Topics
     const REQ_TOPIC = "https://ntfy.sh/cbsequiz_req_7756804720";
     const APP_TOPIC = "https://ntfy.sh/cbsequiz_app_7756804720";
     const STATE_TOPIC = "https://ntfy.sh/cbsequiz_state_7756804720";
@@ -297,9 +297,7 @@
       }
       return r;
     }
-
-    // 150 CBSE CLASS 6-10 SCIENCE & MATHS QUESTION BANK
-    const cbseQuestions = [
+        const cbseQuestions = [
       { q: "What is the primary gas produced during photosynthesis?", o: ["Oxygen", "Carbon dioxide", "Nitrogen", "Hydrogen"], a: 0, sub: "Class 6 Science" },
       { q: "What is the smallest prime number?", o: ["2", "1", "3", "0"], a: 0, sub: "Class 6 Maths" },
       { q: "Deficiency of Vitamin A causes which disease?", o: ["Night blindness", "Scurvy", "Rickets", "Beriberi"], a: 0, sub: "Class 6 Science" },
@@ -320,7 +318,7 @@
       { q: "What is Force applied per unit Area called?", o: ["Pressure", "Friction", "Tension", "Momentum"], a: 0, sub: "Class 8 Physics" },
       { q: "Sound cannot travel through which of the following?", o: ["Vacuum", "Water", "Steel", "Air"], a: 0, sub: "Class 8 Physics" },
       { q: "Which metal is so soft that it can be cut with a knife and stored in kerosene?", o: ["Sodium", "Iron", "Copper", "Aluminium"], a: 0, sub: "Class 8 Chemistry" },
-      { q: "Which non-metal is in liquid state at room temperature?", o: ["Bromine", "Chlorine", "Iodine", "Sulphur"], a: 0, sub: "Class 8 Chemistry" },
+                { q: "Which non-metal is in liquid state at room temperature?", o: ["Bromine", "Chlorine", "Iodine", "Sulphur"], a: 0, sub: "Class 8 Chemistry" },
       { q: "What is the square root of 144?", o: ["12", "14", "16", "18"], a: 0, sub: "Class 8 Maths" },
       { q: "What is the cube root of 64?", o: ["4", "8", "6", "2"], a: 0, sub: "Class 8 Maths" },
       { q: "Which cell organelle is called the 'Powerhouse of the cell'?", o: ["Mitochondria", "Ribosome", "Lysosome", "Vacuole"], a: 0, sub: "Class 8 Biology" },
@@ -340,7 +338,7 @@
       { q: "What is the pH value of pure neutral water at 25°C?", o: ["7", "0", "14", "1"], a: 0, sub: "Class 10 Chemistry" },
       { q: "What is the chemical formula of Baking Soda?", o: ["NaHCO₃", "Na₂CO₃", "NaOH", "CaO"], a: 0, sub: "Class 10 Chemistry" },
       { q: "What is the chemical formula of Plaster of Paris?", o: ["CaSO₄·½H₂O", "CaSO₄·2H₂O", "CaCO₃", "CaO"], a: 0, sub: "Class 10 Chemistry" },
-      { q: "Which metal exists in liquid state at room temperature?", o: ["Mercury", "Lead", "Tin", "Zinc"], a: 0, sub: "Class 10 Chemistry" },
+          { q: "Which metal exists in liquid state at room temperature?", o: ["Mercury", "Lead", "Tin", "Zinc"], a: 0, sub: "Class 10 Chemistry" },
       { q: "What is the basic functional unit of the human kidney?", o: ["Nephron", "Neuron", "Alveoli", "Villi"], a: 0, sub: "Class 10 Biology" },
       { q: "Which endocrine gland is known as the 'Master Gland'?", o: ["Pituitary gland", "Thyroid", "Adrenal", "Pancreas"], a: 0, sub: "Class 10 Biology" },
       { q: "How many pairs of chromosomes are present in human cells?", o: ["23 pairs", "46 pairs", "22 pairs", "24 pairs"], a: 0, sub: "Class 10 Biology" },
@@ -359,19 +357,109 @@
       { q: "Which gas turns lime water milky?", o: ["Carbon dioxide", "Oxygen", "Nitrogen", "Hydrogen"], a: 0, sub: "Class 7 Chemistry" },
       { q: "What is the area of a square whose perimeter is 20 cm?", o: ["25 cm²", "20 cm²", "16 cm²", "100 cm²"], a: 0, sub: "Class 8 Maths" },
       { q: "What is the speed of light in vacuum?", o: ["3 × 10⁸ m/s", "3 × 10⁶ m/s", "3 × 10⁵ km/s", "3 × 10¹⁰ m/s"], a: 0, sub: "Class 10 Physics" },
-      { q: "What is the SI unit of Electric Charge?", o: ["Coulomb", "Ampere", "Volt", "Ohm"], a: 0, sub: "Class 10 Physics" }
+      { q: "What is the SI unit of Electric Charge?", o: ["Coulomb", "Ampere", "Volt", "Ohm"], a: 0, sub: "Class 10 Physics" },
+          { q: "Which metal is the best conductor of electricity?", o: ["Silver", "Copper", "Gold", "Aluminium"], a: 0, sub: "Class 8 Science" },
+      { q: "Solve for x: 2x + 7 = 15. What is x?", o: ["4", "5", "3", "6"], a: 0, sub: "Class 8 Maths" },
+      { q: "What is the chemical formula of ozone gas?", o: ["O₃", "O₂", "O", "O₄"], a: 0, sub: "Class 9 Science" },
+      { q: "What is the valency of Carbon in methane (CH₄)?", o: ["4", "2", "3", "1"], a: 0, sub: "Class 9 Chemistry" },
+      { q: "Point where X-axis and Y-axis intersect is called:", o: ["Origin", "Quadrant", "Abscissa", "Ordinate"], a: 0, sub: "Class 9 Maths" },
+      { q: "Probability of getting Head in a single coin toss is:", o: ["1/2", "1", "1/4", "0"], a: 0, sub: "Class 9 Maths" },
+      { q: "Which acid causes severe burning pain in nettle leaf sting?", o: ["Methanoic acid", "Ethanoic acid", "Tartaric acid", "Oxalic acid"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Main constituent gas of Biogas and CNG is:", o: ["Methane", "Propane", "Butane", "Ethane"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Mirror used by dentists to see enlarged teeth is:", o: ["Concave mirror", "Convex mirror", "Plane mirror", "Bifocal"], a: 0, sub: "Class 10 Physics" },
+      { q: "Near point for distinct vision for normal human eye is:", o: ["25 cm", "2.5 cm", "25 m", "Infinity"], a: 0, sub: "Class 10 Physics" },
+      { q: "Myopia (near-sightedness) is corrected using which lens?", o: ["Concave lens", "Convex lens", "Bifocal lens", "Cylindrical"], a: 0, sub: "Class 10 Physics" },
+      { q: "Hypermetropia (far-sightedness) is corrected using which lens?", o: ["Convex lens", "Concave lens", "Bifocal lens", "Plane glass"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is 1 kiloWatt-hour (1 kWh) in Joules?", o: ["3.6 × 10⁶ J", "3.6 × 10⁵ J", "1000 J", "3600 J"], a: 0, sub: "Class 10 Physics" },
+      { q: "Instrument used to measure electric current is:", o: ["Ammeter", "Voltmeter", "Galvanometer", "Rheostat"], a: 0, sub: "Class 10 Physics" },
+      { q: "Organic acid present in curd and sour milk is:", o: ["Lactic acid", "Citric acid", "Tartaric acid", "Acetic acid"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Natural acid present in lemons and oranges is:", o: ["Citric acid", "Oxalic acid", "Methanoic acid", "Hydrochloric acid"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Gas flushed into potato chips packets to prevent rancidity is:", o: ["Nitrogen", "Oxygen", "Hydrogen", "Carbon dioxide"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the value of sin 90°?", o: ["1", "0", "1/2", "√3/2"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the value of cos 0°?", o: ["1", "0", "1/2", "undefined"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the volume of a cylinder with base radius r and height h?", o: ["πr²h", "2πrh", "1/3 πr²h", "4/3 πr³"], a: 0, sub: "Class 10 Maths" },
+                { q: "What is the total surface area of a sphere of radius r?", o: ["4πr²", "2πr²", "3πr²", "πr²"], a: 0, sub: "Class 10 Maths" },
+      { q: "Mode of data: 2, 3, 3, 4, 5, 3, 6 is:", o: ["3", "4", "2", "5"], a: 0, sub: "Class 10 Maths" },
+      { q: "Smallest composite number is:", o: ["4", "2", "1", "6"], a: 0, sub: "Class 10 Maths" },
+      { q: "HCF of two consecutive even numbers is:", o: ["2", "1", "4", "0"], a: 0, sub: "Class 10 Maths" },
+      { q: "Plant part that develops into fruit after fertilization is:", o: ["Ovary", "Ovule", "Petal", "Sepal"], a: 0, sub: "Class 10 Biology" },
+      { q: "Sex chromosome combination in a normal human male is:", o: ["XY", "XX", "YY", "XO"], a: 0, sub: "Class 10 Biology" },
+      { q: "Who is known as the 'Father of Genetics'?", o: ["Gregor Mendel", "Charles Darwin", "Lamarck", "Watson"], a: 0, sub: "Class 10 Biology" },
+      { q: "How many chambers are there in the human heart?", o: ["4", "2", "3", "1"], a: 0, sub: "Class 10 Biology" },
+      { q: "Respiratory pigment in human red blood cells is:", o: ["Haemoglobin", "Chlorophyll", "Myoglobin", "Bilirubin"], a: 0, sub: "Class 10 Biology" },
+      { q: "Complete digestion of food in human alimentary canal occurs in:", o: ["Small intestine", "Stomach", "Large intestine", "Mouth"], a: 0, sub: "Class 10 Biology" },
+      { q: "Bile juice is produced and secreted by which organ?", o: ["Liver", "Pancreas", "Gall bladder", "Stomach"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which plant hormone promotes cell division?", o: ["Cytokinin", "Auxin", "Gibberellin", "Abscisic acid"], a: 0, sub: "Class 10 Biology" },
+      { q: "Plant hormone known as growth inhibitor is:", o: ["Abscisic acid", "Auxin", "Cytokinin", "Gibberellin"], a: 0, sub: "Class 10 Biology" },
+      { q: "Component of blood that helps in clotting at injury is:", o: ["Platelets", "RBCs", "WBCs", "Plasma"], a: 0, sub: "Class 10 Biology" },
+      { q: "Refractive index of pure water is approximately:", o: ["1.33", "1.50", "2.42", "1.00"], a: 0, sub: "Class 10 Physics" },
+      { q: "Safety fuse wire in domestic circuits must have:", o: ["Low melting point", "High melting point", "Zero resistance", "High boiling point"], a: 0, sub: "Class 10 Physics" },
+      { q: "Device that converts electrical energy into mechanical energy is:", o: ["Electric motor", "Electric generator", "Transformer", "Inverter"], a: 0, sub: "Class 10 Physics" },
+      { q: "Metal extracted from Cinnabar ore is:", o: ["Mercury", "Aluminium", "Copper", "Iron"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Functional group present in Alcohols is:", o: ["-OH", "-CHO", "-COOH", "-CO-"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Percentage of Nitrogen gas in Earth's atmosphere is approx:", o: ["78%", "21%", "0.04%", "1%"], a: 0, sub: "Class 6 Science" },
+      { q: "Instrument used to measure atmospheric pressure is:", o: ["Barometer", "Thermometer", "Hygrometer", "Speedometer"], a: 0, sub: "Class 8 Science" },
+      { q: "Value of 2 raised to the power 5 (2⁵) is:", o: ["32", "10", "64", "16"], a: 0, sub: "Class 7 Maths" },
+      { q: "Circumference of a circle with radius 7 cm (π = 22/7) is:", o: ["44 cm", "88 cm", "154 cm", "22 cm"], a: 0, sub: "Class 7 Maths" },
+      { q: "Two angles are supplementary if their sum equals:", o: ["180°", "90°", "360°", "270°"], a: 0, sub: "Class 7 Maths" },
+      { q: "Volume of a cube of edge length 3 cm is:", o: ["27 cm³", "9 cm³", "18 cm³", "54 cm³"], a: 0, sub: "Class 8 Maths" },
+          { q: "Diagonal of a square with side 5 cm is:", o: ["5√2 cm", "10 cm", "25 cm", "5 cm"], a: 0, sub: "Class 9 Maths" },
+      { q: "Maximum probability of any sure event is:", o: ["1", "100", "0.5", "Infinity"], a: 0, sub: "Class 9 Maths" },
+      { q: "Sum of first 10 natural numbers is:", o: ["55", "50", "45", "60"], a: 0, sub: "Class 10 Maths" },
+      { q: "10th term of AP: 2, 5, 8, 11... is:", o: ["29", "27", "32", "30"], a: 0, sub: "Class 10 Maths" },
+      { q: "Distance of point (3, 4) from origin (0, 0) is:", o: ["5", "7", "1", "25"], a: 0, sub: "Class 10 Maths" },
+      { q: "Value of cos 60° is:", o: ["1/2", "√3/2", "1", "0"], a: 0, sub: "Class 10 Maths" },
+      { q: "Volume of a right circular cone of radius r and height h is:", o: ["1/3 πr²h", "πr²h", "4/3 πr³", "2/3 πr²h"], a: 0, sub: "Class 10 Maths" },
+      { q: "Normal systolic blood pressure in an adult human is:", o: ["120 mm Hg", "80 mm Hg", "140 mm Hg", "100 mm Hg"], a: 0, sub: "Class 10 Biology" },
+      { q: "Normal diastolic blood pressure in an adult human is:", o: ["80 mm Hg", "120 mm Hg", "60 mm Hg", "90 mm Hg"], a: 0, sub: "Class 10 Biology" },
+      { q: "Gap between two communicating neurons is called:", o: ["Synapse", "Axon", "Dendrite", "Node"], a: 0, sub: "Class 10 Biology" },
+      { q: "Part of brain that maintains posture and body balance is:", o: ["Cerebellum", "Cerebrum", "Medulla", "Spinal cord"], a: 0, sub: "Class 10 Biology" },
+      { q: "Hormone that regulates sugar metabolism in humans is:", o: ["Insulin", "Thyroxine", "Adrenaline", "Estrogen"], a: 0, sub: "Class 10 Biology" },
+      { q: "Deficiency of Iodine in diet causes which disease?", o: ["Goitre", "Diabetes", "Scurvy", "Anaemia"], a: 0, sub: "Class 10 Biology" },
+      { q: "SI unit of Magnetic Field Strength is:", o: ["Tesla", "Weber", "Henry", "Gauss"], a: 0, sub: "Class 10 Physics" },
+      { q: "Chemical formula of rust formed on iron is:", o: ["Hydrated ferric oxide", "Ferrous carbonate", "Iron sulphide", "Ferric chloride"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "First member of the Alkane hydrocarbon series is:", o: ["CH₄", "C₂H₆", "C₂H₄", "C₂H₂"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "In Mendel's dihybrid cross, the phenotypic ratio in F2 generation was:", o: ["9:3:3:1", "3:1", "1:2:1", "9:7"], a: 0, sub: "Class 10 Biology" },
+      { q: "Phenotypic ratio of Mendel's monohybrid cross in F2 generation was:", o: ["3:1", "9:3:3:1", "1:2:1", "2:1"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which blood group is known as Universal Donor?", o: ["O Negative", "AB Positive", "A Positive", "B Positive"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which blood group is known as Universal Recipient?", o: ["AB Positive", "O Negative", "A Positive", "B Positive"], a: 0, sub: "Class 10 Biology" },
+      { q: "Asexual reproduction seen in Amoeba is:", o: ["Binary fission", "Budding", "Spore formation", "Regeneration"], a: 0, sub: "Class 10 Biology" },
+      { q: "Yeast reproduces asexually through which process?", o: ["Budding", "Binary fission", "Fragmentation", "Layering"], a: 0, sub: "Class 10 Biology" },
+      { q: "What is the commercial unit of electric energy?", o: ["kWh", "Joule", "Watt", "Volt"], a: 0, sub: "Class 10 Physics" },
+      { q: "Fleming's Left-Hand Rule is used to find direction of:", o: ["Magnetic force", "Induced current", "Electric field", "Sound"], a: 0, sub: "Class 10 Physics" },
+      { q: "Male reproductive gamete in humans is called:", o: ["Sperm", "Ovum", "Zygote", "Embryo"], a: 0, sub: "Class 10 Biology" },
+          { q: "Female reproductive gamete in humans is called:", o: ["Ovum", "Sperm", "Pollen", "Spore"], a: 0, sub: "Class 10 Biology" },
+      { q: "What is the SI unit of Electric Potential Difference?", o: ["Volt", "Ampere", "Ohm", "Coulomb"], a: 0, sub: "Class 10 Physics" },
+      { q: "Sum of interior angles of a regular quadrilateral is:", o: ["360°", "180°", "540°", "270°"], a: 0, sub: "Class 8 Maths" },
+      { q: "Sound pitch is directly determined by its:", o: ["Frequency", "Amplitude", "Speed", "Loudness"], a: 0, sub: "Class 8 Physics" },
+      { q: "What is the value of (-1) raised to an even power?", o: ["1", "-1", "0", "Even"], a: 0, sub: "Class 7 Maths" },
+      { q: "Which gas is evolved during anaerobic respiration in yeast?", o: ["Carbon dioxide", "Oxygen", "Nitrogen", "Methane"], a: 0, sub: "Class 10 Biology" },
+      { q: "In human digestive system, amylase enzyme converts starch into:", o: ["Simple sugars", "Amino acids", "Fatty acids", "Glycerol"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which part of the brain controls voluntary actions and thinking?", o: ["Cerebrum", "Cerebellum", "Medulla", "Pons"], a: 0, sub: "Class 10 Biology" },
+      { q: "Iodine is essential for the synthesis of which hormone?", o: ["Thyroxine", "Insulin", "Adrenaline", "Growth hormone"], a: 0, sub: "Class 10 Biology" },
+      { q: "What is the value of sin 30°?", o: ["1/2", "√3/2", "1/√2", "1"], a: 0, sub: "Class 10 Maths" },
+      { q: "Angle of elevation of Sun when shadow of pole equals its height is:", o: ["45°", "30°", "60°", "90°"], a: 0, sub: "Class 10 Maths" },
+      { q: "Area of an equilateral triangle with side a is:", o: ["(√3/4) a²", "(1/2) a²", "(√3/2) a²", "a²"], a: 0, sub: "Class 9 Maths" },
+      { q: "Relation between Mean, Median and Mode is: Mode =", o: ["3 Median - 2 Mean", "2 Median - 3 Mean", "3 Mean - 2 Median", "Median - Mean"], a: 0, sub: "Class 10 Maths" },
+      { q: "Which metal is extracted from Bauxite ore?", o: ["Aluminium", "Iron", "Copper", "Zinc"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Which mirror is used by solar furnaces?", o: ["Concave mirror", "Convex mirror", "Plane mirror", "Bifocal"], a: 0, sub: "Class 10 Physics" },
+      { q: "Device used to protect electrical circuits from overloading is:", o: ["Electric fuse", "Switch", "Rheostat", "Voltmeter"], a: 0, sub: "Class 10 Physics" },
+      { q: "Which lens always produces an erect and diminished image?", o: ["Concave lens", "Convex lens", "Bifocal lens", "Plano-convex"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is the unit of power of accommodation of eye?", o: ["Dioptre", "Metre", "Decibel", "Lux"], a: 0, sub: "Class 10 Physics" },
+      { q: "Which acid is present in tomato?", o: ["Oxalic acid", "Citric acid", "Tartaric acid", "Acetic acid"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the chemical name of Bleaching powder?", o: ["Calcium oxychloride", "Calcium carbonate", "Calcium hydroxide", "Calcium sulphate"], a: 0, sub: "Class 10 Chemistry" }
     ];
-                let activeSet = [];
+
+    let activeSet = [];
     let curIdx = 0;
     let userAnswers = {};
-    let testTimerSec = 600; // 10 mins
+    let testTimerSec = 600;
     let testTimerHandle = null;
     let testStartTimestamp = 0;
     let curStudent = {};
-
+    let tabSwitchCount = 0;
     let lobbyPollInterval = null;
-
-    function goToScreen(screenId) {
+        function goToScreen(screenId) {
       ["lobbyScreen", "waitingScreen", "quizScreen", "resultScreen", "cancelledScreen", "adminLoginScreen", "adminDashboardScreen"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add("hidden");
@@ -409,7 +497,6 @@
       }
     }
 
-    // 1. STUDENT SUBMIT UTR
     async function submitUtrForApproval() {
       const name = document.getElementById("userName").value.trim();
       const upi = document.getElementById("userUpi").value.trim();
@@ -443,10 +530,8 @@
       } catch (err) {
         alert("Network error. Please try again.");
       }
-    }
-
-    // 2. SYNCHRONIZED LOBBY LOOP (20-MIN & PARTICIPANT SYNC)
-    async function syncLobbyState() {
+        }
+        async function syncLobbyState() {
       const round = getRoundId();
 
       let roundStart = parseInt(localStorage.getItem(`quiz_round_start_${round}`) || String(Date.now()), 10);
@@ -513,10 +598,27 @@
         }
 
       } catch(e) {}
-    }
+    }    // ANTI-CHEAT TAB SWITCH DETECTOR
+    document.addEventListener("visibilitychange", () => {
+      const quizScreen = document.getElementById("quizScreen");
+      if (!quizScreen.classList.contains("hidden") && testTimerHandle) {
+        if (document.hidden) {
+          tabSwitchCount++;
+          if (tabSwitchCount === 1) {
+            document.getElementById("cheatWarningBox").classList.remove("hidden");
+            alert("⚠️ WARNING: Tab switch detect zala! Pudhchya veles test DISQUALIFY (Zero Score) hoil!");
+          } else if (tabSwitchCount >= 2) {
+            alert("❌ DISQUALIFIED: Multiple tab switches detected. Test auto-submit kela jaat ahe (Score: 0).");
+            finishQuiz(true);
+          }
+        }
+      }
+    });
 
-    // 3. START TEST (10-MIN STRICT TIMER)
     function startQuizSession() {
+      tabSwitchCount = 0;
+      document.getElementById("cheatWarningBox").classList.add("hidden");
+
       const shuffled = [...cbseQuestions].sort(() => 0.5 - Math.random());
       activeSet = shuffled.slice(0, 10).map(item => {
         const opts = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
@@ -551,7 +653,7 @@
         if (testTimerSec <= 0) {
           clearInterval(testTimerHandle);
           alert("10 Minutes Over! Submitting test automatically.");
-          finishQuiz();
+          finishQuiz(false);
         }
       }, 1000);
     }
@@ -559,7 +661,6 @@
     function displayQuestion() {
       const q = activeSet[curIdx];
       document.getElementById("questionCount").innerText = `Question ${curIdx + 1} / 10`;
-      document.getElementById("subjectBadge").innerText = q.sub;
       document.getElementById("questionText").innerText = q.q;
 
       const container = document.getElementById("optionsBox");
@@ -594,14 +695,16 @@
     function prevQuestion() { if (curIdx > 0) { curIdx--; displayQuestion(); } }
     function nextQuestion() { if (curIdx < 9) { curIdx++; displayQuestion(); } }
 
-    async function finishQuiz() {
+    async function finishQuiz(isDisqualified = false) {
       clearInterval(testTimerHandle);
       const totalTime = Math.floor((Date.now() - testStartTimestamp) / 1000);
 
       let score = 0;
-      activeSet.forEach((item, idx) => {
-        if (userAnswers[idx] === item.a) score++;
-      });
+      if (!isDisqualified) {
+        activeSet.forEach((item, idx) => {
+          if (userAnswers[idx] === item.a) score++;
+        });
+      }
 
       const submission = {
         name: curStudent.name,
@@ -609,7 +712,8 @@
         utr: curStudent.utr,
         round: curStudent.round,
         score: score,
-        time: totalTime
+        time: totalTime,
+        status: isDisqualified ? "Disqualified" : "Completed"
       };
 
       try {
@@ -622,11 +726,18 @@
       document.getElementById("testTimerBadge").classList.add("hidden");
       goToScreen("resultScreen");
 
-      document.getElementById("scoreDisplay").innerText = `Score: ${score} / 10 | Time: ${totalTime} seconds`;
+      if (isDisqualified) {
+        document.getElementById("resultEmoji").innerText = "❌";
+        document.getElementById("resultHeading").innerText = "Disqualified (Cheating)";
+        document.getElementById("scoreDisplay").innerText = `Score: 0 / 10 (Tab Switch Detected)`;
+      } else {
+        document.getElementById("resultEmoji").innerText = "🎉";
+        document.getElementById("resultHeading").innerText = "Quiz Completed!";
+        document.getElementById("scoreDisplay").innerText = `Score: ${score} / 10 | Time: ${totalTime} seconds`;
+      }
       fetchRoundLeaderboard();
-  }
-                // 4. ADMIN APPROVAL & PERMANENT LEDGER SYNC
-    async function fetchAdminRequests() {
+    }
+        async function fetchAdminRequests() {
       const container = document.getElementById("pendingUtrList");
       container.innerHTML = "<p class='text-xs text-slate-500 py-2'>Loading requests...</p>";
       const currentRound = getRoundId();
@@ -747,8 +858,26 @@
       });
     }
 
-    // 5. REFUND HANDLING LOGIC
-    function saveRefundsForRound(round, students) {
+    function exportLedgerToCSV() {
+      const ledger = JSON.parse(localStorage.getItem("permanent_all_time_ledger") || "[]");
+      if (ledger.length === 0) {
+        alert("No records found in permanent ledger to export!");
+        return;
+      }
+
+      let csv = "Round,Student Name,UPI ID,UTR Number,Amount,Date,Time,Status\n";
+      ledger.forEach(row => {
+        csv += `"${row.round}","${row.name}","${row.upi}","${row.utr}","${row.amount}","${row.date}","${row.time}","${row.status}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `CBSE_Quiz_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }    function saveRefundsForRound(round, students) {
       let refundList = JSON.parse(localStorage.getItem("pending_refunds_list") || "[]");
       students.forEach(s => {
         if (!refundList.some(r => r.utr === s.utr)) {
@@ -806,7 +935,6 @@
       setTimeout(renderRefundList, 1000);
     }
 
-    // 6. ADMIN FORCE COMMANDS
     async function forceStartContest() {
       const round = getRoundId();
       if (confirm("Force start quiz now for all waiting participants in Round " + round + "?")) {
@@ -830,7 +958,6 @@
       }
     }
 
-    // WINNERS PAYOUT LIST
     async function renderAllPayouts() {
       const round = getRoundId();
       try {
@@ -897,7 +1024,7 @@
               <span class="font-bold text-slate-200">${w.name}</span>
               <p class="text-[10px] text-slate-400 font-mono">UPI: ${w.upi}</p>
             </div>
-            <span class="bg-emerald-950 border border-emerald-600 text-emerald-300 text-xs font-black px-2.5 py-1 rounded">
+            <span class="bg-emerald-950 border border-emerald-600 text-emerald-300 text-xs font-black px-2 py-0.5 rounded">
               ✅ PAID
             </span>
           `;
@@ -977,3 +1104,6 @@
   </script>
 </body>
 </html>
+
+    
+    
