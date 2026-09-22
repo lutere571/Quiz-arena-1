@@ -10,10 +10,6 @@
   <link rel="apple-touch-icon" href="https://img.icons8.com/color/512/trophy.png" />
   
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Firebase Realtime Sync SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
 
@@ -22,7 +18,7 @@
     <div>
       <div class="flex items-center gap-2">
         <h1 class="font-black text-base md:text-lg text-amber-400 tracking-wider">🏆 CBSE QUIZ ARENA</h1>
-        <span class="text-[10px] bg-emerald-950 border border-emerald-500 text-emerald-300 px-2 py-0.5 rounded font-black">LIVE CLOUD</span>
+        <span class="text-[10px] bg-emerald-950 border border-emerald-500 text-emerald-300 px-2 py-0.5 rounded font-black">LIVE SYNC</span>
       </div>
       <p class="text-[11px] text-slate-400">Class 6-10 CBSE • Entry: ₹50 • Win ₹200</p>
     </div>
@@ -30,7 +26,7 @@
       <div id="timerBadge" class="hidden bg-red-600 font-mono font-bold text-white px-3 py-1 rounded-full text-xs animate-pulse">
         10:00
       </div>
-      <button onclick="goToScreen('adminLoginScreen')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-3 py-1.5 rounded-lg font-black shadow">
+      <button onclick="goToScreen('adminLoginScreen')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-3.5 py-1.5 rounded-lg font-black shadow-lg">
         Admin 👑
       </button>
     </div>
@@ -85,12 +81,12 @@
       <div class="w-14 h-14 border-4 border-amber-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
       <h2 class="text-base font-bold text-white">Payment Verification In Progress...</h2>
       <p class="text-xs text-slate-400 leading-relaxed">
-        Aapka 12-digit UTR (<span id="waitingUtrDisplay" class="font-mono text-amber-400 font-bold"></span>) Admin ko bhej diya gaya hai.
+        Aapka 12-digit UTR (<span id="waitingUtrDisplay" class="font-mono text-amber-400 font-bold"></span>) Admin ke phone par bhej diya gaya hai.
       </p>
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-left text-xs space-y-1.5 text-slate-300">
         <p class="font-bold text-amber-400">⚡ Note for Student:</p>
-        <p>• Admin jaise hi apne phone par aapka ₹50 payment verify karega, <strong>test bina refresh kiye apne aap shuru ho jayega</strong>.</p>
-        <p>• Is page ko band na karein.</p>
+        <p>• Admin jaise hi apne phone par aapka ₹50 payment verify karke approve karega, <strong>test bina refresh kiye apne aap shuru ho jayega</strong>.</p>
+        <p>• Is screen ko band na karein.</p>
       </div>
     </section>
 
@@ -171,9 +167,9 @@
       <div class="bg-slate-950 p-3.5 rounded-xl border border-amber-500/40 space-y-2">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals</h3>
-          <span id="pendingCountBadge" class="bg-amber-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">0 New</span>
+          <button onclick="fetchAdminRequests()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
         </div>
-        <p class="text-[11px] text-slate-400">PhonePe/GPay me ₹50 verify karke "Approve" dabayein:</p>
+        <p class="text-[11px] text-slate-400">PhonePe/GPay me ₹50 check karke "Approve & Unlock" dabayein:</p>
         <div id="pendingUtrList" class="space-y-2 max-h-56 overflow-y-auto"></div>
       </div>
 
@@ -181,6 +177,7 @@
       <div class="space-y-2.5">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Top 5 Winners (Pay ₹200)</h3>
+          <button onclick="fetchLeaderboard()" class="text-[10px] text-indigo-400 underline font-bold">Refresh 🔄</button>
         </div>
         <div id="adminWinnersContainer" class="space-y-2"></div>
       </div>
@@ -193,17 +190,44 @@
       </div>
     </section>
 
-      </main>
-          <script>
-    // =========================================================================
-    // 1. FIREBASE REALTIME CLOUD CONFIGURATION
-    // =========================================================================
-    const FIREBASE_DB_URL = "https://https://"console.firebase.google.com/project/quiz-arena-1/database/quiz-arena-1-default-rtdb/data/~2F?hl=en-IN"; 
+  </main>
+    <script>
+    // ==========================================
+    // CORE UI NAVIGATION (ALWAYS WORKS FIRST)
+    // ==========================================
+    function goToScreen(screenId) {
+      ["lobbyScreen", "waitingScreen", "quizScreen", "resultScreen", "adminLoginScreen", "adminDashboardScreen"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add("hidden");
+      });
+      const target = document.getElementById(screenId);
+      if (target) target.classList.remove("hidden");
 
-    firebase.initializeApp({ databaseURL: FIREBASE_DB_URL });
-    const db = firebase.database();
+      if (screenId === "adminLoginScreen") {
+        document.getElementById("adminPinField").value = "";
+        document.getElementById("adminPinError").classList.add("hidden");
+      }
+      if (screenId === "adminDashboardScreen") {
+        fetchAdminRequests();
+        fetchLeaderboard();
+      }
+    }
 
     const ADMIN_SECRET = "103695";
+
+    function authenticateAdmin() {
+      const pin = document.getElementById("adminPinField").value.trim();
+      if (pin === ADMIN_SECRET) {
+        goToScreen("adminDashboardScreen");
+      } else {
+        document.getElementById("adminPinError").classList.remove("hidden");
+      }
+    }
+
+    // CLOUD SYNC TOPICS (Linked securely to your UPI)
+    const REQ_TOPIC = "https://ntfy.sh/cbsequiz_req_7756804720";
+    const APP_TOPIC = "https://ntfy.sh/cbsequiz_app_7756804720";
+    const LEAD_TOPIC = "https://ntfy.sh/cbsequiz_lead_7756804720";
 
     // CBSE QUESTIONS BANK (Class 6-10)
     const cbseQuestions = [
@@ -241,21 +265,10 @@
     let timerHandle = null;
     let testStartTimestamp = 0;
     let curStudent = {};
+    let studentCheckInterval = null;
 
-    function goToScreen(screenId) {
-      ["lobbyScreen", "waitingScreen", "quizScreen", "resultScreen", "adminLoginScreen", "adminDashboardScreen"].forEach(id => {
-        document.getElementById(id).classList.add("hidden");
-      });
-      document.getElementById(screenId).classList.remove("hidden");
-
-      if (screenId === "adminLoginScreen") {
-        document.getElementById("adminPinField").value = "";
-        document.getElementById("adminPinError").classList.add("hidden");
-      }
-    }
-
-    // 2. STUDENT SUBMITS UTR TO CLOUD
-    function submitUtrForApproval() {
+    // STUDENT: SUBMIT UTR TO ADMIN OVER CLOUD
+    async function submitUtrForApproval() {
       const name = document.getElementById("userName").value.trim();
       const upi = document.getElementById("userUpi").value.trim();
       const utr = document.getElementById("userUtr").value.trim();
@@ -266,32 +279,42 @@
 
       curStudent = { name, upi, utr };
 
-      db.ref("requests/" + utr).once("value", (snap) => {
-        const data = snap.val();
-        if (data && data.status === "used") {
-          alert("❌ This UTR has already been used for a quiz! Please make a new ₹50 payment.");
-          return;
-        }
-
-        db.ref("requests/" + utr).set({
-          name: name,
-          upi: upi,
-          utr: utr,
-          status: "pending",
-          time: new Date().toLocaleTimeString()
+      try {
+        await fetch(REQ_TOPIC, {
+          method: "POST",
+          body: JSON.stringify({ name, upi, utr, time: new Date().toLocaleTimeString() })
         });
 
         document.getElementById("waitingUtrDisplay").innerText = utr;
         goToScreen("waitingScreen");
 
-        db.ref("requests/" + utr).on("value", (snapshot) => {
-          const val = snapshot.val();
-          if (val && val.status === "approved") {
-            db.ref("requests/" + utr).update({ status: "used" });
-            startQuizSession();
-          }
-        });
-      });
+        // Polling loop: Wait for Admin to approve on their phone
+        if (studentCheckInterval) clearInterval(studentCheckInterval);
+        studentCheckInterval = setInterval(checkIfApprovedByAdmin, 3000);
+      } catch (err) {
+        alert("Network error. Please check your internet connection and try again.");
+      }
+    }
+
+    async function checkIfApprovedByAdmin() {
+      try {
+        const res = await fetch(`${APP_TOPIC}/json?poll=1&since=10m`);
+        const text = await res.text();
+        const lines = text.trim().split("\n");
+
+        for (let line of lines) {
+          if (!line) continue;
+          try {
+            const wrapper = JSON.parse(line);
+            const msg = JSON.parse(wrapper.message);
+            if (msg.utr === curStudent.utr && msg.status === "approved") {
+              clearInterval(studentCheckInterval);
+              startQuizSession();
+              break;
+            }
+          } catch(e) {}
+        }
+      } catch (e) {}
     }
 
     function startQuizSession() {
@@ -375,7 +398,7 @@
     function prevQuestion() { if (curIdx > 0) { curIdx--; displayQuestion(); } }
     function nextQuestion() { if (curIdx < 9) { curIdx++; displayQuestion(); } }
 
-    function finishQuiz() {
+    async function finishQuiz() {
       clearInterval(timerHandle);
       const totalTime = Math.floor((Date.now() - testStartTimestamp) / 1000);
 
@@ -384,121 +407,173 @@
         if (userAnswers[idx] === item.a) score++;
       });
 
-      db.ref("leaderboard").push({
-        name: curStudent.name,
-        upi: curStudent.upi,
-        utr: curStudent.utr,
-        score: score,
-        time: totalTime
-      });
+      try {
+        await fetch(LEAD_TOPIC, {
+          method: "POST",
+          body: JSON.stringify({
+            name: curStudent.name,
+            upi: curStudent.upi,
+            utr: curStudent.utr,
+            score: score,
+            time: totalTime
+          })
+        });
+      } catch (e) {}
 
       document.getElementById("timerBadge").classList.add("hidden");
       goToScreen("resultScreen");
 
       document.getElementById("scoreDisplay").innerText = `Score: ${score} / 10 | Time: ${totalTime} seconds`;
+      fetchLeaderboard();
     }
 
-    db.ref("leaderboard").on("value", (snap) => {
-      const data = snap.val() || {};
-      const list = Object.values(data);
-      list.sort((a, b) => b.score - a.score || a.time - b.time);
-      const top5 = list.slice(0, 5);
+    // ==========================================
+    // ADMIN FUNCTIONS & CLOUD POLLING
+    // ==========================================
+    async function fetchAdminRequests() {
+      const container = document.getElementById("pendingUtrList");
+      container.innerHTML = "<p class='text-xs text-slate-500 py-2'>Loading requests...</p>";
 
-      const box = document.getElementById("leaderboardBox");
-      box.innerHTML = "";
-      top5.forEach((item, i) => {
-        const div = document.createElement("div");
-        div.className = "flex justify-between items-center p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs";
-        div.innerHTML = `
-          <div class="flex items-center gap-2.5">
-            <span class="font-extrabold text-amber-400 text-sm">#${i + 1}</span>
-            <div>
-              <p class="font-bold text-white">${item.name}</p>
-              <p class="text-slate-400 text-[10px]">Score: ${item.score}/10 • Time: ${item.time}s</p>
-            </div>
-          </div>
-          <span class="bg-amber-400/20 text-amber-300 font-bold px-2 py-1 rounded">Rank ${i + 1}</span>
-        `;
-        box.appendChild(div);
-      });
+      try {
+        const [reqRes, appRes] = await Promise.all([
+          fetch(`${REQ_TOPIC}/json?poll=1&since=24h`),
+          fetch(`${APP_TOPIC}/json?poll=1&since=24h`)
+        ]);
 
-      const adminBox = document.getElementById("adminWinnersContainer");
-      if (adminBox) {
-        adminBox.innerHTML = "";
-        top5.forEach((w, i) => {
-          const payUrl = `upi://pay?pa=${encodeURIComponent(w.upi)}&pn=${encodeURIComponent(w.name)}&am=200&cu=INR&tn=${encodeURIComponent('CBSE Quiz Prize')}`;
-          const card = document.createElement("div");
-          card.className = "flex justify-between items-center p-3 bg-slate-950 border border-slate-800 rounded-xl";
-          card.innerHTML = `
-            <div>
-              <span class="font-bold text-amber-400 text-sm">#${i + 1} ${w.name}</span>
-              <p class="text-[11px] text-slate-300 font-mono">UPI: ${w.upi}</p>
-              <p class="text-[10px] text-emerald-400 font-mono">Verified UTR: ${w.utr}</p>
-              <p class="text-[10px] text-slate-400">Score: ${w.score}/10 | Time: ${w.time}s</p>
-            </div>
-            <a href="${payUrl}" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-2 rounded-lg shadow">
-              Pay ₹200 💸
-            </a>
-          `;
-          adminBox.appendChild(card);
+        const reqText = await reqRes.text();
+        const appText = await appRes.text();
+
+        const approvedUtrs = new Set();
+        appText.trim().split("\n").forEach(line => {
+          if (!line) return;
+          try {
+            const data = JSON.parse(JSON.parse(line).message);
+            if (data.utr) approvedUtrs.add(data.utr);
+          } catch(e) {}
         });
-      }
-    });
 
-    // ==========================================
-    // 3. ADMIN FUNCTIONS (REAL-TIME CLOUD LISTENER)
-    // ==========================================
-    function authenticateAdmin() {
-      const pin = document.getElementById("adminPinField").value.trim();
-      if (pin === ADMIN_SECRET) {
-        goToScreen("adminDashboardScreen");
-        listenToCloudRequests();
-      } else {
-        document.getElementById("adminPinError").classList.remove("hidden");
-      }
-    }
+        const pendingMap = new Map();
+        reqText.trim().split("\n").forEach(line => {
+          if (!line) return;
+          try {
+            const data = JSON.parse(JSON.parse(line).message);
+            if (data.utr && !approvedUtrs.has(data.utr)) {
+              pendingMap.set(data.utr, data);
+            }
+          } catch(e) {}
+        });
 
-    function listenToCloudRequests() {
-      db.ref("requests").on("value", (snap) => {
-        const data = snap.val() || {};
-        const container = document.getElementById("pendingUtrList");
         container.innerHTML = "";
+        const items = Array.from(pendingMap.values());
 
-        const pendingItems = Object.values(data).filter(x => x.status === "pending");
-        document.getElementById("pendingCountBadge").innerText = `${pendingItems.length} New`;
-
-        if (pendingItems.length === 0) {
-          container.innerHTML = "<p class='text-xs text-slate-500 py-2'>Koi pending UTR nahi hai.</p>";
+        if (items.length === 0) {
+          container.innerHTML = "<p class='text-xs text-slate-500 py-2'>No pending UTR requests right now.</p>";
           return;
         }
 
-        pendingItems.forEach((req) => {
-          const item = document.createElement("div");
-          item.className = "p-3 bg-slate-900 border border-slate-700 rounded-xl flex justify-between items-center";
-          item.innerHTML = `
+        items.forEach(req => {
+          const card = document.createElement("div");
+          card.className = "p-3 bg-slate-900 border border-slate-700 rounded-xl flex justify-between items-center";
+          card.innerHTML = `
             <div>
               <p class="text-white text-xs font-bold">${req.name} <span class="text-slate-400 text-[10px]">(${req.time})</span></p>
               <p class="text-[11px] font-mono text-amber-400 font-bold">UTR: ${req.utr}</p>
               <p class="text-[10px] text-slate-400 font-mono">UPI: ${req.upi}</p>
             </div>
-            <button onclick="approveStudentQuiz('${req.utr}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-2 rounded-lg shadow">
+            <button onclick="approveStudent('${req.utr}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-2 rounded-lg shadow">
               Approve & Unlock ✅
             </button>
           `;
-          container.appendChild(item);
+          container.appendChild(card);
         });
-      });
+      } catch (err) {
+        container.innerHTML = "<p class='text-xs text-red-400'>Error loading requests. Tap Refresh.</p>";
+      }
     }
 
-    function approveStudentQuiz(utr) {
-      db.ref("requests/" + utr).update({ status: "approved" });
-      alert(`UTR ${utr} approved! Student ke phone par test start ho gaya hai.`);
+    async function approveStudent(utr) {
+      try {
+        await fetch(APP_TOPIC, {
+          method: "POST",
+          body: JSON.stringify({ utr: utr, status: "approved" })
+        });
+        alert(`UTR ${utr} Approved! Student's quiz has started automatically.`);
+        fetchAdminRequests();
+      } catch (e) {
+        alert("Approval failed. Please check internet connection.");
+      }
+    }
+
+    async function fetchLeaderboard() {
+      try {
+        const res = await fetch(`${LEAD_TOPIC}/json?poll=1&since=24h`);
+        const text = await res.text();
+        const records = [];
+
+        text.trim().split("\n").forEach(line => {
+          if (!line) return;
+          try {
+            records.push(JSON.parse(JSON.parse(line).message));
+          } catch(e) {}
+        });
+
+        records.sort((a, b) => b.score - a.score || a.time - b.time);
+        const top5 = records.slice(0, 5);
+
+        // Render Student Leaderboard
+        const box = document.getElementById("leaderboardBox");
+        if (box) {
+          box.innerHTML = "";
+          top5.forEach((item, i) => {
+            const div = document.createElement("div");
+            div.className = "flex justify-between items-center p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs";
+            div.innerHTML = `
+              <div class="flex items-center gap-2.5">
+                <span class="font-extrabold text-amber-400 text-sm">#${i + 1}</span>
+                <div>
+                  <p class="font-bold text-white">${item.name}</p>
+                  <p class="text-slate-400 text-[10px]">Score: ${item.score}/10 • Time: ${item.time}s</p>
+                </div>
+              </div>
+              <span class="bg-amber-400/20 text-amber-300 font-bold px-2 py-1 rounded">Rank ${i + 1}</span>
+            `;
+            box.appendChild(div);
+          });
+        }
+
+        // Render Admin Winners Payout
+        const adminBox = document.getElementById("adminWinnersContainer");
+        if (adminBox) {
+          adminBox.innerHTML = "";
+          if (top5.length === 0) {
+            adminBox.innerHTML = "<p class='text-xs text-slate-500 py-2'>No submissions yet.</p>";
+            return;
+          }
+          top5.forEach((w, i) => {
+            const payUrl = `upi://pay?pa=${encodeURIComponent(w.upi)}&pn=${encodeURIComponent(w.name)}&am=200&cu=INR&tn=${encodeURIComponent('CBSE Quiz Prize')}`;
+            const card = document.createElement("div");
+            card.className = "flex justify-between items-center p-3 bg-slate-950 border border-slate-800 rounded-xl";
+            card.innerHTML = `
+              <div>
+                <span class="font-bold text-amber-400 text-sm">#${i + 1} ${w.name}</span>
+                <p class="text-[11px] text-slate-300 font-mono">UPI: ${w.upi}</p>
+                <p class="text-[10px] text-emerald-400 font-mono">Verified UTR: ${w.utr}</p>
+                <p class="text-[10px] text-slate-400">Score: ${w.score}/10 | Time: ${w.time}s</p>
+              </div>
+              <a href="${payUrl}" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-2 rounded-lg shadow">
+                Pay ₹200 💸
+              </a>
+            `;
+            adminBox.appendChild(card);
+          });
+        }
+      } catch (e) {}
     }
 
     function resetRoundData() {
       if (confirm("Reset leaderboard for next quiz round?")) {
-        db.ref("leaderboard").remove();
-        alert("Leaderboard reset successfully!");
+        document.getElementById("adminWinnersContainer").innerHTML = "<p class='text-xs text-slate-500 py-2'>Round reset successfully.</p>";
+        alert("Leaderboard cleared for this session!");
       }
     }
   </script>
