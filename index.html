@@ -111,8 +111,8 @@
       <button id="submitBtn" onclick="finishQuiz()" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-xl text-sm hidden shadow-lg">
         Submit Quiz Answers ✅
       </button>
-  </section>
-      <!-- SCREEN 4: RESULT SCREEN -->
+    </section>
+        <!-- SCREEN 4: RESULT SCREEN -->
     <section id="resultScreen" class="hidden space-y-4">
       <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center shadow-xl">
         <div class="text-4xl mb-2">🎉</div>
@@ -174,7 +174,7 @@
         <div id="pendingUtrList" class="space-y-2 max-h-48 overflow-y-auto"></div>
       </div>
 
-      <!-- SECTION: PENDING TO PAY (UNPAID WINNERS) -->
+      <!-- SECTION: PENDING TO PAY -->
       <div class="space-y-2">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">⏳ Winners - Pending to Pay (Unpaid)</h3>
@@ -184,7 +184,7 @@
         <div id="unpaidWinnersContainer" class="space-y-2"></div>
       </div>
 
-      <!-- SECTION: COMPLETED PAYOUTS (PAID) -->
+      <!-- SECTION: COMPLETED PAYOUTS -->
       <div class="space-y-2 pt-2 border-t border-slate-800">
         <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">✅ Paid Winners (Completed)</h3>
         <div id="paidWinnersContainer" class="space-y-2"></div>
@@ -252,35 +252,160 @@
       }
     }
 
-    // CBSE QUESTIONS BANK (Class 6-10)
+    // 150 CBSE CLASS 6-10 SCIENCE & MATHS QUESTION BANK (PART A: 1 - 60)
     const cbseQuestions = [
+      { q: "What is the primary gas produced during photosynthesis?", o: ["Oxygen", "Carbon dioxide", "Nitrogen", "Hydrogen"], a: 0, sub: "Class 6 Science" },
+      { q: "What is the smallest prime number?", o: ["2", "1", "3", "0"], a: 0, sub: "Class 6 Maths" },
+      { q: "Deficiency of Vitamin A causes which disease?", o: ["Night blindness", "Scurvy", "Rickets", "Beriberi"], a: 0, sub: "Class 6 Science" },
+      { q: "What is the boiling point of pure water at normal atmospheric pressure?", o: ["100°C", "0°C", "50°C", "150°C"], a: 0, sub: "Class 6 Science" },
+      { q: "How many bones are there in an adult human skeleton?", o: ["206", "208", "300", "196"], a: 0, sub: "Class 6 Science" },
+      { q: "What is the perimeter of a square with side 8 cm?", o: ["32 cm", "64 cm", "16 cm", "24 cm"], a: 0, sub: "Class 6 Maths" },
+      { q: "Which animal is a primary carnivore?", o: ["Tiger", "Deer", "Cow", "Rabbit"], a: 0, sub: "Class 6 Science" },
+      { q: "What is the normal freezing point of water on Celsius scale?", o: ["0°C", "4°C", "-10°C", "32°C"], a: 0, sub: "Class 6 Science" },
+      { q: "What is the average normal body temperature of a human in Celsius?", o: ["37°C", "98.6°C", "32°C", "40°C"], a: 0, sub: "Class 7 Science" },
+      { q: "What is the SI unit of time?", o: ["Second", "Minute", "Hour", "Day"], a: 0, sub: "Class 7 Physics" },
+      { q: "Which acid is naturally found in human stomach to digest food?", o: ["Hydrochloric acid", "Sulphuric acid", "Nitric acid", "Citric acid"], a: 0, sub: "Class 7 Science" },
+      { q: "What is the sum of all three angles in any triangle?", o: ["180°", "360°", "90°", "270°"], a: 0, sub: "Class 7 Maths" },
+      { q: "Blue litmus turns red when dipped in which solution?", o: ["Acid", "Base", "Neutral water", "Common salt"], a: 0, sub: "Class 7 Chemistry" },
+      { q: "Find the Simple Interest on ₹1000 at 10% per annum for 1 year:", o: ["₹100", "₹50", "₹200", "₹10"], a: 0, sub: "Class 7 Maths" },
+      { q: "Which plant tissue transports water from roots to leaves?", o: ["Xylem", "Phloem", "Cortex", "Epidermis"], a: 0, sub: "Class 7 Biology" },
+      { q: "Which organ pumps oxygenated blood throughout the human body?", o: ["Heart", "Lungs", "Kidneys", "Liver"], a: 0, sub: "Class 7 Biology" },
+      { q: "Who discovered the living cell for the first time in 1665?", o: ["Robert Hooke", "Robert Brown", "Leeuwenhoek", "Schwann"], a: 0, sub: "Class 8 Biology" },
+      { q: "What is Force applied per unit Area called?", o: ["Pressure", "Friction", "Tension", "Momentum"], a: 0, sub: "Class 8 Physics" },
+      { q: "Sound cannot travel through which of the following?", o: ["Vacuum", "Water", "Steel", "Air"], a: 0, sub: "Class 8 Physics" },
+      { q: "Which metal is so soft that it can be cut with a knife and stored in kerosene?", o: ["Sodium", "Iron", "Copper", "Aluminium"], a: 0, sub: "Class 8 Chemistry" },
+      { q: "Which non-metal is in liquid state at room temperature?", o: ["Bromine", "Chlorine", "Iodine", "Sulphur"], a: 0, sub: "Class 8 Chemistry" },
+      { q: "What is the square root of 144?", o: ["12", "14", "16", "18"], a: 0, sub: "Class 8 Maths" },
+      { q: "What is the cube root of 64?", o: ["4", "8", "6", "2"], a: 0, sub: "Class 8 Maths" },
+      { q: "Which cell organelle is called the 'Powerhouse of the cell'?", o: ["Mitochondria", "Ribosome", "Lysosome", "Vacuole"], a: 0, sub: "Class 8 Biology" },
+      { q: "What is the SI unit of Force?", o: ["Newton", "Joule", "Pascal", "Watt"], a: 0, sub: "Class 9 Physics" },
+      { q: "Newton's First Law of Motion is also known as the Law of:", o: ["Inertia", "Momentum", "Action-Reaction", "Gravitation"], a: 0, sub: "Class 9 Physics" },
+      { q: "What is the standard value of acceleration due to gravity (g) on Earth?", o: ["9.8 m/s²", "8.9 m/s²", "10.8 m/s²", "9.2 m/s²"], a: 0, sub: "Class 9 Physics" },
+      { q: "What is the SI unit of Work and Energy?", o: ["Joule", "Watt", "Newton", "Pascal"], a: 0, sub: "Class 9 Physics" },
+      { q: "Which organelle is called the 'Suicide Bag' of the cell?", o: ["Lysosome", "Mitochondria", "Golgi apparatus", "Ribosome"], a: 0, sub: "Class 9 Biology" },
+      { q: "What is the chemical formula of common salt?", o: ["NaCl", "KCl", "NaOH", "HCl"], a: 0, sub: "Class 9 Chemistry" },
+      { q: "What is the value of 5! (5 factorial)?", o: ["120", "60", "24", "720"], a: 0, sub: "Class 9 Maths" },
+      { q: "The probability of an impossible event is always:", o: ["0", "1", "0.5", "-1"], a: 0, sub: "Class 9 Maths" },
       { q: "What is the focal length of a spherical mirror with radius of curvature 32 cm?", o: ["16 cm", "64 cm", "8 cm", "32 cm"], a: 0, sub: "Class 10 Physics" },
-      { q: "Which acid causes burning pain in nettle leaf sting?", o: ["Methanoic acid", "Ethanoic acid", "Tartaric acid", "Oxalic acid"], a: 0, sub: "Class 10 Chemistry" },
-      { q: "If roots of equation 2x² - 8x + k = 0 are real and equal, find k:", o: ["8", "4", "16", "2"], a: 0, sub: "Class 10 Maths" },
-      { q: "In Mendel's dihybrid cross, the phenotypic ratio in F2 generation was:", o: ["9:3:3:1", "3:1", "1:2:1", "9:7"], a: 0, sub: "Class 10 Biology" },
-      { q: "What is the value of (sin² 30° + cos² 30°) + tan 45°?", o: ["2", "1", "0", "1.5"], a: 0, sub: "Class 10 Maths" },
-      { q: "Newton's Second Law states that Force is equal to rate of change of:", o: ["Momentum", "Velocity", "Acceleration", "Energy"], a: 0, sub: "Class 9 Physics" },
-      { q: "Which organelle is called the 'Powerhouse of the cell'?", o: ["Mitochondria", "Ribosome", "Endoplasmic Reticulum", "Lysosome"], a: 0, sub: "Class 9 Biology" },
-      { q: "Sum of all interior angles of a quadrilateral is:", o: ["360°", "180°", "540°", "270°"], a: 0, sub: "Class 9 Maths" },
-      { q: "Valency of Nitrogen in ammonia (NH₃) is:", o: ["3", "1", "2", "5"], a: 0, sub: "Class 9 Chemistry" },
-      { q: "Total surface area of a sphere with radius r is:", o: ["4πr²", "2πr²", "3πr²", "4/3 πr³"], a: 0, sub: "Class 9 Maths" },
-      { q: "Sound waves cannot travel through:", o: ["Vacuum", "Water", "Iron rod", "Air"], a: 0, sub: "Class 8 Physics" },
-      { q: "The hottest part of a candle flame is the:", o: ["Outer non-luminous zone", "Middle zone", "Innermost zone", "Blue bottom"], a: 0, sub: "Class 8 Chemistry" },
-      { q: "Solve for x: 3x - 5 = 16:", o: ["7", "9", "6", "8"], a: 0, sub: "Class 8 Maths" },
-      { q: "Which bacteria converts milk into curd?", o: ["Lactobacillus", "Yeast", "Rhizobium", "Penicillium"], a: 0, sub: "Class 8 Biology" },
-      { q: "Area of a rhombus with diagonals 12 cm and 16 cm is:", o: ["96 cm²", "192 cm²", "48 cm²", "144 cm²"], a: 0, sub: "Class 8 Maths" },
-      { q: "Heat from Sun reaches Earth by:", o: ["Radiation", "Conduction", "Convection", "Advection"], a: 0, sub: "Class 7 Physics" },
-      { q: "Which pigment traps light energy for photosynthesis?", o: ["Chlorophyll", "Carotene", "Anthocyanin", "Xanthophyll"], a: 0, sub: "Class 7 Biology" },
-      { q: "If triangle angles are in ratio 1:2:3, the largest angle is:", o: ["90°", "60°", "100°", "120°"], a: 0, sub: "Class 7 Maths" },
-      { q: "Simple Interest on ₹2000 at 5% p.a. for 2 years is:", o: ["₹200", "₹100", "₹300", "₹250"], a: 0, sub: "Class 7 Maths" },
-      { q: "Normal human body temperature on Celsius scale is:", o: ["37°C", "98.6°C", "32°C", "45°C"], a: 0, sub: "Class 7 Science" },
-      { q: "Deficiency of Vitamin C leads to:", o: ["Scurvy", "Rickets", "Beriberi", "Night blindness"], a: 0, sub: "Class 6 Science" },
-      { q: "Smallest prime number is:", o: ["2", "1", "3", "0"], a: 0, sub: "Class 6 Maths" },
-      { q: "Perimeter of a regular hexagon with side 5 cm is:", o: ["30 cm", "25 cm", "36 cm", "20 cm"], a: 0, sub: "Class 6 Maths" },
-      { q: "Conversion of water vapour into liquid water is called:", o: ["Condensation", "Evaporation", "Sublimation", "Transpiration"], a: 0, sub: "Class 6 Science" },
-      { q: "Which gas is primarily taken in by plants during photosynthesis?", o: ["Carbon dioxide", "Oxygen", "Nitrogen", "Argon"], a: 0, sub: "Class 6 Science" }
+      { q: "What is the SI unit of Electric Current?", o: ["Ampere", "Volt", "Ohm", "Coulomb"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is the SI unit of Electrical Resistance?", o: ["Ohm", "Ampere", "Volt", "Watt"], a: 0, sub: "Class 10 Physics" },
+      { q: "According to Ohm's Law, what is the formula connecting V, I and R?", o: ["V = I × R", "V = I / R", "I = V × R", "R = V × I"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is the SI unit of Power of a Lens?", o: ["Dioptre", "Metre", "Centimetre", "Watt"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is the pH value of pure neutral water at 25°C?", o: ["7", "0", "14", "1"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the chemical formula of Baking Soda?", o: ["NaHCO₃", "Na₂CO₃", "NaOH", "CaO"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the chemical formula of Plaster of Paris?", o: ["CaSO₄·½H₂O", "CaSO₄·2H₂O", "CaCO₃", "CaO"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Which metal exists in liquid state at room temperature?", o: ["Mercury", "Lead", "Tin", "Zinc"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the basic functional and filtration unit of the human kidney?", o: ["Nephron", "Neuron", "Alveoli", "Villi"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which endocrine gland is known as the 'Master Gland'?", o: ["Pituitary gland", "Thyroid", "Adrenal", "Pancreas"], a: 0, sub: "Class 10 Biology" },
+      { q: "How many pairs of chromosomes are present in human cells?", o: ["23 pairs", "46 pairs", "22 pairs", "24 pairs"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which type of mirror is used as a rear-view mirror in vehicles?", o: ["Convex mirror", "Concave mirror", "Plane mirror", "Cylindrical"], a: 0, sub: "Class 10 Physics" },
+      { q: "The twinkling of stars at night is caused by:", o: ["Atmospheric refraction", "Internal reflection", "Total dispersion", "Scattering"], a: 0, sub: "Class 10 Physics" },
+      { q: "The blue colour of the clear sky is due to:", o: ["Scattering of light", "Refraction of light", "Dispersion of light", "Reflection"], a: 0, sub: "Class 10 Physics" },
+      { q: "Electric bulb filament is primarily made of which metal?", o: ["Tungsten", "Nichrome", "Copper", "Silver"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is the value of (sin² 45° + cos² 45°)?", o: ["1", "0", "2", "0.5"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the value of tan 45°?", o: ["1", "0", "√3", "1/√3"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the formula for the area of a circle?", o: ["πr²", "2πr", "4πr²", "πd"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the discriminant formula for ax² + bx + c = 0?", o: ["b² - 4ac", "b² + 4ac", "4ac - b²", "2b - 4ac"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the first prime number greater than 10?", o: ["11", "13", "12", "15"], a: 0, sub: "Class 6 Maths" },
+      { q: "Which vitamin is synthesized in our skin in the presence of sunlight?", o: ["Vitamin D", "Vitamin C", "Vitamin B", "Vitamin K"], a: 0, sub: "Class 6 Science" },
+      { q: "What is the perimeter of an equilateral triangle of side 6 cm?", o: ["18 cm", "12 cm", "36 cm", "24 cm"], a: 0, sub: "Class 6 Maths" },
+      { q: "Find the mean of the numbers: 2, 4, 6, 8, 10:", o: ["6", "5", "7", "8"], a: 0, sub: "Class 7 Maths" },
+      { q: "What is the value of (-1) raised to an even power?", o: ["1", "-1", "0", "Even"], a: 0, sub: "Class 7 Maths" },
+      { q: "Which gas turns lime water milky?", o: ["Carbon dioxide", "Oxygen", "Nitrogen", "Hydrogen"], a: 0, sub: "Class 7 Chemistry" },
+      { q: "Sound pitch is directly determined by its:", o: ["Frequency", "Amplitude", "Speed", "Loudness"], a: 0, sub: "Class 8 Physics" },
+      { q: "What is the sum of interior angles of a regular quadrilateral?", o: ["360°", "180°", "540°", "270°"], a: 0, sub: "Class 8 Maths" },
+          { q: "Which metal is the best conductor of electricity at room temperature?", o: ["Silver", "Copper", "Gold", "Aluminium"], a: 0, sub: "Class 8 Science" },
+      { q: "Solve for x: 2x + 7 = 15. What is x?", o: ["4", "5", "3", "6"], a: 0, sub: "Class 8 Maths" },
+      { q: "What is the area of a square whose perimeter is 20 cm?", o: ["25 cm²", "20 cm²", "16 cm²", "100 cm²"], a: 0, sub: "Class 8 Maths" },
+      { q: "What is the chemical formula of ozone gas?", o: ["O₃", "O₂", "O", "O₄"], a: 0, sub: "Class 9 Science" },
+      { q: "What is the density of pure water at 4°C in g/cm³?", o: ["1 g/cm³", "0.5 g/cm³", "10 g/cm³", "2 g/cm³"], a: 0, sub: "Class 9 Physics" },
+      { q: "What is the valency of Carbon in methane (CH₄)?", o: ["4", "2", "3", "1"], a: 0, sub: "Class 9 Chemistry" },
+      { q: "Which state of matter has a definite volume but no definite shape?", o: ["Liquid", "Solid", "Gas", "Plasma"], a: 0, sub: "Class 9 Chemistry" },
+      { q: "The point where the X-axis and Y-axis intersect is called:", o: ["Origin", "Quadrant", "Abscissa", "Ordinate"], a: 0, sub: "Class 9 Maths" },
+      { q: "In a right-angled triangle, the side opposite to the 90° angle is:", o: ["Hypotenuse", "Base", "Perpendicular", "Median"], a: 0, sub: "Class 9 Maths" },
+      { q: "What is the probability of getting a Head in a single toss of a coin?", o: ["1/2", "1", "1/4", "0"], a: 0, sub: "Class 9 Maths" },
+      { q: "Which acid causes severe burning pain in nettle leaf sting?", o: ["Methanoic acid", "Ethanoic acid", "Tartaric acid", "Oxalic acid"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Which gas is released when dilute HCl reacts with Zinc granules?", o: ["Hydrogen", "Oxygen", "Chlorine", "Carbon dioxide"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the main constituent gas of Biogas and CNG?", o: ["Methane", "Propane", "Butane", "Ethane"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Which mirror is used by dentists to see enlarged images of teeth?", o: ["Concave mirror", "Convex mirror", "Plane mirror", "Bifocal"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is the near point (least distance of distinct vision) for normal human eye?", o: ["25 cm", "2.5 cm", "25 m", "Infinity"], a: 0, sub: "Class 10 Physics" },
+      { q: "Myopia (near-sightedness) is corrected using which lens?", o: ["Concave lens", "Convex lens", "Bifocal lens", "Cylindrical"], a: 0, sub: "Class 10 Physics" },
+      { q: "Hypermetropia (far-sightedness) is corrected using which lens?", o: ["Convex lens", "Concave lens", "Bifocal lens", "Plane glass"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is 1 kiloWatt-hour (1 kWh) in Joules?", o: ["3.6 × 10⁶ J", "3.6 × 10⁵ J", "1000 J", "3600 J"], a: 0, sub: "Class 10 Physics" },
+      { q: "Which instrument is used to measure electric current in a circuit?", o: ["Ammeter", "Voltmeter", "Galvanometer", "Rheostat"], a: 0, sub: "Class 10 Physics" },
+      { q: "In parallel combination of electrical resistors, what remains constant across all?", o: ["Potential difference", "Current", "Resistance", "Power"], a: 0, sub: "Class 10 Physics" },
+      { q: "Chlorofluorocarbons (CFCs) are primarily responsible for the depletion of:", o: ["Ozone layer", "Oxygen level", "Carbon cycle", "Nitrogen cycle"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which organic acid is present in curd and sour milk?", o: ["Lactic acid", "Citric acid", "Tartaric acid", "Acetic acid"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Which natural acid is present in lemons and oranges?", o: ["Citric acid", "Oxalic acid", "Methanoic acid", "Hydrochloric acid"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "Which gas is flushed into potato chips packets to prevent rancidity?", o: ["Nitrogen", "Oxygen", "Hydrogen", "Carbon dioxide"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the value of sin 90°?", o: ["1", "0", "1/2", "√3/2"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the value of cos 0°?", o: ["1", "0", "1/2", "undefined"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the volume of a cylinder with base radius r and height h?", o: ["πr²h", "2πrh", "1/3 πr²h", "4/3 πr³"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the total surface area of a sphere of radius r?", o: ["4πr²", "2πr²", "3πr²", "πr²"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the mode of data: 2, 3, 3, 4, 5, 3, 6?", o: ["3", "4", "2", "5"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the smallest composite number?", o: ["4", "2", "1", "6"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the HCF of two consecutive even numbers?", o: ["2", "1", "4", "0"], a: 0, sub: "Class 10 Maths" },
+      { q: "Which plant part develops into a fruit after fertilization?", o: ["Ovary", "Ovule", "Petal", "Sepal"], a: 0, sub: "Class 10 Biology" },
+      { q: "What is the sex chromosome combination in a normal human male?", o: ["XY", "XX", "YY", "XO"], a: 0, sub: "Class 10 Biology" },
+      { q: "Who is known as the 'Father of Genetics'?", o: ["Gregor Mendel", "Charles Darwin", "Lamarck", "Watson"], a: 0, sub: "Class 10 Biology" },
+      { q: "What was the phenotypic ratio of Mendel's monohybrid cross in F2 generation?", o: ["3:1", "9:3:3:1", "1:2:1", "2:1"], a: 0, sub: "Class 10 Biology" },
+      { q: "In human circulatory system, blood group 'O Negative' is known as:", o: ["Universal Donor", "Universal Recipient", "Rare donor only", "None"], a: 0, sub: "Class 10 Biology" },
+      { q: "How many chambers are there in the human heart?", o: ["4", "2", "3", "1"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which respiratory pigment in human red blood cells carries oxygen?", o: ["Haemoglobin", "Chlorophyll", "Myoglobin", "Bilirubin"], a: 0, sub: "Class 10 Biology" },
+      { q: "Complete digestion of food in the human alimentary canal occurs in the:", o: ["Small intestine", "Stomach", "Large intestine", "Mouth"], a: 0, sub: "Class 10 Biology" },
+      { q: "Bile juice is produced and secreted by which organ?", o: ["Liver", "Pancreas", "Gall bladder", "Stomach"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which plant hormone promotes cell division?", o: ["Cytokinin", "Auxin", "Gibberellin", "Abscisic acid"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which plant hormone is known as the growth inhibitor causing wilting of leaves?", o: ["Abscisic acid", "Auxin", "Cytokinin", "Gibberellin"], a: 0, sub: "Class 10 Biology" },
+      { q: "The process of asexual reproduction seen in Amoeba is:", o: ["Binary fission", "Budding", "Spore formation", "Regeneration"], a: 0, sub: "Class 10 Biology" },
+      { q: "Yeast reproduces asexually through which process?", o: ["Budding", "Binary fission", "Fragmentation", "Layering"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which component of blood helps in blood clotting at the site of injury?", o: ["Platelets", "RBCs", "WBCs", "Plasma"], a: 0, sub: "Class 10 Biology" },
+      { q: "What is the speed of light in vacuum?", o: ["3 × 10⁸ m/s", "3 × 10⁶ m/s", "3 × 10⁵ km/s", "3 × 10¹⁰ m/s"], a: 0, sub: "Class 10 Physics" },
+      { q: "The refractive index of pure water is approximately:", o: ["1.33", "1.50", "2.42", "1.00"], a: 0, sub: "Class 10 Physics" },
+      { q: "A safety fuse wire in domestic circuits must have:", o: ["Low melting point", "High melting point", "Zero resistance", "High boiling point"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is the commercial unit of electric energy?", o: ["kWh (Unit)", "Joule", "Watt", "Volt"], a: 0, sub: "Class 10 Physics" },
+      { q: "Which device converts electrical energy into mechanical energy?", o: ["Electric motor", "Electric generator", "Transformer", "Inverter"], a: 0, sub: "Class 10 Physics" },
+      { q: "Which device converts mechanical energy into electrical energy?", o: ["Electric generator", "Electric motor", "Galvanometer", "Voltmeter"], a: 0, sub: "Class 10 Physics" },
+      { q: "Fleming's Left-Hand Rule is used to find the direction of:", o: ["Magnetic force", "Induced current", "Electric field", "Sound"], a: 0, sub: "Class 10 Physics" },
+      { q: "Which metal is extracted from Cinnabar ore?", o: ["Mercury", "Aluminium", "Copper", "Iron"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the chemical name of rust formed on iron?", o: ["Hydrated ferric oxide", "Ferrous carbonate", "Iron sulphide", "Ferric chloride"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the functional group present in Alcohols?", o: ["-OH", "-CHO", "-COOH", "-CO-"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the formula of the first member of the Alkane hydrocarbon series?", o: ["CH₄", "C₂H₆", "C₂H₄", "C₂H₂"], a: 0, sub: "Class 10 Chemistry" },
+      { q: "What is the approximate percentage of Nitrogen gas in Earth's atmosphere?", o: ["78%", "21%", "0.04%", "1%"], a: 0, sub: "Class 6 Science" },
+      { q: "Which instrument is used to measure atmospheric pressure?", o: ["Barometer", "Thermometer", "Hygrometer", "Speedometer"], a: 0, sub: "Class 8 Science" },
+      { q: "What is the value of 2 raised to the power 5 (2⁵)?", o: ["32", "10", "64", "16"], a: 0, sub: "Class 7 Maths" },
+      { q: "What is the circumference of a circle with radius 7 cm? (Take π = 22/7)", o: ["44 cm", "88 cm", "154 cm", "22 cm"], a: 0, sub: "Class 7 Maths" },
+      { q: "Two angles are supplementary if their sum equals:", o: ["180°", "90°", "360°", "270°"], a: 0, sub: "Class 7 Maths" },
+      { q: "Two angles are complementary if their sum equals:", o: ["90°", "180°", "360°", "45°"], a: 0, sub: "Class 7 Maths" },
+      { q: "What is the volume of a cube of edge length 3 cm?", o: ["27 cm³", "9 cm³", "18 cm³", "54 cm³"], a: 0, sub: "Class 8 Maths" },
+      { q: "What is the diagonal of a square with side length 5 cm?", o: ["5√2 cm", "10 cm", "25 cm", "5 cm"], a: 0, sub: "Class 9 Maths" },
+      { q: "What is the maximum probability of any sure event?", o: ["1", "100", "0.5", "Infinity"], a: 0, sub: "Class 9 Maths" },
+      { q: "What is the sum of first 10 natural numbers?", o: ["55", "50", "45", "60"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the 10th term of AP: 2, 5, 8, 11...?", o: ["29", "27", "32", "30"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the distance of point (3, 4) from the origin (0, 0)?", o: ["5", "7", "1", "25"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the coordinates of the midpoint of (2, 4) and (6, 8)?", o: ["(4, 6)", "(3, 5)", "(8, 12)", "(4, 4)"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the value of cos 60°?", o: ["1/2", "√3/2", "1", "0"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the value of sin 30°?", o: ["1/2", "√3/2", "1/√2", "1"], a: 0, sub: "Class 10 Maths" },
+      { q: "The angle of elevation of the Sun when shadow of pole equals its height is:", o: ["45°", "30°", "60°", "90°"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the volume of a right circular cone of base radius r and height h?", o: ["1/3 πr²h", "πr²h", "4/3 πr³", "2/3 πr²h"], a: 0, sub: "Class 10 Maths" },
+      { q: "What is the area of an equilateral triangle with side a?", o: ["(√3/4) a²", "(1/2) a²", "(√3/2) a²", "a²"], a: 0, sub: "Class 9 Maths" },
+      { q: "The relation between Mean, Median and Mode is: Mode =", o: ["3 Median - 2 Mean", "2 Median - 3 Mean", "3 Mean - 2 Median", "Median - Mean"], a: 0, sub: "Class 10 Maths" },
+      { q: "Which gas is primarily evolved during anaerobic respiration in yeast?", o: ["Carbon dioxide", "Oxygen", "Nitrogen", "Methane"], a: 0, sub: "Class 10 Biology" },
+      { q: "In human digestive system, amylase enzyme converts starch into:", o: ["Simple sugars", "Amino acids", "Fatty acids", "Glycerol"], a: 0, sub: "Class 10 Biology" },
+      { q: "What is the normal systolic blood pressure in an adult human?", o: ["120 mm Hg", "80 mm Hg", "140 mm Hg", "100 mm Hg"], a: 0, sub: "Class 10 Biology" },
+      { q: "What is the normal diastolic blood pressure in an adult human?", o: ["80 mm Hg", "120 mm Hg", "60 mm Hg", "90 mm Hg"], a: 0, sub: "Class 10 Biology" },
+      { q: "The gap between two communicating neurons is called a:", o: ["Synapse", "Axon", "Dendrite", "Node"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which part of the brain controls voluntary actions and thinking?", o: ["Cerebrum", "Cerebellum", "Medulla", "Pons"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which part of the brain maintains posture and body balance?", o: ["Cerebellum", "Cerebrum", "Medulla", "Spinal cord"], a: 0, sub: "Class 10 Biology" },
+      { q: "Which hormone regulates the carbohydrate and sugar metabolism in humans?", o: ["Insulin", "Thyroxine", "Adrenaline", "Estrogen"], a: 0, sub: "Class 10 Biology" },
+      { q: "Iodine is essential for the synthesis of which hormone?", o: ["Thyroxine", "Insulin", "Adrenaline", "Growth hormone"], a: 0, sub: "Class 10 Biology" },
+      { q: "Deficiency of Iodine in diet causes which disease?", o: ["Goitre", "Diabetes", "Scurvy", "Anaemia"], a: 0, sub: "Class 10 Biology" },
+      { q: "Male reproductive gamete in humans is called:", o: ["Sperm", "Ovum", "Zygote", "Embryo"], a: 0, sub: "Class 10 Biology" },
+      { q: "Female reproductive gamete in humans is called:", o: ["Ovum", "Sperm", "Pollen", "Spore"], a: 0, sub: "Class 10 Biology" },
+      { q: "What is the SI unit of Magnetic Field Strength?", o: ["Tesla", "Weber", "Henry", "Gauss"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is the SI unit of Electric Potential Difference?", o: ["Volt", "Ampere", "Ohm", "Coulomb"], a: 0, sub: "Class 10 Physics" },
+      { q: "What is the SI unit of Electric Charge?", o: ["Coulomb", "Ampere", "Volt", "Ohm"], a: 0, sub: "Class 10 Physics" }
     ];
-              let activeSet = [];
+        let activeSet = [];
     let curIdx = 0;
     let userAnswers = {};
     let timerSec = 600;
@@ -340,6 +465,7 @@
     }
 
     function startQuizSession() {
+      // Shuffles entire 150-question bank and takes 10 unique questions
       const shuffled = [...cbseQuestions].sort(() => 0.5 - Math.random());
       activeSet = shuffled.slice(0, 10).map(item => {
         const opts = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
@@ -691,4 +817,3 @@
   </script>
 </body>
 </html>
-  
