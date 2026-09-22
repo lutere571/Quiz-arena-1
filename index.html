@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>CBSE Mega Quiz Arena (Class 6-10)</title>
   
-  <!-- Trophy App Icon -->
   <link rel="icon" type="image/png" href="https://img.icons8.com/color/512/trophy.png" />
   <link rel="apple-touch-icon" href="https://img.icons8.com/color/512/trophy.png" />
   
@@ -18,7 +17,7 @@
     <div>
       <div class="flex items-center gap-2">
         <h1 class="font-black text-base md:text-lg text-amber-400 tracking-wider">🏆 CBSE QUIZ ARENA</h1>
-        <span class="text-[10px] bg-emerald-950 border border-emerald-500 text-emerald-300 px-2 py-0.5 rounded font-black">LIVE SYNC</span>
+        <span id="roundBadge" class="text-[10px] bg-emerald-950 border border-emerald-500 text-emerald-300 px-2 py-0.5 rounded font-black">ROUND 1</span>
       </div>
       <p class="text-[11px] text-slate-400">Class 6-10 CBSE • Entry: ₹50 • Win ₹200</p>
     </div>
@@ -34,7 +33,7 @@
 
   <main class="max-w-md mx-auto p-4 pb-20">
 
-    <!-- SCREEN 1: LOBBY & REGISTRATION -->
+    <!-- SCREEN 1: LOBBY -->
     <section id="lobbyScreen" class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       <div class="bg-indigo-950/60 border border-indigo-500/30 p-3.5 rounded-xl text-xs space-y-1 text-indigo-200">
         <p class="font-bold text-amber-300 text-sm">📌 Contest Rules & Syllabus:</p>
@@ -44,7 +43,7 @@
         <p>• Test tabhi start hoga jab Admin ₹50 payment verify karke approve karega.</p>
       </div>
 
-      <!-- Payment Step -->
+      <!-- Step 1: Payment -->
       <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center space-y-2">
         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Step 1: Pay ₹50 Entry Fee</h3>
         <a href="upi://pay?pa=7756804720@ybl&pn=Quiz%20Master&am=50&cu=INR&tn=CBSEQuizEntry" 
@@ -54,7 +53,7 @@
         <p class="text-[11px] text-slate-400">UPI ID: <span class="font-mono text-amber-400 font-bold select-all">7756804720@ybl</span></p>
       </div>
 
-      <!-- Form Step -->
+      <!-- Step 2: Form -->
       <div class="space-y-3">
         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Step 2: Enter Student Info & UTR</h3>
         <div>
@@ -76,7 +75,7 @@
       </div>
     </section>
 
-    <!-- SCREEN 2: WAITING FOR APPROVAL SCREEN (STUDENT PHONE) -->
+    <!-- SCREEN 2: WAITING FOR APPROVAL -->
     <section id="waitingScreen" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl text-center space-y-4">
       <div class="w-14 h-14 border-4 border-amber-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
       <h2 class="text-base font-bold text-white">Payment Verification In Progress...</h2>
@@ -85,12 +84,12 @@
       </p>
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-left text-xs space-y-1.5 text-slate-300">
         <p class="font-bold text-amber-400">⚡ Note for Student:</p>
-        <p>• Admin jaise hi apne phone par aapka ₹50 payment verify karke approve karega, <strong>test bina refresh kiye apne aap shuru ho jayega</strong>.</p>
+        <p>• Admin jaise hi ₹50 payment verify karke approve karega, test bina refresh kiye apne aap shuru ho jayega.</p>
         <p>• Is screen ko band na karein.</p>
       </div>
     </section>
 
-    <!-- SCREEN 3: ACTIVE TEST SCREEN -->
+    <!-- SCREEN 3: ACTIVE TEST -->
     <section id="quizScreen" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-slate-800">
         <span id="questionCount" class="text-xs font-bold text-amber-400 uppercase tracking-wider">Question 1 / 10</span>
@@ -112,9 +111,8 @@
       <button id="submitBtn" onclick="finishQuiz()" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-xl text-sm hidden shadow-lg">
         Submit Quiz Answers ✅
       </button>
-    </section>
-
-    <!-- SCREEN 4: RESULT SCREEN -->
+  </section>
+      <!-- SCREEN 4: RESULT SCREEN -->
     <section id="resultScreen" class="hidden space-y-4">
       <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center shadow-xl">
         <div class="text-4xl mb-2">🎉</div>
@@ -124,7 +122,7 @@
       </div>
 
       <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-3">
-        <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Top 5 Leaderboard</h3>
+        <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Top 5 Leaderboard (Current Round)</h3>
         <div id="leaderboardBox" class="space-y-2"></div>
       </div>
 
@@ -156,45 +154,75 @@
       </div>
     </section>
 
-    <!-- SCREEN 6: ADMIN CONTROL DASHBOARD (ADMIN PHONE) -->
+    <!-- SCREEN 6: ADMIN CONTROL DASHBOARD -->
     <section id="adminDashboardScreen" class="hidden bg-slate-900 border-2 border-amber-500/50 p-5 rounded-2xl shadow-2xl space-y-5">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-        <h2 class="text-base font-black text-amber-400">👑 Admin Live Control</h2>
+        <div>
+          <h2 class="text-base font-black text-amber-400">👑 Admin Live Control</h2>
+          <span id="adminRoundBadge" class="text-[10px] text-emerald-400 font-mono font-bold">Active: Round 1</span>
+        </div>
         <button onclick="goToScreen('lobbyScreen')" class="text-xs text-red-400 font-bold bg-slate-800 px-2.5 py-1 rounded">Logout ✖</button>
       </div>
 
-      <!-- Pending Approval Requests (From All Students) -->
+      <!-- Pending UTR Approvals -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-amber-500/40 space-y-2">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals</h3>
           <button onclick="fetchAdminRequests()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
         </div>
         <p class="text-[11px] text-slate-400">PhonePe/GPay me ₹50 check karke "Approve & Unlock" dabayein:</p>
-        <div id="pendingUtrList" class="space-y-2 max-h-56 overflow-y-auto"></div>
+        <div id="pendingUtrList" class="space-y-2 max-h-48 overflow-y-auto"></div>
       </div>
 
-      <!-- Winners & Disbursement -->
-      <div class="space-y-2.5">
+      <!-- SECTION: PENDING TO PAY (UNPAID WINNERS) -->
+      <div class="space-y-2">
         <div class="flex justify-between items-center">
-          <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Top 5 Winners (Pay ₹200)</h3>
-          <button onclick="fetchLeaderboard()" class="text-[10px] text-indigo-400 underline font-bold">Refresh 🔄</button>
+          <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">⏳ Winners - Pending to Pay (Unpaid)</h3>
+          <button onclick="renderAllPayouts()" class="text-[10px] text-indigo-400 underline font-bold">Refresh 🔄</button>
         </div>
-        <div id="adminWinnersContainer" class="space-y-2"></div>
+        <p class="text-[11px] text-slate-400">Tab close hone par bhi ye list safe rahegi jab tak aap pay nahi karte:</p>
+        <div id="unpaidWinnersContainer" class="space-y-2"></div>
       </div>
 
-      <!-- Reset -->
-      <div class="pt-2 border-t border-slate-800">
-        <button onclick="resetRoundData()" class="w-full bg-red-900/60 hover:bg-red-800 border border-red-700 text-red-200 font-bold py-2 rounded-xl text-xs">
-          ⚠️ Clear Leaderboard for New Round
+      <!-- SECTION: COMPLETED PAYOUTS (PAID) -->
+      <div class="space-y-2 pt-2 border-t border-slate-800">
+        <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">✅ Paid Winners (Completed)</h3>
+        <div id="paidWinnersContainer" class="space-y-2"></div>
+      </div>
+
+      <!-- RESET / START NEW ROUND -->
+      <div class="pt-3 border-t border-slate-800">
+        <button onclick="startFreshNewRound()" class="w-full bg-red-900/70 hover:bg-red-800 border border-red-600 text-red-100 font-bold py-3 rounded-xl text-xs shadow-lg transition">
+          🚀 Clear & Start Fresh New Round (New Questions)
         </button>
       </div>
     </section>
 
   </main>
-    <script>
-    // ==========================================
-    // CORE UI NAVIGATION (ALWAYS WORKS FIRST)
-    // ==========================================
+
+  <script>
+    const ADMIN_SECRET = "103695";
+
+    function getRoundId() {
+      let r = localStorage.getItem("quiz_active_round");
+      if (!r) {
+        r = "1";
+        localStorage.setItem("quiz_active_round", r);
+      }
+      return r;
+    }
+
+    const REQ_TOPIC = "https://ntfy.sh/cbsequiz_req_7756804720";
+    const APP_TOPIC = "https://ntfy.sh/cbsequiz_app_7756804720";
+    const LEAD_TOPIC = "https://ntfy.sh/cbsequiz_lead_7756804720";
+
+    function updateRoundHeaders() {
+      const r = getRoundId();
+      document.getElementById("roundBadge").innerText = `ROUND ${r}`;
+      const adm = document.getElementById("adminRoundBadge");
+      if (adm) adm.innerText = `Active: Round ${r}`;
+    }
+
     function goToScreen(screenId) {
       ["lobbyScreen", "waitingScreen", "quizScreen", "resultScreen", "adminLoginScreen", "adminDashboardScreen"].forEach(id => {
         const el = document.getElementById(id);
@@ -203,17 +231,17 @@
       const target = document.getElementById(screenId);
       if (target) target.classList.remove("hidden");
 
+      updateRoundHeaders();
+
       if (screenId === "adminLoginScreen") {
         document.getElementById("adminPinField").value = "";
         document.getElementById("adminPinError").classList.add("hidden");
       }
       if (screenId === "adminDashboardScreen") {
         fetchAdminRequests();
-        fetchLeaderboard();
+        renderAllPayouts();
       }
     }
-
-    const ADMIN_SECRET = "103695";
 
     function authenticateAdmin() {
       const pin = document.getElementById("adminPinField").value.trim();
@@ -223,11 +251,6 @@
         document.getElementById("adminPinError").classList.remove("hidden");
       }
     }
-
-    // CLOUD SYNC TOPICS (Linked securely to your UPI)
-    const REQ_TOPIC = "https://ntfy.sh/cbsequiz_req_7756804720";
-    const APP_TOPIC = "https://ntfy.sh/cbsequiz_app_7756804720";
-    const LEAD_TOPIC = "https://ntfy.sh/cbsequiz_lead_7756804720";
 
     // CBSE QUESTIONS BANK (Class 6-10)
     const cbseQuestions = [
@@ -257,8 +280,7 @@
       { q: "Conversion of water vapour into liquid water is called:", o: ["Condensation", "Evaporation", "Sublimation", "Transpiration"], a: 0, sub: "Class 6 Science" },
       { q: "Which gas is primarily taken in by plants during photosynthesis?", o: ["Carbon dioxide", "Oxygen", "Nitrogen", "Argon"], a: 0, sub: "Class 6 Science" }
     ];
-
-    let activeSet = [];
+              let activeSet = [];
     let curIdx = 0;
     let userAnswers = {};
     let timerSec = 600;
@@ -267,32 +289,32 @@
     let curStudent = {};
     let studentCheckInterval = null;
 
-    // STUDENT: SUBMIT UTR TO ADMIN OVER CLOUD
+    // STUDENT: SUBMIT UTR
     async function submitUtrForApproval() {
       const name = document.getElementById("userName").value.trim();
       const upi = document.getElementById("userUpi").value.trim();
       const utr = document.getElementById("userUtr").value.trim();
+      const round = getRoundId();
 
       if (!name) { alert("Please enter Student Full Name!"); return; }
       if (!upi || !upi.includes("@")) { alert("Please enter valid UPI ID for prize money!"); return; }
       if (!/^\d{12}$/.test(utr)) { alert("UTR must be exactly 12 numeric digits from payment receipt!"); return; }
 
-      curStudent = { name, upi, utr };
+      curStudent = { name, upi, utr, round };
 
       try {
         await fetch(REQ_TOPIC, {
           method: "POST",
-          body: JSON.stringify({ name, upi, utr, time: new Date().toLocaleTimeString() })
+          body: JSON.stringify({ name, upi, utr, round, time: new Date().toLocaleTimeString() })
         });
 
         document.getElementById("waitingUtrDisplay").innerText = utr;
         goToScreen("waitingScreen");
 
-        // Polling loop: Wait for Admin to approve on their phone
         if (studentCheckInterval) clearInterval(studentCheckInterval);
         studentCheckInterval = setInterval(checkIfApprovedByAdmin, 3000);
       } catch (err) {
-        alert("Network error. Please check your internet connection and try again.");
+        alert("Network error. Please try again.");
       }
     }
 
@@ -307,7 +329,7 @@
           try {
             const wrapper = JSON.parse(line);
             const msg = JSON.parse(wrapper.message);
-            if (msg.utr === curStudent.utr && msg.status === "approved") {
+            if (msg.utr === curStudent.utr && msg.status === "approved" && msg.round === curStudent.round) {
               clearInterval(studentCheckInterval);
               startQuizSession();
               break;
@@ -318,7 +340,18 @@
     }
 
     function startQuizSession() {
-      activeSet = get10RandomQuestions();
+      const shuffled = [...cbseQuestions].sort(() => 0.5 - Math.random());
+      activeSet = shuffled.slice(0, 10).map(item => {
+        const opts = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
+        opts.sort(() => 0.5 - Math.random());
+        return {
+          q: item.q,
+          sub: item.sub,
+          o: opts.map(x => x.text),
+          a: opts.findIndex(x => x.isCorrect)
+        };
+      });
+
       userAnswers = {};
       curIdx = 0;
       timerSec = 600;
@@ -329,20 +362,6 @@
       testStartTimestamp = Date.now();
       startQuizTimer();
       displayQuestion();
-    }
-
-    function get10RandomQuestions() {
-      const shuffled = [...cbseQuestions].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, 10).map(item => {
-        const opts = item.o.map((text, idx) => ({ text, isCorrect: idx === item.a }));
-        opts.sort(() => 0.5 - Math.random());
-        return {
-          q: item.q,
-          sub: item.sub,
-          o: opts.map(x => x.text),
-          a: opts.findIndex(x => x.isCorrect)
-        };
-      });
     }
 
     function startQuizTimer() {
@@ -407,16 +426,19 @@
         if (userAnswers[idx] === item.a) score++;
       });
 
+      const submission = {
+        name: curStudent.name,
+        upi: curStudent.upi,
+        utr: curStudent.utr,
+        round: curStudent.round,
+        score: score,
+        time: totalTime
+      };
+
       try {
         await fetch(LEAD_TOPIC, {
           method: "POST",
-          body: JSON.stringify({
-            name: curStudent.name,
-            upi: curStudent.upi,
-            utr: curStudent.utr,
-            score: score,
-            time: totalTime
-          })
+          body: JSON.stringify(submission)
         });
       } catch (e) {}
 
@@ -424,15 +446,13 @@
       goToScreen("resultScreen");
 
       document.getElementById("scoreDisplay").innerText = `Score: ${score} / 10 | Time: ${totalTime} seconds`;
-      fetchLeaderboard();
+      fetchRoundLeaderboard();
     }
 
-    // ==========================================
-    // ADMIN FUNCTIONS & CLOUD POLLING
-    // ==========================================
     async function fetchAdminRequests() {
       const container = document.getElementById("pendingUtrList");
       container.innerHTML = "<p class='text-xs text-slate-500 py-2'>Loading requests...</p>";
+      const currentRound = getRoundId();
 
       try {
         const [reqRes, appRes] = await Promise.all([
@@ -457,7 +477,7 @@
           if (!line) return;
           try {
             const data = JSON.parse(JSON.parse(line).message);
-            if (data.utr && !approvedUtrs.has(data.utr)) {
+            if (data.utr && data.round === currentRound && !approvedUtrs.has(data.utr)) {
               pendingMap.set(data.utr, data);
             }
           } catch(e) {}
@@ -487,24 +507,26 @@
           container.appendChild(card);
         });
       } catch (err) {
-        container.innerHTML = "<p class='text-xs text-red-400'>Error loading requests. Tap Refresh.</p>";
+        container.innerHTML = "<p class='text-xs text-red-400'>Error loading. Tap Refresh.</p>";
       }
     }
 
     async function approveStudent(utr) {
       try {
+        const round = getRoundId();
         await fetch(APP_TOPIC, {
           method: "POST",
-          body: JSON.stringify({ utr: utr, status: "approved" })
+          body: JSON.stringify({ utr: utr, round: round, status: "approved" })
         });
-        alert(`UTR ${utr} Approved! Student's quiz has started automatically.`);
+        alert(`UTR ${utr} Approved! Student's quiz has started.`);
         fetchAdminRequests();
       } catch (e) {
         alert("Approval failed. Please check internet connection.");
       }
     }
 
-    async function fetchLeaderboard() {
+    async function syncWinnersFromCloud() {
+      const currentRound = getRoundId();
       try {
         const res = await fetch(`${LEAD_TOPIC}/json?poll=1&since=24h`);
         const text = await res.text();
@@ -513,17 +535,126 @@
         text.trim().split("\n").forEach(line => {
           if (!line) return;
           try {
-            records.push(JSON.parse(JSON.parse(line).message));
+            const data = JSON.parse(JSON.parse(line).message);
+            if (data.round === currentRound) records.push(data);
           } catch(e) {}
         });
 
         records.sort((a, b) => b.score - a.score || a.time - b.time);
         const top5 = records.slice(0, 5);
 
-        // Render Student Leaderboard
+        let stored = JSON.parse(localStorage.getItem(`quiz_payouts_r${currentRound}`) || "[]");
+        const existingUtrs = new Set(stored.map(x => x.utr));
+
+        top5.forEach(winner => {
+          if (!existingUtrs.has(winner.utr)) {
+            stored.push({
+              name: winner.name,
+              upi: winner.upi,
+              utr: winner.utr,
+              score: winner.score,
+              time: winner.time,
+              paid: false
+            });
+          }
+        });
+
+        localStorage.setItem(`quiz_payouts_r${currentRound}`, JSON.stringify(stored));
+      } catch(e) {}
+    }
+
+    async function renderAllPayouts() {
+      await syncWinnersFromCloud();
+      const currentRound = getRoundId();
+      const stored = JSON.parse(localStorage.getItem(`quiz_payouts_r${currentRound}`) || "[]");
+
+      const unpaidContainer = document.getElementById("unpaidWinnersContainer");
+      const paidContainer = document.getElementById("paidWinnersContainer");
+
+      unpaidContainer.innerHTML = "";
+      paidContainer.innerHTML = "";
+
+      const unpaidList = stored.filter(x => !x.paid);
+      const paidList = stored.filter(x => x.paid);
+
+      if (unpaidList.length === 0) {
+        unpaidContainer.innerHTML = "<p class='text-xs text-slate-500 py-2'>No pending payouts. All clear!</p>";
+      } else {
+        unpaidList.forEach((w, i) => {
+          const payUrl = `upi://pay?pa=${encodeURIComponent(w.upi)}&pn=${encodeURIComponent(w.name)}&am=200&cu=INR&tn=${encodeURIComponent('CBSE Quiz Winner Prize')}`;
+          const card = document.createElement("div");
+          card.className = "flex justify-between items-center p-3 bg-slate-950 border border-amber-500/50 rounded-xl";
+          card.innerHTML = `
+            <div>
+              <span class="font-bold text-amber-400 text-sm">#${i + 1} ${w.name}</span>
+              <p class="text-[11px] text-slate-300 font-mono">UPI: ${w.upi}</p>
+              <p class="text-[10px] text-emerald-400 font-mono">Verified UTR: ${w.utr}</p>
+              <p class="text-[10px] text-slate-400">Score: ${w.score}/10 | Time: ${w.time}s</p>
+            </div>
+            <a href="${payUrl}" onclick="markAsPaid('${w.utr}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-2.5 rounded-lg shadow-lg flex items-center gap-1">
+              Pay ₹200 💸
+            </a>
+          `;
+          unpaidContainer.appendChild(card);
+        });
+      }
+
+      if (paidList.length === 0) {
+        paidContainer.innerHTML = "<p class='text-xs text-slate-600 py-1'>No completed payments yet.</p>";
+      } else {
+        paidList.forEach((w, i) => {
+          const card = document.createElement("div");
+          card.className = "flex justify-between items-center p-3 bg-slate-900 border border-slate-800 rounded-xl opacity-80";
+          card.innerHTML = `
+            <div>
+              <span class="font-bold text-slate-200 text-sm">${w.name}</span>
+              <p class="text-[10px] text-slate-400 font-mono">UPI: ${w.upi} • UTR: ${w.utr}</p>
+            </div>
+            <span class="bg-emerald-950 border border-emerald-600 text-emerald-300 text-xs font-black px-2.5 py-1 rounded">
+              ✅ PAID
+            </span>
+          `;
+          paidContainer.appendChild(card);
+        });
+      }
+    }
+
+    function markAsPaid(utr) {
+      const currentRound = getRoundId();
+      let stored = JSON.parse(localStorage.getItem(`quiz_payouts_r${currentRound}`) || "[]");
+      stored = stored.map(item => {
+        if (item.utr === utr) item.paid = true;
+        return item;
+      });
+      localStorage.setItem(`quiz_payouts_r${currentRound}`, JSON.stringify(stored));
+      setTimeout(renderAllPayouts, 1000);
+    }
+
+    async function fetchRoundLeaderboard() {
+      const currentRound = getRoundId();
+      try {
+        const res = await fetch(`${LEAD_TOPIC}/json?poll=1&since=24h`);
+        const text = await res.text();
+        const records = [];
+
+        text.trim().split("\n").forEach(line => {
+          if (!line) return;
+          try {
+            const data = JSON.parse(JSON.parse(line).message);
+            if (data.round === currentRound) records.push(data);
+          } catch(e) {}
+        });
+
+        records.sort((a, b) => b.score - a.score || a.time - b.time);
+        const top5 = records.slice(0, 5);
+
         const box = document.getElementById("leaderboardBox");
         if (box) {
           box.innerHTML = "";
+          if (top5.length === 0) {
+            box.innerHTML = "<p class='text-xs text-slate-500 py-2'>No submissions in this round yet.</p>";
+            return;
+          }
           top5.forEach((item, i) => {
             const div = document.createElement("div");
             div.className = "flex justify-between items-center p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs";
@@ -540,43 +671,24 @@
             box.appendChild(div);
           });
         }
-
-        // Render Admin Winners Payout
-        const adminBox = document.getElementById("adminWinnersContainer");
-        if (adminBox) {
-          adminBox.innerHTML = "";
-          if (top5.length === 0) {
-            adminBox.innerHTML = "<p class='text-xs text-slate-500 py-2'>No submissions yet.</p>";
-            return;
-          }
-          top5.forEach((w, i) => {
-            const payUrl = `upi://pay?pa=${encodeURIComponent(w.upi)}&pn=${encodeURIComponent(w.name)}&am=200&cu=INR&tn=${encodeURIComponent('CBSE Quiz Prize')}`;
-            const card = document.createElement("div");
-            card.className = "flex justify-between items-center p-3 bg-slate-950 border border-slate-800 rounded-xl";
-            card.innerHTML = `
-              <div>
-                <span class="font-bold text-amber-400 text-sm">#${i + 1} ${w.name}</span>
-                <p class="text-[11px] text-slate-300 font-mono">UPI: ${w.upi}</p>
-                <p class="text-[10px] text-emerald-400 font-mono">Verified UTR: ${w.utr}</p>
-                <p class="text-[10px] text-slate-400">Score: ${w.score}/10 | Time: ${w.time}s</p>
-              </div>
-              <a href="${payUrl}" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-2 rounded-lg shadow">
-                Pay ₹200 💸
-              </a>
-            `;
-            adminBox.appendChild(card);
-          });
-        }
       } catch (e) {}
     }
 
-    function resetRoundData() {
-      if (confirm("Reset leaderboard for next quiz round?")) {
-        document.getElementById("adminWinnersContainer").innerHTML = "<p class='text-xs text-slate-500 py-2'>Round reset successfully.</p>";
-        alert("Leaderboard cleared for this session!");
+    function startFreshNewRound() {
+      if (confirm("Are you sure you want to start a FRESH NEW ROUND?\n\n• Old leaderboard and approved requests will be archived.\n• All incoming students will get completely fresh randomized questions.\n• Unpaid winners will be cleared.")) {
+        let currentRound = parseInt(getRoundId(), 10);
+        let nextRound = currentRound + 1;
+        localStorage.setItem("quiz_active_round", String(nextRound));
+
+        updateRoundHeaders();
+        fetchAdminRequests();
+        renderAllPayouts();
+        alert(`🎉 Round ${nextRound} Started Successfully!\nLeaderboard is clean and ready for new students.`);
       }
     }
+
+    updateRoundHeaders();
   </script>
 </body>
-  </html>
+</html>
   
