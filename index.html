@@ -133,8 +133,8 @@
           Submit UTR & Enter Waiting Lobby ⏱️
         </button>
       </div>
-    </section>
-        <!-- SCREEN 2: SYNCHRONIZED WAITING ROOM -->
+  </section>
+       <!-- SCREEN 2: SYNCHRONIZED WAITING ROOM -->
     <section id="waitingScreen" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl text-center space-y-4">
       <div class="inline-block bg-indigo-950/80 border border-indigo-500/40 px-3 py-1 rounded-full text-indigo-300 text-xs font-bold">
         ⏳ LIVE QUIZ LOBBY
@@ -228,7 +228,7 @@
       </button>
     </section>
 
-    <!-- SCREEN 5: CANCELLED & REFUND SCREEN -->
+    <!-- SCREEN 5: CANCELLED & REFUND SCREEN (TRIGGERED ONLY INSIDE WAITING ROOM) -->
     <section id="cancelledScreen" class="hidden bg-slate-900 border-2 border-red-500/60 p-6 rounded-2xl shadow-2xl text-center space-y-4">
       <div class="text-4xl">⚠️</div>
       <h2 class="text-lg font-black text-red-400">Round Cancelled (Under 20 Participants)</h2>
@@ -246,7 +246,7 @@
         Back to Home
       </button>
     </section>
-        <!-- SCREEN 6: ADMIN LOGIN -->
+       <!-- SCREEN 6: ADMIN LOGIN -->
     <section id="adminLoginScreen" class="hidden bg-slate-900 border-2 border-amber-500/60 p-6 rounded-2xl shadow-2xl space-y-4">
       <div class="text-center space-y-1">
         <div class="text-3xl">🔐</div>
@@ -308,13 +308,13 @@
         </button>
       </div>
 
-      <!-- PENDING UTR APPROVALS (LIVE AUTO-REFRESH) -->
+      <!-- PENDING UTR APPROVALS (STRICT ROUND FILTER ACTIVE) -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-amber-500/40 space-y-2">
         <div class="flex justify-between items-center">
-          <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals (Live)</h3>
+          <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals (Current Round Only)</h3>
           <button onclick="fetchAdminRequests()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
         </div>
-        <p class="text-[11px] text-slate-400">Verify ₹50 in PhonePe and approve student:</p>
+        <p class="text-[11px] text-slate-400">Verify ₹50 in PhonePe and approve student for active round:</p>
         <div id="pendingUtrList" class="space-y-2 max-h-48 overflow-y-auto"></div>
       </div>
             <!-- Incomplete / Drop-off Leads -->
@@ -376,7 +376,7 @@
 
   <script>
     const ADMIN_SECRET = "103695";
-    const MIN_PLAYERS = 20; // STRICT 20 PARTICIPANTS MINIMUM REQUIREMENT
+    const MIN_PLAYERS = 20;
 
     // Cloud Topics
     const REQ_TOPIC = "https://ntfy.sh/cbsequiz_req_7756804720";
@@ -390,12 +390,13 @@
         r = "1";
         localStorage.setItem("quiz_active_round", r);
       }
-      return r;
+      return String(r);
     }
 
     function generateHandshakeToken(utr, round) {
       return btoa(utr + ":" + round + ":" + ADMIN_SECRET);
-    }    const cbseQuestions = [
+    }
+        const cbseQuestions = [
       { q: "What is the primary gas produced during photosynthesis?", o: ["Oxygen", "Carbon dioxide", "Nitrogen", "Hydrogen"], a: 0, sub: "Class 6 Science" },
       { q: "What is the smallest prime number?", o: ["2", "1", "3", "0"], a: 0, sub: "Class 6 Maths" },
       { q: "Deficiency of Vitamin A causes which disease?", o: ["Night blindness", "Scurvy", "Rickets", "Beriberi"], a: 0, sub: "Class 6 Science" },
@@ -422,7 +423,7 @@
       { q: "Which cell organelle is called the 'Powerhouse of the cell'?", o: ["Mitochondria", "Ribosome", "Lysosome", "Vacuole"], a: 0, sub: "Class 8 Biology" },
       { q: "What is the SI unit of Force?", o: ["Newton", "Joule", "Pascal", "Watt"], a: 0, sub: "Class 9 Physics" }
     ];
-           const cbsePart2 = [
+        const cbsePart2 = [
       { q: "Newton's First Law of Motion is also known as the Law of:", o: ["Inertia", "Momentum", "Action-Reaction", "Gravitation"], a: 0, sub: "Class 9 Physics" },
       { q: "What is the standard value of acceleration due to gravity (g) on Earth?", o: ["9.8 m/s²", "8.9 m/s²", "10.8 m/s²", "9.2 m/s²"], a: 0, sub: "Class 9 Physics" },
       { q: "What is the SI unit of Work and Energy?", o: ["Joule", "Watt", "Newton", "Pascal"], a: 0, sub: "Class 9 Physics" },
@@ -455,7 +456,7 @@
       { q: "What is the perimeter of an equilateral triangle of side 6 cm?", o: ["18 cm", "12 cm", "36 cm", "24 cm"], a: 0, sub: "Class 6 Maths" }
     ];
     cbseQuestions.push(...cbsePart2);
-          const cbsePart3 = [
+        const cbsePart3 = [
       { q: "Find the mean of the numbers: 2, 4, 6, 8, 10:", o: ["6", "5", "7", "8"], a: 0, sub: "Class 7 Maths" },
       { q: "Which gas turns lime water milky?", o: ["Carbon dioxide", "Oxygen", "Nitrogen", "Hydrogen"], a: 0, sub: "Class 7 Chemistry" },
       { q: "What is the area of a square whose perimeter is 20 cm?", o: ["25 cm²", "20 cm²", "16 cm²", "100 cm²"], a: 0, sub: "Class 8 Maths" },
@@ -488,7 +489,7 @@
       { q: "Plant part that develops into fruit after fertilization is:", o: ["Ovary", "Ovule", "Petal", "Sepal"], a: 0, sub: "Class 10 Biology" }
     ];
     cbseQuestions.push(...cbsePart3);
-           const cbsePart4 = [
+        const cbsePart4 = [
       { q: "Sex chromosome combination in a normal human male is:", o: ["XY", "XX", "YY", "XO"], a: 0, sub: "Class 10 Biology" },
       { q: "Who is known as the 'Father of Genetics'?", o: ["Gregor Mendel", "Charles Darwin", "Lamarck", "Watson"], a: 0, sub: "Class 10 Biology" },
       { q: "How many chambers are there in the human heart?", o: ["4", "2", "3", "1"], a: 0, sub: "Class 10 Biology" },
@@ -559,7 +560,7 @@
       { q: "What is the chemical name of Bleaching powder?", o: ["Calcium oxychloride", "Calcium carbonate", "Calcium hydroxide", "Calcium sulphate"], a: 0, sub: "Class 10 Chemistry" }
     ];
     cbseQuestions.push(...cbsePart5);
-           let activeSet = [];
+        let activeSet = [];
     let curIdx = 0;
     let userAnswers = {};
     let testTimerSec = 600;
@@ -673,22 +674,32 @@
       }
     });
 
+    // HAR ROUND KE LIYE NAYA PAYMENT AUR NAYA UTR SUBMISSION
     async function submitUtrForApproval() {
       const name = curStudent.name || document.getElementById("userName").value.trim();
       const phone = curStudent.phone || document.getElementById("userPhone").value.trim();
       const utr = document.getElementById("userUtr").value.trim();
-      const round = getRoundId();
+      const round = String(getRoundId());
 
       if (!name || !phone) { alert("Please complete Step 1 first!"); return; }
       if (!/^\d{12}$/.test(utr)) { alert("UTR must be exactly 12 numeric digits!"); return; }
 
+      // 1. Permanent ledger check across all rounds
       const ledger = JSON.parse(localStorage.getItem("permanent_all_time_ledger") || "[]");
       if (ledger.some(x => x.utr === utr)) {
-        alert("❌ Fraud Alert: This UTR has already been used! Please make a fresh payment.");
+        alert(`❌ Fraud Prevention:\n\nThis UTR was already used in a previous round!\nFor Round ${round}, you must make a fresh ₹50 payment and submit the new 12-digit UTR.`);
+        return;
+      }
+
+      // 2. Check locally used UTRs
+      const usedUtrs = JSON.parse(localStorage.getItem("quiz_my_used_utrs") || "[]");
+      if (usedUtrs.includes(utr)) {
+        alert("This UTR has already been submitted. Please make a fresh payment for this round.");
         return;
       }
 
       curStudent.utr = utr;
+      curStudent.round = round;
 
       let roundStart = localStorage.getItem(`quiz_round_start_${round}`);
       if (!roundStart) {
@@ -706,6 +717,9 @@
           body: JSON.stringify({ name, phone, utr, round, time: new Date().toLocaleTimeString() })
         });
 
+        usedUtrs.push(utr);
+        localStorage.setItem("quiz_my_used_utrs", JSON.stringify(usedUtrs));
+
         document.getElementById("refundPhoneDisplay").innerText = phone;
         document.getElementById("refundUtrDisplay").innerText = utr;
         goToScreen("waitingScreen");
@@ -716,7 +730,6 @@
       }
     }
 
-    // Jitter Polling (5 to 7 seconds) prevents rate-limit issues on free cloud servers
     function scheduleLobbySync() {
       if (lobbyPollTimeout) clearTimeout(lobbyPollTimeout);
       const delay = 5000 + Math.floor(Math.random() * 2000);
@@ -727,8 +740,6 @@
     }
 
     async function syncLobbyState() {
-      const round = getRoundId();
-
       try {
         const [appRes, stateRes] = await Promise.all([
           fetch(`${APP_TOPIC}/json?poll=1`),
@@ -738,20 +749,30 @@
         const appText = await appRes.text();
         const stateText = await stateRes.text();
 
+        let cloudRound = null;
         let universalStartTime = null;
         let remoteState = null;
 
+        // READ MASTER ROUND & TIMER DIRECTLY FROM CLOUD (PREVENTS ROUND MISMATCH)
         stateText.trim().split("\n").forEach(line => {
           if (!line) return;
           try {
             const p = JSON.parse(line);
             const obj = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
-            if (obj && obj.round === round) {
+            if (obj && obj.round) {
+              cloudRound = obj.round;
               if (obj.startTime) universalStartTime = parseInt(obj.startTime, 10);
               if (obj.state) remoteState = obj.state;
             }
           } catch(e) {}
         });
+
+        if (cloudRound && cloudRound !== localStorage.getItem("quiz_active_round")) {
+          localStorage.setItem("quiz_active_round", cloudRound);
+          updateRoundDisplay();
+        }
+
+        const round = getRoundId();
 
         if (!universalStartTime) {
           universalStartTime = parseInt(localStorage.getItem(`quiz_round_start_${round}`) || String(Date.now()), 10);
@@ -776,7 +797,7 @@
           try {
             const p = JSON.parse(line);
             const data = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
-            if (data && data.round === round && data.status === "approved") {
+            if (data && String(data.round) === round && data.status === "approved") {
               approvedStudents.push(data);
             }
           } catch(e) {}
@@ -793,23 +814,26 @@
         const expectedToken = generateHandshakeToken(curStudent.utr, round);
         const isSelfApproved = approvedStudents.some(x => x.utr === curStudent.utr && x.token === expectedToken);
 
-        // AUTO-START ONLY IF MINIMUM 20 PARTICIPANTS JOINED
-        if (remoteState === "started" || (remainingWaiting === 0 && count >= MIN_PLAYERS)) {
-          localStorage.setItem(`quiz_round_valid_started_${round}`, "true");
-          if (lobbyPollTimeout) clearTimeout(lobbyPollTimeout);
-          if (isSelfApproved) startQuizSession();
-          return;
-        }
+        // ONLY TRIGGER CANCEL OR START IF CURRENTLY ON WAITING SCREEN (FIXES 1-SEC LOOP!)
+        const isWaitingScreenActive = !document.getElementById("waitingScreen").classList.contains("hidden");
 
-        // CANCEL & REFUND IF UNDER 20 PARTICIPANTS WHEN TIMER HITS ZERO
-        if (remoteState === "cancelled" || (remainingWaiting === 0 && count < MIN_PLAYERS)) {
-          if (lobbyPollTimeout) clearTimeout(lobbyPollTimeout);
-          saveRefundsForRound(round, approvedStudents);
-          goToScreen("cancelledScreen");
-          return;
+        if (isWaitingScreenActive) {
+          if (remoteState === "started" || (remainingWaiting === 0 && count >= MIN_PLAYERS)) {
+            localStorage.setItem(`quiz_round_valid_started_${round}`, "true");
+            if (lobbyPollTimeout) clearTimeout(lobbyPollTimeout);
+            if (isSelfApproved) startQuizSession();
+            return;
+          }
+
+          if (remoteState === "cancelled" || (remainingWaiting === 0 && count < MIN_PLAYERS)) {
+            if (lobbyPollTimeout) clearTimeout(lobbyPollTimeout);
+            saveRefundsForRound(round, approvedStudents);
+            goToScreen("cancelledScreen");
+            return;
+          }
         }
       } catch(e) {}
-            }
+    }
         // 3-SECOND GRACE PERIOD ANTI-CHEAT
     document.addEventListener("visibilitychange", () => {
       if (isQuizActive && testTimerHandle) {
@@ -960,9 +984,11 @@
       fetchRoundLeaderboard();
     }
 
+    // STRICT ACTIVE ROUND FILTER: ONLY PENDING UTRs OF THE CURRENT ROUND ARE SHOWN
     async function fetchAdminRequests() {
       const container = document.getElementById("pendingUtrList");
       if (!container) return;
+      const currentRound = String(getRoundId());
 
       try {
         const [reqRes, appRes] = await Promise.all([
@@ -979,7 +1005,9 @@
           try {
             const parsed = JSON.parse(line);
             const d = typeof parsed.message === "string" ? JSON.parse(parsed.message) : parsed.message;
-            if (d && d.utr) approvedUtrs.add(d.utr);
+            if (d && d.utr && String(d.round) === currentRound) {
+              approvedUtrs.add(d.utr);
+            }
           } catch(e) {}
         });
 
@@ -991,7 +1019,9 @@
           try {
             const parsed = JSON.parse(line);
             const d = typeof parsed.message === "string" ? JSON.parse(parsed.message) : parsed.message;
-            if (d && d.utr) {
+            
+            // STRICT FILTER: ACCEPTS UTR ONLY IF ROUND EXACTLY MATCHES CURRENT ACTIVE ROUND
+            if (d && d.utr && String(d.round) === currentRound) {
               utrFrequency[d.utr] = (utrFrequency[d.utr] || 0) + 1;
               if (!approvedUtrs.has(d.utr)) {
                 pendingMap.set(d.utr, d);
@@ -1003,7 +1033,7 @@
         const items = Array.from(pendingMap.values());
 
         if (items.length === 0) {
-          container.innerHTML = "<p class='text-xs text-slate-500 py-2'>No pending UTR requests right now.</p>";
+          container.innerHTML = `<p class='text-xs text-slate-500 py-2'>No pending UTR requests for Round ${currentRound}.</p>`;
           return;
         }
 
@@ -1014,14 +1044,14 @@
           card.className = `p-3 bg-slate-900 border ${isDuplicate ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-700'} rounded-xl flex justify-between items-center`;
           card.innerHTML = `
             <div>
-              <p class="text-white text-xs font-bold">${req.name} <span class="text-amber-400 text-[10px] font-mono">[R-${req.round || '1'}]</span></p>
+              <p class="text-white text-xs font-bold">${req.name} <span class="text-amber-400 text-[10px] font-mono">[Round ${req.round}]</span></p>
               <p class="text-[11px] font-mono text-amber-400 font-bold">UTR: ${req.utr}</p>
               <p class="text-[11px] text-emerald-400 font-mono font-bold">📱 PhonePe: ${req.phone}</p>
               <p class="text-[10px] text-slate-400">${req.time || ''}</p>
               ${isDuplicate ? '<span class="text-[10px] font-bold text-red-400">⚠️ DUPLICATE UTR!</span>' : ''}
             </div>
             <div class="flex flex-col gap-1.5">
-              <button onclick="approveStudent('${req.name}', '${req.phone}', '${req.utr}')" ${isDuplicate ? 'disabled' : ''} class="${isDuplicate ? 'bg-slate-700 opacity-50 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500'} text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg shadow">
+              <button onclick="approveStudent('${req.name}', '${req.phone}', '${req.utr}', '${req.round}')" ${isDuplicate ? 'disabled' : ''} class="${isDuplicate ? 'bg-slate-700 opacity-50 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500'} text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg shadow">
                 Approve ✅
               </button>
               <button onclick="rejectStudent('${req.utr}')" class="bg-red-700 hover:bg-red-600 text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg shadow">
@@ -1032,10 +1062,10 @@
           container.appendChild(card);
         });
       } catch (err) {
-        container.innerHTML = "<p class='text-xs text-red-400'>Loading...</p>";
+        container.innerHTML = "<p class='text-xs text-red-400'>Loading requests...</p>";
       }
-                                    }
-           // ADMIN TIMER RESET (RESETS TO 20:00 FOR ALL PHONES)
+    }
+        // ADMIN TIMER RESET (RESETS TO 20:00 FOR ALL PHONES IN ACTIVE ROUND)
     async function adminResetTimer() {
       const round = getRoundId();
       if (confirm("Reset lobby timer to 20:00 for all participants in Round " + round + "?")) {
@@ -1044,7 +1074,7 @@
         try {
           await fetch(STATE_TOPIC, {
             method: "POST",
-            body: JSON.stringify({ round, state: "waiting", startTime: nowStr })
+            body: JSON.stringify({ round: String(round), state: "waiting", startTime: nowStr })
           });
           alert("20-Minute Timer Reset successfully across all student devices!");
           syncLobbyState();
@@ -1054,18 +1084,18 @@
       }
     }
 
-    async function approveStudent(name, phone, utr) {
+    async function approveStudent(name, phone, utr, studentRound) {
       try {
-        const round = getRoundId();
+        const round = String(studentRound || getRoundId());
         const token = generateHandshakeToken(utr, round);
 
         await fetch(APP_TOPIC, {
           method: "POST",
-          body: JSON.stringify({ name, phone, utr, round, status: "approved", token: token })
+          body: JSON.stringify({ name, phone, utr, round: round, status: "approved", token: token })
         });
 
         saveToPermanentLedger({
-          round,
+          round: round,
           name,
           phone,
           utr,
@@ -1075,7 +1105,7 @@
           status: "Admitted"
         });
 
-        alert(`Student ${name} (PhonePe: ${phone}) Approved!`);
+        alert(`Student ${name} (PhonePe: ${phone}) Approved for Round ${round}!`);
         fetchAdminRequests();
         renderPermanentLedger();
       } catch (e) {
@@ -1286,7 +1316,7 @@
           try {
             const p = JSON.parse(line);
             const data = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
-            if (data && data.type === "quiz_result" && data.round === round) records.push(data);
+            if (data && data.type === "quiz_result" && String(data.round) === round) records.push(data);
           } catch(e) {}
         });
 
@@ -1381,7 +1411,7 @@
           try {
             const p = JSON.parse(line);
             const data = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
-            if (data && data.type === "quiz_result" && data.round === round) records.push(data);
+            if (data && data.type === "quiz_result" && String(data.round) === round) records.push(data);
           } catch(e) {}
         });
 
@@ -1463,4 +1493,3 @@
 </body>
 </html>
   
-    
