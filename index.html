@@ -757,8 +757,7 @@
         alert("Network error. Please try again.");
       }
     }
-
-    // POLL CLOUD UNTIL ADMIN APPROVES
+    // POLL CLOUD UNTIL ADMIN APPROVES (LOOP FREE)
     function startVerificationPolling() {
       if (verifPollTimeout) clearTimeout(verifPollTimeout);
       verifPollTimeout = setTimeout(async () => {
@@ -789,28 +788,18 @@
           }
 
           if (isRejected) {
-            alert("❌ Payment Rejected! Invalid or duplicate UTR. Please check PhonePe and re-enter.");
+            alert("❌ Payment Rejected! Invalid or duplicate UTR.");
             goToScreen("lobbyScreen");
             return;
           }
-
-          const stateRes = await fetch(`${STATE_TOPIC}/json?poll=1`);
-          const stateText = await stateRes.text();
-          let remoteState = null;
-          stateText.trim().split("\n").forEach(line => {
-            if (!line) return;
-            try {
-              const p = JSON.parse(line);
-              const obj = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
-              if (obj && String(obj.round) === round && obj.state) remoteState = obj.state;
-            } catch(e) {}
-          });
-
-          if (remoteState === "cancelled") {
-            alert("⚠️ Round was cancelled. Please re-register.");
-            goToScreen("lobbyScreen");
-            return;
-          }
+          
+          startVerificationPolling();
+        } catch(e) {
+          startVerificationPolling();
+        }
+      }, 3000);
+    }
+    
 
           startVerificationPolling();
         } catch(e) {
