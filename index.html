@@ -667,14 +667,23 @@
         }
       });
     }
-
     async function proceedToPayment() {
-      const name = document.getElementById("userName").value.trim();
-      const phone = document.getElementById("userPhone").value.trim();
+      const nameEl = document.getElementById("userName");
+      const phoneEl = document.getElementById("userPhone");
+      if (!nameEl || !phoneEl) return;
+
+      const name = nameEl.value.trim();
+      const phone = phoneEl.value.trim();
       const round = getRoundId();
 
-      if (!name) { alert("Please enter Student Full Name!"); return; }
-      if (!/^[6-9]\d{9}$/.test(phone)) { alert("Please enter valid 10-digit PhonePe mobile number!"); return; }
+      if (!name) { 
+        alert("Please enter Student Full Name!"); 
+        return; 
+      }
+      if (!/^[6-9]\d{9}$/.test(phone)) { 
+        alert("Please enter valid 10-digit PhonePe mobile number!"); 
+        return; 
+      }
 
       curStudent.name = name;
       curStudent.phone = phone;
@@ -687,22 +696,23 @@
         });
       } catch(e) {}
 
-      document.getElementById("step1Container").classList.add("opacity-50", "pointer-events-none");
-      document.getElementById("step2Container").classList.remove("hidden");
-      document.getElementById("step2Container").scrollIntoView({ behavior: 'smooth' });
-    }
-        window.addEventListener("beforeunload", (e) => {
-      if (isQuizActive) {
-        e.preventDefault();
-        e.returnValue = "";
+      const s1 = document.getElementById("step1Container");
+      const s2 = document.getElementById("step2Container");
+      if (s1) s1.classList.add("opacity-50", "pointer-events-none");
+      if (s2) {
+        s2.classList.remove("hidden");
+        s2.scrollIntoView({ behavior: 'smooth' });
       }
-    });
+    }
 
-    // UTR SUBMISSION ENTERS VERIFICATION GATE INSTEAD OF WAITING LOBBY
     async function submitUtrForApproval() {
-      const name = curStudent.name || document.getElementById("userName").value.trim();
-      const phone = curStudent.phone || document.getElementById("userPhone").value.trim();
-      const utr = document.getElementById("userUtr").value.trim();
+      const nameEl = document.getElementById("userName");
+      const phoneEl = document.getElementById("userPhone");
+      const utrEl = document.getElementById("userUtr");
+
+      const name = curStudent.name || (nameEl ? nameEl.value.trim() : "");
+      const phone = curStudent.phone || (phoneEl ? phoneEl.value.trim() : "");
+      const utr = utrEl ? utrEl.value.trim() : "";
       const round = String(getRoundId());
 
       if (!name || !phone) { alert("Please complete Step 1 first!"); return; }
@@ -710,28 +720,12 @@
 
       const ledger = JSON.parse(localStorage.getItem("permanent_all_time_ledger") || "[]");
       if (ledger.some(x => x.utr === utr)) {
-        alert(`❌ Fraud Prevention:\n\nThis UTR was already used in a previous round!\nFor Round ${round}, you must make a fresh ₹50 payment and submit the new 12-digit UTR.`);
-        return;
-      }
-
-      const usedUtrs = JSON.parse(localStorage.getItem("quiz_my_used_utrs") || "[]");
-      if (usedUtrs.includes(utr)) {
-        alert("This UTR has already been submitted. Please make a fresh payment for this round.");
+        alert("❌ This UTR was already used! Make a fresh payment.");
         return;
       }
 
       curStudent.utr = utr;
       curStudent.round = round;
-
-      let roundStart = localStorage.getItem(`quiz_round_start_${round}`);
-      if (!roundStart) {
-        roundStart = String(Date.now());
-        localStorage.setItem(`quiz_round_start_${round}`, roundStart);
-        await fetch(STATE_TOPIC, {
-          method: "POST",
-          body: JSON.stringify({ round, state: "waiting", startTime: roundStart })
-        });
-      }
 
       try {
         await fetch(REQ_TOPIC, {
@@ -739,25 +733,23 @@
           body: JSON.stringify({ name, phone, utr, round, time: new Date().toLocaleTimeString() })
         });
 
-        usedUtrs.push(utr);
-        localStorage.setItem("quiz_my_used_utrs", JSON.stringify(usedUtrs));
+        const vName = document.getElementById("verifNameDisplay");
+        const vPhone = document.getElementById("verifPhoneDisplay");
+        const vUtr = document.getElementById("verifUtrDisplay");
+        const vRound = document.getElementById("verifRoundDisplay");
 
-        document.getElementById("verifNameDisplay").innerText = name;
-        document.getElementById("verifPhoneDisplay").innerText = phone;
-        document.getElementById("verifUtrDisplay").innerText = utr;
-        document.getElementById("verifRoundDisplay").innerText = `Round ${round}`;
+        if (vName) vName.innerText = name;
+        if (vPhone) vPhone.innerText = phone;
+        if (vUtr) vUtr.innerText = utr;
+        if (vRound) vRound.innerText = `Round ${round}`;
 
-        document.getElementById("refundPhoneDisplay").innerText = phone;
-        document.getElementById("refundUtrDisplay").innerText = utr;
-
-        // GO TO VERIFICATION GATE (DOES NOT ENTER WAITING ROOM YET!)
         goToScreen("verificationScreen");
         startVerificationPolling();
       } catch (err) {
         alert("Network error. Please try again.");
       }
     }
-    // POLL CLOUD UNTIL ADMIN APPROVES (LOOP FREE)
+
     function startVerificationPolling() {
       if (verifPollTimeout) clearTimeout(verifPollTimeout);
       verifPollTimeout = setTimeout(async () => {
@@ -788,18 +780,10 @@
           }
 
           if (isRejected) {
-            alert("❌ Payment Rejected! Invalid or duplicate UTR.");
+            alert("❌ Payment Rejected! Invalid UTR.");
             goToScreen("lobbyScreen");
             return;
           }
-          
-          startVerificationPolling();
-        } catch(e) {
-          startVerificationPolling();
-        }
-      }, 3000);
-    }
-    
 
           startVerificationPolling();
         } catch(e) {
@@ -807,6 +791,7 @@
         }
       }, 3000);
     }
+    
         function scheduleLobbySync() {
       if (lobbyPollTimeout) clearTimeout(lobbyPollTimeout);
       const delay = 5000 + Math.floor(Math.random() * 2000);
@@ -1644,6 +1629,3 @@ async function restartSameRound() {
   </script>
 </body>
 </html>
-                                
-    
-    
