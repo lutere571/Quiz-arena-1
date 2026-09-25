@@ -49,15 +49,15 @@
           </li>
           <li class="flex items-start gap-2">
             <span class="text-emerald-400 font-bold text-sm">2.</span>
-            <span><strong>10 MCQs in 10 Minutes:</strong> Solve 10 quick conceptual CBSE Science & Maths MCQs. Top 5 ranks receive direct cash prizes sent straight to their PhonePe mobile numbers: 🥇 Rank 1: ₹300 | 🥈 Rank 2: ₹200 | 🥉 Rank 3: ₹150 | 🎖️ Rank 4: ₹100 | 🎖️ Rank 5: ₹50.</span>
+            <span><strong>10 MCQs in 10 Minutes:</strong> Solve 10 quick conceptual CBSE Science & Maths MCQs. Top 5 ranks receive direct cash prizes sent straight to their PhonePe numbers: 🥇 Rank 1: ₹300 | 🥈 Rank 2: ₹200 | 🥉 Rank 3: ₹150 | 🎖️ Rank 4: ₹100 | 🎖️ Rank 5: ₹50.</span>
           </li>
           <li class="flex items-start gap-2">
             <span class="text-amber-400 font-bold text-sm">3.</span>
-            <span><strong>Minimum 20 Students Policy:</strong> The contest unlocks ONLY if <strong>at least 20 students</strong> join. If fewer than 20 join within the lobby window, the round is cancelled with a <strong>100% full refund</strong> (₹50 returned to your PhonePe).</span>
+            <span><strong>Minimum 20 Students Policy:</strong> The contest unlocks ONLY if <strong>at least 20 students</strong> join. If fewer than 20 join, the round cancels with <strong>100% full refund</strong> (₹50 back to your PhonePe).</span>
           </li>
           <li class="flex items-start gap-2">
             <span class="text-cyan-400 font-bold text-sm">4.</span>
-            <span><strong>20-Minute Waiting Lobby:</strong> A 20-minute lobby countdown runs for all registered participants. When the countdown completes and 20+ join, the test begins for everyone simultaneously.</span>
+            <span><strong>20-Minute Waiting Window:</strong> A 20-minute lobby countdown runs. You will enter the waiting room ONLY after the Admin verifies and approves your payment UTR.</span>
           </li>
         </ul>
       </div>
@@ -93,8 +93,8 @@
         <button onclick="proceedToPayment()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg text-sm transition mt-2">
           Save Details & Proceed to Pay ₹50 ➔
         </button>
-      </div>
-            <!-- STEP 2: PAYMENT & UTR SUBMISSION (UNLOCKED AFTER STEP 1) -->
+  </div>
+        <!-- STEP 2: PAYMENT & UTR SUBMISSION (UNLOCKED AFTER STEP 1) -->
       <div id="step2Container" class="hidden bg-slate-950 p-4 rounded-xl border-2 border-emerald-500/50 space-y-4">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Step 2: Pay Entry Fee ₹50</h3>
@@ -130,22 +130,43 @@
         </div>
 
         <button onclick="submitUtrForApproval()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl shadow-lg text-sm tracking-wide">
-          Submit UTR & Enter Waiting Lobby ⏱️
+          Submit UTR for Admin Verification ⏱️
         </button>
       </div>
   </section>
-       <!-- SCREEN 2: SYNCHRONIZED WAITING ROOM -->
+       <!-- SCREEN 2: PAYMENT VERIFICATION GATE (STUDENTS STAY HERE UNTIL ADMIN APPROVES) -->
+    <section id="verificationScreen" class="hidden bg-slate-900 border-2 border-amber-500/60 p-6 rounded-2xl shadow-2xl text-center space-y-4">
+      <div class="text-4xl animate-bounce">⏳</div>
+      <h2 class="text-lg font-black text-amber-400">Payment Verification Pending</h2>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Your UTR has been submitted to the Admin. Please wait while your ₹50 PhonePe transaction is verified.
+      </p>
+
+      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left space-y-2 text-xs">
+        <p class="text-slate-400">Student: <span id="verifNameDisplay" class="font-bold text-white"></span></p>
+        <p class="text-slate-400">PhonePe: <span id="verifPhoneDisplay" class="font-mono text-emerald-400 font-bold"></span></p>
+        <p class="text-slate-400">Submitted UTR: <span id="verifUtrDisplay" class="font-mono text-amber-300 font-bold"></span></p>
+        <p class="text-slate-400">Round: <span id="verifRoundDisplay" class="font-mono text-cyan-300 font-bold"></span></p>
+      </div>
+
+      <div class="p-3 bg-indigo-950/80 rounded-xl border border-indigo-500/40 text-xs text-indigo-200 animate-pulse">
+        🔍 Admin is verifying your payment. You will automatically enter the Live Lobby once approved!
+      </div>
+
+      <p class="text-[11px] text-slate-500">Do not refresh or close this window.</p>
+    </section>
+
+    <!-- SCREEN 3: SYNCHRONIZED WAITING LOBBY (ACCESSIBLE ONLY AFTER ADMIN APPROVAL) -->
     <section id="waitingScreen" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl text-center space-y-4">
       <div class="inline-block bg-indigo-950/80 border border-indigo-500/40 px-3 py-1 rounded-full text-indigo-300 text-xs font-bold">
-        ⏳ LIVE QUIZ LOBBY
+        ⏳ LIVE QUIZ LOBBY (APPROVED)
       </div>
 
       <div class="space-y-1">
         <h2 class="text-base font-extrabold text-white">Waiting for Participants...</h2>
         <p class="text-xs text-slate-400">Contest starts automatically once 20+ join and countdown completes.</p>
       </div>
-
-      <!-- Server Sync Clock -->
+            <!-- Server Sync Clock -->
       <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
         <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Time Left in Lobby</p>
         <div id="waitingClockDisplay" class="font-mono text-4xl font-black text-amber-400 tracking-wider">
@@ -157,13 +178,13 @@
       <!-- Progress Counter (Min 20 Required) -->
       <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
         <div class="flex justify-between items-center text-xs">
-          <span class="text-slate-300 font-bold">Participants Joined:</span>
+          <span class="text-slate-300 font-bold">Approved Players:</span>
           <span class="font-mono font-black text-amber-400"><span id="liveJoinedCount">0</span> / 20 Required</span>
         </div>
         <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
           <div id="joinProgressBar" class="bg-gradient-to-r from-amber-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
         </div>
-        <p id="participantStatusText" class="text-[11px] text-amber-300/90 font-medium">Waiting for registrations...</p>
+        <p id="participantStatusText" class="text-[11px] text-amber-300/90 font-medium">Waiting for approved participants...</p>
         
         <!-- WhatsApp Invite Button -->
         <a href="whatsapp://send?text=Hey!%20Join%20the%20CBSE%20Mega%20Quiz%20Arena%20now!%20Top%205%20win%20cash%20prizes%20directly%20on%20PhonePe:%20https://lutere571.github.io/Quiz-arena-1/Index.html" 
@@ -179,7 +200,7 @@
         <p>• If fewer than 20 join, ₹50 will be refunded to your PhonePe number.</p>
       </div>
     </section>
-        <!-- SCREEN 3: ACTIVE TEST SCREEN -->
+        <!-- SCREEN 4: ACTIVE TEST SCREEN -->
     <section id="quizScreen" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-slate-800">
         <span id="questionCount" class="text-xs font-bold text-amber-400 uppercase tracking-wider">Question 1 / 10</span>
@@ -209,7 +230,7 @@
         Submit Quiz Answers ✅
       </button>
     </section>
-        <!-- SCREEN 4: RESULT SCREEN -->
+        <!-- SCREEN 5: RESULT SCREEN -->
     <section id="resultScreen" class="hidden space-y-4">
       <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center shadow-xl">
         <div id="resultEmoji" class="text-4xl mb-2">🎉</div>
@@ -228,7 +249,7 @@
       </button>
     </section>
 
-    <!-- SCREEN 5: CANCELLED & REFUND SCREEN (TRIGGERED ONLY INSIDE WAITING ROOM) -->
+    <!-- SCREEN 6: CANCELLED & REFUND SCREEN (TRIGGERED ONLY INSIDE WAITING ROOM) -->
     <section id="cancelledScreen" class="hidden bg-slate-900 border-2 border-red-500/60 p-6 rounded-2xl shadow-2xl text-center space-y-4">
       <div class="text-4xl">⚠️</div>
       <h2 class="text-lg font-black text-red-400">Round Cancelled (Under 20 Participants)</h2>
@@ -246,7 +267,7 @@
         Back to Home
       </button>
     </section>
-       <!-- SCREEN 6: ADMIN LOGIN -->
+        <!-- SCREEN 7: ADMIN LOGIN -->
     <section id="adminLoginScreen" class="hidden bg-slate-900 border-2 border-amber-500/60 p-6 rounded-2xl shadow-2xl space-y-4">
       <div class="text-center space-y-1">
         <div class="text-3xl">🔐</div>
@@ -270,7 +291,7 @@
       </div>
     </section>
 
-    <!-- SCREEN 7: ADMIN CONTROL DASHBOARD -->
+    <!-- SCREEN 8: ADMIN CONTROL DASHBOARD -->
     <section id="adminDashboardScreen" class="hidden bg-slate-900 border-2 border-amber-500/50 p-5 rounded-2xl shadow-2xl space-y-5">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <div>
@@ -290,11 +311,11 @@
           <p class="text-slate-400">Approved Players:</p>
           <p class="font-mono text-xl font-black text-emerald-400"><span id="adminApprovedCount">0</span> / 20</p>
         </div>
-      </div>
-            <!-- ADMIN 20-MINUTE TIMER CONTROL TAB -->
+          </div>
+              <!-- ADMIN 20-MINUTE TIMER & EMERGENCY HARD RESET TAB -->
       <div class="bg-slate-950 p-3.5 rounded-xl border-2 border-amber-500/70 space-y-2">
-        <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wider">⏱️ 20-Minute Timer Management</h3>
-        <p class="text-[11px] text-slate-400">Reset or restart the universal 20-minute countdown across all student screens:</p>
+        <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wider">⏱️ Timer & Round Controls</h3>
+        <p class="text-[11px] text-slate-400">Manage 20-minute countdown, force start, or reset back to Round 1:</p>
         <div class="grid grid-cols-2 gap-2 pt-1">
           <button onclick="adminResetTimer()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2.5 rounded-xl text-xs shadow">
             🔄 Reset Timer to 20:00
@@ -303,30 +324,35 @@
             🚀 Force Start Now
           </button>
         </div>
-        <button onclick="forceCancelRoundAndRefund()" class="w-full bg-red-700 hover:bg-red-600 text-white font-bold py-2 rounded-xl text-xs shadow mt-1">
-          🛑 Cancel Round & Refund Everyone
-        </button>
-      </div>
-
-      <!-- PENDING UTR APPROVALS (STRICT ROUND FILTER ACTIVE) -->
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="forceCancelRoundAndRefund()" class="bg-red-700 hover:bg-red-600 text-white font-bold py-2 rounded-xl text-xs shadow">
+            🛑 Cancel Round & Refund
+          </button>
+          <!-- HARD RESET BUTTON TO FIX "ABHI BHI ROUND 2 DIKH RAHA HAI" -->
+          <button onclick="hardResetToRound1()" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 rounded-xl text-xs shadow">
+            ⏮️ Hard Reset to Round 1
+          </button>
+        </div>
+          </div>
+            <!-- PENDING UTR APPROVALS (STRICT CURRENT ROUND FILTER) -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-amber-500/40 space-y-2">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals (Current Round Only)</h3>
           <button onclick="fetchAdminRequests()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
         </div>
-        <p class="text-[11px] text-slate-400">Verify ₹50 in PhonePe and approve student for active round:</p>
+        <p class="text-[11px] text-slate-400">Verify ₹50 in PhonePe. Student enters waiting lobby only after you Approve:</p>
         <div id="pendingUtrList" class="space-y-2 max-h-48 overflow-y-auto"></div>
       </div>
-            <!-- Incomplete / Drop-off Leads -->
+
+      <!-- Incomplete / Drop-off Leads -->
       <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">📋 Incomplete / Drop-off Leads</h3>
           <span id="leadCountBadge" class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded font-mono font-bold">0</span>
         </div>
         <div id="dropoffLeadsContainer" class="space-y-1 max-h-28 overflow-y-auto text-[11px]"></div>
-      </div>
-
-      <!-- Pending Refunds Section -->
+          </div>
+               <!-- Pending Refunds Section -->
       <div class="space-y-2 pt-2 border-t border-slate-800">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-red-400 uppercase tracking-wider">💸 Pending Refunds (₹50 Each)</h3>
@@ -364,7 +390,7 @@
         <button onclick="restartSameRound()" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-xs shadow-lg transition">
           🔄 Restart Same Round (Timer Reset to 20:00)
         </button>
-        <p class="text-[10px] text-slate-400 text-center">Keeps round active if under 20 players. Resets lobby timer back to 20:00.</p>
+        <p class="text-[10px] text-slate-400 text-center">Keeps same round active if under 20 players. Resets lobby timer back to 20:00.</p>
 
         <button onclick="startFreshNewRound()" class="w-full bg-indigo-900/80 hover:bg-indigo-800 border border-indigo-600 text-indigo-100 font-bold py-2.5 rounded-xl text-xs shadow-lg transition">
           ⏭️ Advance to Next Round (Only After Test Runs)
@@ -396,7 +422,7 @@
     function generateHandshakeToken(utr, round) {
       return btoa(utr + ":" + round + ":" + ADMIN_SECRET);
     }
-        const cbseQuestions = [
+         const cbseQuestions = [
       { q: "What is the primary gas produced during photosynthesis?", o: ["Oxygen", "Carbon dioxide", "Nitrogen", "Hydrogen"], a: 0, sub: "Class 6 Science" },
       { q: "What is the smallest prime number?", o: ["2", "1", "3", "0"], a: 0, sub: "Class 6 Maths" },
       { q: "Deficiency of Vitamin A causes which disease?", o: ["Night blindness", "Scurvy", "Rickets", "Beriberi"], a: 0, sub: "Class 6 Science" },
@@ -421,14 +447,14 @@
       { q: "What is the square root of 144?", o: ["12", "14", "16", "18"], a: 0, sub: "Class 8 Maths" },
       { q: "What is the cube root of 64?", o: ["4", "8", "6", "2"], a: 0, sub: "Class 8 Maths" },
       { q: "Which cell organelle is called the 'Powerhouse of the cell'?", o: ["Mitochondria", "Ribosome", "Lysosome", "Vacuole"], a: 0, sub: "Class 8 Biology" },
-      { q: "What is the SI unit of Force?", o: ["Newton", "Joule", "Pascal", "Watt"], a: 0, sub: "Class 9 Physics" }
-    ];
-        const cbsePart2 = [
+      { q: "What is the SI unit of Force?", o: ["Newton", "Joule", "Pascal", "Watt"], a: 0, sub: "Class 9 Physics" },
       { q: "Newton's First Law of Motion is also known as the Law of:", o: ["Inertia", "Momentum", "Action-Reaction", "Gravitation"], a: 0, sub: "Class 9 Physics" },
       { q: "What is the standard value of acceleration due to gravity (g) on Earth?", o: ["9.8 m/s²", "8.9 m/s²", "10.8 m/s²", "9.2 m/s²"], a: 0, sub: "Class 9 Physics" },
       { q: "What is the SI unit of Work and Energy?", o: ["Joule", "Watt", "Newton", "Pascal"], a: 0, sub: "Class 9 Physics" },
       { q: "Which organelle is called the 'Suicide Bag' of the cell?", o: ["Lysosome", "Mitochondria", "Golgi apparatus", "Ribosome"], a: 0, sub: "Class 9 Biology" },
-      { q: "What is the chemical formula of common salt?", o: ["NaCl", "KCl", "NaOH", "HCl"], a: 0, sub: "Class 9 Chemistry" },
+      { q: "What is the chemical formula of common salt?", o: ["NaCl", "KCl", "NaOH", "HCl"], a: 0, sub: "Class 9 Chemistry" }
+    ];
+       const cbsePart2 = [
       { q: "What is the value of 5! (5 factorial)?", o: ["120", "60", "24", "720"], a: 0, sub: "Class 9 Maths" },
       { q: "The probability of an impossible event is always:", o: ["0", "1", "0.5", "-1"], a: 0, sub: "Class 9 Maths" },
       { q: "What is the focal length of a spherical mirror with radius of curvature 32 cm?", o: ["16 cm", "64 cm", "8 cm", "32 cm"], a: 0, sub: "Class 10 Physics" },
@@ -453,10 +479,7 @@
       { q: "What is the discriminant formula for ax² + bx + c = 0?", o: ["b² - 4ac", "b² + 4ac", "4ac - b²", "2b - 4ac"], a: 0, sub: "Class 10 Maths" },
       { q: "What is the first prime number greater than 10?", o: ["11", "13", "12", "15"], a: 0, sub: "Class 6 Maths" },
       { q: "Which vitamin is synthesized in skin in presence of sunlight?", o: ["Vitamin D", "Vitamin C", "Vitamin B", "Vitamin K"], a: 0, sub: "Class 6 Science" },
-      { q: "What is the perimeter of an equilateral triangle of side 6 cm?", o: ["18 cm", "12 cm", "36 cm", "24 cm"], a: 0, sub: "Class 6 Maths" }
-    ];
-    cbseQuestions.push(...cbsePart2);
-        const cbsePart3 = [
+      { q: "What is the perimeter of an equilateral triangle of side 6 cm?", o: ["18 cm", "12 cm", "36 cm", "24 cm"], a: 0, sub: "Class 6 Maths" },
       { q: "Find the mean of the numbers: 2, 4, 6, 8, 10:", o: ["6", "5", "7", "8"], a: 0, sub: "Class 7 Maths" },
       { q: "Which gas turns lime water milky?", o: ["Carbon dioxide", "Oxygen", "Nitrogen", "Hydrogen"], a: 0, sub: "Class 7 Chemistry" },
       { q: "What is the area of a square whose perimeter is 20 cm?", o: ["25 cm²", "20 cm²", "16 cm²", "100 cm²"], a: 0, sub: "Class 8 Maths" },
@@ -471,7 +494,10 @@
       { q: "Which acid causes severe burning pain in nettle leaf sting?", o: ["Methanoic acid", "Ethanoic acid", "Tartaric acid", "Oxalic acid"], a: 0, sub: "Class 10 Chemistry" },
       { q: "Main constituent gas of Biogas and CNG is:", o: ["Methane", "Propane", "Butane", "Ethane"], a: 0, sub: "Class 10 Chemistry" },
       { q: "Mirror used by dentists to see enlarged teeth is:", o: ["Concave mirror", "Convex mirror", "Plane mirror", "Bifocal"], a: 0, sub: "Class 10 Physics" },
-      { q: "Near point for distinct vision for normal human eye is:", o: ["25 cm", "2.5 cm", "25 m", "Infinity"], a: 0, sub: "Class 10 Physics" },
+      { q: "Near point for distinct vision for normal human eye is:", o: ["25 cm", "2.5 cm", "25 m", "Infinity"], a: 0, sub: "Class 10 Physics" }
+    ];
+    cbseQuestions.push(...cbsePart2);
+         const cbsePart3 = [
       { q: "Myopia (near-sightedness) is corrected using which lens?", o: ["Concave lens", "Convex lens", "Bifocal lens", "Cylindrical"], a: 0, sub: "Class 10 Physics" },
       { q: "Hypermetropia (far-sightedness) is corrected using which lens?", o: ["Convex lens", "Concave lens", "Bifocal lens", "Plane glass"], a: 0, sub: "Class 10 Physics" },
       { q: "What is 1 kiloWatt-hour (1 kWh) in Joules?", o: ["3.6 × 10⁶ J", "3.6 × 10⁵ J", "1000 J", "3600 J"], a: 0, sub: "Class 10 Physics" },
@@ -486,10 +512,7 @@
       { q: "Mode of data: 2, 3, 3, 4, 5, 3, 6 is:", o: ["3", "4", "2", "5"], a: 0, sub: "Class 10 Maths" },
       { q: "Smallest composite number is:", o: ["4", "2", "1", "6"], a: 0, sub: "Class 10 Maths" },
       { q: "HCF of two consecutive even numbers is:", o: ["2", "1", "4", "0"], a: 0, sub: "Class 10 Maths" },
-      { q: "Plant part that develops into fruit after fertilization is:", o: ["Ovary", "Ovule", "Petal", "Sepal"], a: 0, sub: "Class 10 Biology" }
-    ];
-    cbseQuestions.push(...cbsePart3);
-        const cbsePart4 = [
+      { q: "Plant part that develops into fruit after fertilization is:", o: ["Ovary", "Ovule", "Petal", "Sepal"], a: 0, sub: "Class 10 Biology" },
       { q: "Sex chromosome combination in a normal human male is:", o: ["XY", "XX", "YY", "XO"], a: 0, sub: "Class 10 Biology" },
       { q: "Who is known as the 'Father of Genetics'?", o: ["Gregor Mendel", "Charles Darwin", "Lamarck", "Watson"], a: 0, sub: "Class 10 Biology" },
       { q: "How many chambers are there in the human heart?", o: ["4", "2", "3", "1"], a: 0, sub: "Class 10 Biology" },
@@ -514,15 +537,15 @@
       { q: "Maximum probability of any sure event is:", o: ["1", "100", "0.5", "Infinity"], a: 0, sub: "Class 9 Maths" },
       { q: "Sum of first 10 natural numbers is:", o: ["55", "50", "45", "60"], a: 0, sub: "Class 10 Maths" },
       { q: "10th term of AP: 2, 5, 8, 11... is:", o: ["29", "27", "32", "30"], a: 0, sub: "Class 10 Maths" },
-      { q: "Distance of point (3, 4) from origin (0, 0) is:", o: ["5", "7", "1", "25"], a: 0, sub: "Class 10 Maths" },
+      { q: "Distance of point (3, 4) from origin (0, 0) is:", o: ["5", "7", "1", "25"], a: 0, sub: "Class 10 Maths" }
+    ];
+    cbseQuestions.push(...cbsePart3);
+        const cbsePart4 = [
       { q: "Value of cos 60° is:", o: ["1/2", "√3/2", "1", "0"], a: 0, sub: "Class 10 Maths" },
       { q: "Volume of a right circular cone of radius r and height h is:", o: ["1/3 πr²h", "πr²h", "4/3 πr³", "2/3 πr²h"], a: 0, sub: "Class 10 Maths" },
       { q: "Normal systolic blood pressure in an adult human is:", o: ["120 mm Hg", "80 mm Hg", "140 mm Hg", "100 mm Hg"], a: 0, sub: "Class 10 Biology" },
       { q: "Normal diastolic blood pressure in an adult human is:", o: ["80 mm Hg", "120 mm Hg", "60 mm Hg", "90 mm Hg"], a: 0, sub: "Class 10 Biology" },
-      { q: "Gap between two communicating neurons is called:", o: ["Synapse", "Axon", "Dendrite", "Node"], a: 0, sub: "Class 10 Biology" }
-    ];
-    cbseQuestions.push(...cbsePart4);
-        const cbsePart5 = [
+      { q: "Gap between two communicating neurons is called:", o: ["Synapse", "Axon", "Dendrite", "Node"], a: 0, sub: "Class 10 Biology" },
       { q: "Part of brain that maintains posture and body balance is:", o: ["Cerebellum", "Cerebrum", "Medulla", "Spinal cord"], a: 0, sub: "Class 10 Biology" },
       { q: "Hormone that regulates sugar metabolism in humans is:", o: ["Insulin", "Thyroxine", "Adrenaline", "Estrogen"], a: 0, sub: "Class 10 Biology" },
       { q: "Deficiency of Iodine in diet causes which disease?", o: ["Goitre", "Diabetes", "Scurvy", "Anaemia"], a: 0, sub: "Class 10 Biology" },
@@ -559,7 +582,7 @@
       { q: "Which acid is present in tomato?", o: ["Oxalic acid", "Citric acid", "Tartaric acid", "Acetic acid"], a: 0, sub: "Class 10 Chemistry" },
       { q: "What is the chemical name of Bleaching powder?", o: ["Calcium oxychloride", "Calcium carbonate", "Calcium hydroxide", "Calcium sulphate"], a: 0, sub: "Class 10 Chemistry" }
     ];
-    cbseQuestions.push(...cbsePart5);
+    cbseQuestions.push(...cbsePart4);
         let activeSet = [];
     let curIdx = 0;
     let userAnswers = {};
@@ -571,11 +594,12 @@
     let tabSwitchCount = 0;
     let cheatGraceTimer = null;
     let lobbyPollTimeout = null;
+    let verifPollTimeout = null;
     let adminLiveInterval = null;
     let landingSyncInterval = null;
 
     function goToScreen(screenId) {
-      ["lobbyScreen", "waitingScreen", "quizScreen", "resultScreen", "cancelledScreen", "adminLoginScreen", "adminDashboardScreen"].forEach(id => {
+      ["lobbyScreen", "verificationScreen", "waitingScreen", "quizScreen", "resultScreen", "cancelledScreen", "adminLoginScreen", "adminDashboardScreen"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add("hidden");
       });
@@ -600,7 +624,7 @@
         adminLiveInterval = setInterval(() => {
           fetchAdminRequests();
           renderDropoffLeads();
-        }, 3500);
+        }, 3000);
       } else {
         if (adminLiveInterval) {
           clearInterval(adminLiveInterval);
@@ -643,7 +667,6 @@
       });
     }
 
-    // Step 1 Validation & Lead Capture
     async function proceedToPayment() {
       const name = document.getElementById("userName").value.trim();
       const phone = document.getElementById("userPhone").value.trim();
@@ -667,14 +690,14 @@
       document.getElementById("step2Container").classList.remove("hidden");
       document.getElementById("step2Container").scrollIntoView({ behavior: 'smooth' });
     }
-        window.addEventListener("beforeunload", (e) => {
+       window.addEventListener("beforeunload", (e) => {
       if (isQuizActive) {
         e.preventDefault();
         e.returnValue = "";
       }
     });
 
-    // HAR ROUND KE LIYE NAYA PAYMENT AUR NAYA UTR SUBMISSION
+    // UTR SUBMIT HOTACH STUDENT WAITING ROOM ME NAHI JAYEGA, VERIFICATION GATE PAR RUKHEGA
     async function submitUtrForApproval() {
       const name = curStudent.name || document.getElementById("userName").value.trim();
       const phone = curStudent.phone || document.getElementById("userPhone").value.trim();
@@ -684,14 +707,12 @@
       if (!name || !phone) { alert("Please complete Step 1 first!"); return; }
       if (!/^\d{12}$/.test(utr)) { alert("UTR must be exactly 12 numeric digits!"); return; }
 
-      // 1. Permanent ledger check across all rounds
       const ledger = JSON.parse(localStorage.getItem("permanent_all_time_ledger") || "[]");
       if (ledger.some(x => x.utr === utr)) {
         alert(`❌ Fraud Prevention:\n\nThis UTR was already used in a previous round!\nFor Round ${round}, you must make a fresh ₹50 payment and submit the new 12-digit UTR.`);
         return;
       }
 
-      // 2. Check locally used UTRs
       const usedUtrs = JSON.parse(localStorage.getItem("quiz_my_used_utrs") || "[]");
       if (usedUtrs.includes(utr)) {
         alert("This UTR has already been submitted. Please make a fresh payment for this round.");
@@ -720,17 +741,84 @@
         usedUtrs.push(utr);
         localStorage.setItem("quiz_my_used_utrs", JSON.stringify(usedUtrs));
 
+        document.getElementById("verifNameDisplay").innerText = name;
+        document.getElementById("verifPhoneDisplay").innerText = phone;
+        document.getElementById("verifUtrDisplay").innerText = utr;
+        document.getElementById("verifRoundDisplay").innerText = `Round ${round}`;
+
         document.getElementById("refundPhoneDisplay").innerText = phone;
         document.getElementById("refundUtrDisplay").innerText = utr;
-        goToScreen("waitingScreen");
 
-        scheduleLobbySync();
+        // GO TO VERIFICATION GATE (DOES NOT ENTER WAITING ROOM YET!)
+        goToScreen("verificationScreen");
+        startVerificationPolling();
       } catch (err) {
         alert("Network error. Please try again.");
       }
     }
 
-    function scheduleLobbySync() {
+    // POLL CLOUD UNTIL ADMIN APPROVES
+    function startVerificationPolling() {
+      if (verifPollTimeout) clearTimeout(verifPollTimeout);
+      verifPollTimeout = setTimeout(async () => {
+        const round = String(getRoundId());
+        try {
+          const res = await fetch(`${APP_TOPIC}/json?poll=1`);
+          const text = await res.text();
+          let isApproved = false;
+          let isRejected = false;
+
+          text.trim().split("\n").forEach(line => {
+            if (!line) return;
+            try {
+              const p = JSON.parse(line);
+              const data = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
+              if (data && data.utr === curStudent.utr && String(data.round) === round) {
+                if (data.status === "approved") isApproved = true;
+                if (data.status === "rejected") isRejected = true;
+              }
+            } catch(e) {}
+          });
+
+          if (isApproved) {
+            alert("🎉 Payment Approved! Entering Live Waiting Lobby.");
+            goToScreen("waitingScreen");
+            scheduleLobbySync();
+            return;
+          }
+
+          if (isRejected) {
+            alert("❌ Payment Rejected! Invalid or duplicate UTR. Please check PhonePe and re-enter.");
+            goToScreen("lobbyScreen");
+            return;
+          }
+
+          // Check if round was cancelled while waiting
+          const stateRes = await fetch(`${STATE_TOPIC}/json?poll=1`);
+          const stateText = await stateRes.text();
+          let remoteState = null;
+          stateText.trim().split("\n").forEach(line => {
+            if (!line) return;
+            try {
+              const p = JSON.parse(line);
+              const obj = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
+              if (obj && String(obj.round) === round && obj.state) remoteState = obj.state;
+            } catch(e) {}
+          });
+
+          if (remoteState === "cancelled") {
+            alert("⚠️ Round was cancelled. Please re-register.");
+            goToScreen("lobbyScreen");
+            return;
+          }
+
+          startVerificationPolling();
+        } catch(e) {
+          startVerificationPolling();
+        }
+      }, 3000);
+                }
+            function scheduleLobbySync() {
       if (lobbyPollTimeout) clearTimeout(lobbyPollTimeout);
       const delay = 5000 + Math.floor(Math.random() * 2000);
       lobbyPollTimeout = setTimeout(async () => {
@@ -753,14 +841,13 @@
         let universalStartTime = null;
         let remoteState = null;
 
-        // READ MASTER ROUND & TIMER DIRECTLY FROM CLOUD (PREVENTS ROUND MISMATCH)
         stateText.trim().split("\n").forEach(line => {
           if (!line) return;
           try {
             const p = JSON.parse(line);
             const obj = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
             if (obj && obj.round) {
-              cloudRound = obj.round;
+              cloudRound = String(obj.round);
               if (obj.startTime) universalStartTime = parseInt(obj.startTime, 10);
               if (obj.state) remoteState = obj.state;
             }
@@ -814,7 +901,6 @@
         const expectedToken = generateHandshakeToken(curStudent.utr, round);
         const isSelfApproved = approvedStudents.some(x => x.utr === curStudent.utr && x.token === expectedToken);
 
-        // ONLY TRIGGER CANCEL OR START IF CURRENTLY ON WAITING SCREEN (FIXES 1-SEC LOOP!)
         const isWaitingScreenActive = !document.getElementById("waitingScreen").classList.contains("hidden");
 
         if (isWaitingScreenActive) {
@@ -834,7 +920,8 @@
         }
       } catch(e) {}
     }
-        // 3-SECOND GRACE PERIOD ANTI-CHEAT
+
+    // 3-SECOND GRACE ANTI-CHEAT
     document.addEventListener("visibilitychange", () => {
       if (isQuizActive && testTimerHandle) {
         if (document.hidden) {
@@ -937,7 +1024,7 @@
 
     function prevQuestion() { if (curIdx > 0) { curIdx--; displayQuestion(); } }
     function nextQuestion() { if (curIdx < 9) { curIdx++; displayQuestion(); } }
-        async function finishQuiz(isDisqualified = false) {
+          async function finishQuiz(isDisqualified = false) {
       isQuizActive = false;
       clearInterval(testTimerHandle);
       
@@ -984,11 +1071,14 @@
       fetchRoundLeaderboard();
     }
 
-    // STRICT ACTIVE ROUND FILTER: ONLY PENDING UTRs OF THE CURRENT ROUND ARE SHOWN
+    // STRICT ACTIVE ROUND FILTER (CANCELLED & APPROVED UTRs ARE NEVER SHOWN)
     async function fetchAdminRequests() {
       const container = document.getElementById("pendingUtrList");
       if (!container) return;
       const currentRound = String(getRoundId());
+
+      // Get cancelled/purged UTRs
+      const cancelledUtrs = new Set(JSON.parse(localStorage.getItem(`quiz_cancelled_utrs_r${currentRound}`) || "[]"));
 
       try {
         const [reqRes, appRes] = await Promise.all([
@@ -1020,10 +1110,10 @@
             const parsed = JSON.parse(line);
             const d = typeof parsed.message === "string" ? JSON.parse(parsed.message) : parsed.message;
             
-            // STRICT FILTER: ACCEPTS UTR ONLY IF ROUND EXACTLY MATCHES CURRENT ACTIVE ROUND
+            // STRICT FILTER: MUST MATCH ACTIVE ROUND & NOT BE APPROVED OR CANCELLED
             if (d && d.utr && String(d.round) === currentRound) {
               utrFrequency[d.utr] = (utrFrequency[d.utr] || 0) + 1;
-              if (!approvedUtrs.has(d.utr)) {
+              if (!approvedUtrs.has(d.utr) && !cancelledUtrs.has(d.utr)) {
                 pendingMap.set(d.utr, d);
               }
             }
@@ -1054,7 +1144,7 @@
               <button onclick="approveStudent('${req.name}', '${req.phone}', '${req.utr}', '${req.round}')" ${isDuplicate ? 'disabled' : ''} class="${isDuplicate ? 'bg-slate-700 opacity-50 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500'} text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg shadow">
                 Approve ✅
               </button>
-              <button onclick="rejectStudent('${req.utr}')" class="bg-red-700 hover:bg-red-600 text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg shadow">
+              <button onclick="rejectStudent('${req.utr}', '${req.round}')" class="bg-red-700 hover:bg-red-600 text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg shadow">
                 Reject ❌
               </button>
             </div>
@@ -1063,24 +1153,6 @@
         });
       } catch (err) {
         container.innerHTML = "<p class='text-xs text-red-400'>Loading requests...</p>";
-      }
-    }
-        // ADMIN TIMER RESET (RESETS TO 20:00 FOR ALL PHONES IN ACTIVE ROUND)
-    async function adminResetTimer() {
-      const round = getRoundId();
-      if (confirm("Reset lobby timer to 20:00 for all participants in Round " + round + "?")) {
-        const nowStr = String(Date.now());
-        localStorage.setItem(`quiz_round_start_${round}`, nowStr);
-        try {
-          await fetch(STATE_TOPIC, {
-            method: "POST",
-            body: JSON.stringify({ round: String(round), state: "waiting", startTime: nowStr })
-          });
-          alert("20-Minute Timer Reset successfully across all student devices!");
-          syncLobbyState();
-        } catch (e) {
-          alert("Failed to reset timer. Check network connection.");
-        }
       }
     }
 
@@ -1113,10 +1185,10 @@
       }
     }
 
-    async function rejectStudent(utr) {
+    async function rejectStudent(utr, studentRound) {
       if (confirm(`Reject UTR ${utr}?`)) {
         try {
-          const round = getRoundId();
+          const round = String(studentRound || getRoundId());
           await fetch(APP_TOPIC, {
             method: "POST",
             body: JSON.stringify({ utr: utr, round: round, status: "rejected" })
@@ -1125,6 +1197,106 @@
           fetchAdminRequests();
         } catch (e) {
           alert("Rejection failed.");
+        }
+      }
+    }
+
+    // ROUND CANCEL: SAME ROUND KEEPS RUNNING, APPROVED GO TO REFUND, PENDING PURGED
+    async function forceCancelRoundAndRefund() {
+      const round = String(getRoundId());
+      if (confirm(`Cancel active Round ${round}? All approved students will be routed to Refunds, pending UTRs will be cleared, and Round ${round} will restart at 20:00.`)) {
+        
+        // 1. Fetch all approved students of this round and send to refund list
+        try {
+          const [appRes, reqRes] = await Promise.all([
+            fetch(`${APP_TOPIC}/json?poll=1`),
+            fetch(`${REQ_TOPIC}/json?poll=1`)
+          ]);
+          const appText = await appRes.text();
+          const reqText = await reqRes.text();
+
+          const approvedList = [];
+          appText.trim().split("\n").forEach(line => {
+            if (!line) return;
+            try {
+              const p = JSON.parse(line);
+              const d = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
+              if (d && String(d.round) === round && d.status === "approved") {
+                approvedList.push(d);
+              }
+            } catch(e) {}
+          });
+
+          // Save approved students into pending refunds
+          saveRefundsForRound(round, approvedList);
+
+          // Purge all pending UTRs so they NEVER show up on reload!
+          const purgeUtrs = [];
+          reqText.trim().split("\n").forEach(line => {
+            if (!line) return;
+            try {
+              const p = JSON.parse(line);
+              const d = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
+              if (d && String(d.round) === round && d.utr) {
+                purgeUtrs.push(d.utr);
+              }
+            } catch(e) {}
+          });
+          localStorage.setItem(`quiz_cancelled_utrs_r${round}`, JSON.stringify(purgeUtrs));
+
+        } catch (e) {}
+
+        // 2. Broadcast cancellation and reset timer
+        const nowStr = String(Date.now());
+        localStorage.setItem(`quiz_round_start_${round}`, nowStr);
+
+        await fetch(STATE_TOPIC, {
+          method: "POST",
+          body: JSON.stringify({ round: round, state: "cancelled", startTime: nowStr })
+        });
+
+        alert(`Round ${round} Cancelled! Approved students sent to Refunds. Pending UTRs cleared. Round ${round} restarted at 20:00.`);
+        renderRefundList();
+        fetchAdminRequests();
+      }
+    }
+
+    // HARD RESET TO ROUND 1 (CLEARS EVERYTHING BACK TO FRESH ROUND 1)
+    async function hardResetToRound1() {
+      if (confirm("Reset everything back to ROUND 1? This will clear active round data and set the server back to Round 1 at 20:00.")) {
+        const nowStr = String(Date.now());
+        localStorage.setItem("quiz_active_round", "1");
+        localStorage.setItem("quiz_round_start_1", nowStr);
+        localStorage.removeItem("quiz_round_valid_started_1");
+        localStorage.removeItem("quiz_round_valid_started_2");
+        localStorage.removeItem("quiz_round_valid_started_3");
+
+        await fetch(STATE_TOPIC, {
+          method: "POST",
+          body: JSON.stringify({ round: "1", state: "waiting", startTime: nowStr })
+        });
+
+        updateRoundDisplay();
+        fetchAdminRequests();
+        renderRefundList();
+        alert("✅ Successfully Reset to ROUND 1!");
+      }
+    }
+
+    async function adminResetTimer() {
+      const round = getRoundId();
+      if (confirm("Reset lobby timer to 20:00 for all participants in Round " + round + "?")) {
+        const nowStr = String(Date.now());
+        localStorage.setItem(`quiz_round_start_${round}`, nowStr);
+        try {
+          await fetch(STATE_TOPIC, {
+            method: "POST",
+            body: JSON.stringify({ round: String(round), state: "waiting", startTime: nowStr })
+          });
+          alert("20-Minute Timer Reset successfully across all student devices!");
+          syncLobbyState();
+        } catch (e) {
+          alert("Failed to reset timer. Check network connection.");
         }
       }
     }
@@ -1289,16 +1461,431 @@
         alert("Broadcast sent! Quiz will start simultaneously for everyone.");
       }
     }
+    async function finishQuiz(isDisqualified = false) {
+      isQuizActive = false;
+      clearInterval(testTimerHandle);
+      
+      const totalTimeMs = Date.now() - testStartTimestamp;
+      const totalTimeSec = (totalTimeMs / 1000).toFixed(2);
 
+      let score = 0;
+      if (!isDisqualified) {
+        activeSet.forEach((item, idx) => {
+          if (userAnswers[idx] === item.a) score++;
+        });
+      }
+
+      const submission = {
+        type: "quiz_result",
+        name: curStudent.name,
+        phone: curStudent.phone,
+        utr: curStudent.utr,
+        round: curStudent.round,
+        score: score,
+        time: parseFloat(totalTimeSec),
+        status: isDisqualified ? "Disqualified" : "Completed"
+      };
+
+      try {
+        await fetch(LEAD_TOPIC, {
+          method: "POST",
+          body: JSON.stringify(submission)
+        });
+      } catch (e) {}
+
+      document.getElementById("testTimerBadge").classList.add("hidden");
+      goToScreen("resultScreen");
+
+      if (isDisqualified) {
+        document.getElementById("resultEmoji").innerText = "❌";
+        document.getElementById("resultHeading").innerText = "Disqualified (Cheating)";
+        document.getElementById("scoreDisplay").innerText = `Score: 0 / 10 (Tab Switch Detected)`;
+      } else {
+        document.getElementById("resultEmoji").innerText = "🎉";
+        document.getElementById("resultHeading").innerText = "Quiz Completed!";
+        document.getElementById("scoreDisplay").innerText = `Score: ${score} / 10 | Time: ${totalTimeSec}s`;
+      }
+      fetchRoundLeaderboard();
+    }
+
+    // STRICT ACTIVE ROUND FILTER (CANCELLED & APPROVED UTRs ARE NEVER SHOWN)
+    async function fetchAdminRequests() {
+      const container = document.getElementById("pendingUtrList");
+      if (!container) return;
+      const currentRound = String(getRoundId());
+
+      const cancelledUtrs = new Set(JSON.parse(localStorage.getItem(`quiz_cancelled_utrs_r${currentRound}`) || "[]"));
+
+      try {
+        const [reqRes, appRes] = await Promise.all([
+          fetch(`${REQ_TOPIC}/json?poll=1`),
+          fetch(`${APP_TOPIC}/json?poll=1`)
+        ]);
+
+        const reqText = await reqRes.text();
+        const appText = await appRes.text();
+
+        const approvedUtrs = new Set();
+        appText.trim().split("\n").forEach(line => {
+          if (!line) return;
+          try {
+            const parsed = JSON.parse(line);
+            const d = typeof parsed.message === "string" ? JSON.parse(parsed.message) : parsed.message;
+            if (d && d.utr && String(d.round) === currentRound) {
+              approvedUtrs.add(d.utr);
+            }
+          } catch(e) {}
+        });
+
+        const pendingMap = new Map();
+        const utrFrequency = {};
+
+        reqText.trim().split("\n").forEach(line => {
+          if (!line) return;
+          try {
+            const parsed = JSON.parse(line);
+            const d = typeof parsed.message === "string" ? JSON.parse(parsed.message) : parsed.message;
+            
+            // STRICT FILTER: MUST MATCH ACTIVE ROUND & NOT BE APPROVED OR CANCELLED
+            if (d && d.utr && String(d.round) === currentRound) {
+              utrFrequency[d.utr] = (utrFrequency[d.utr] || 0) + 1;
+              if (!approvedUtrs.has(d.utr) && !cancelledUtrs.has(d.utr)) {
+                pendingMap.set(d.utr, d);
+              }
+            }
+          } catch(e) {}
+        });
+
+        const items = Array.from(pendingMap.values());
+
+        if (items.length === 0) {
+          container.innerHTML = `<p class='text-xs text-slate-500 py-2'>No pending UTR requests for Round ${currentRound}.</p>`;
+          return;
+        }
+
+        container.innerHTML = "";
+        items.forEach(req => {
+          const isDuplicate = utrFrequency[req.utr] > 1;
+          const card = document.createElement("div");
+          card.className = `p-3 bg-slate-900 border ${isDuplicate ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-700'} rounded-xl flex justify-between items-center`;
+          card.innerHTML = `
+            <div>
+              <p class="text-white text-xs font-bold">${req.name} <span class="text-amber-400 text-[10px] font-mono">[Round ${req.round}]</span></p>
+              <p class="text-[11px] font-mono text-amber-400 font-bold">UTR: ${req.utr}</p>
+              <p class="text-[11px] text-emerald-400 font-mono font-bold">📱 PhonePe: ${req.phone}</p>
+              <p class="text-[10px] text-slate-400">${req.time || ''}</p>
+              ${isDuplicate ? '<span class="text-[10px] font-bold text-red-400">⚠️ DUPLICATE UTR!</span>' : ''}
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <button onclick="approveStudent('${req.name}', '${req.phone}', '${req.utr}', '${req.round}')" ${isDuplicate ? 'disabled' : ''} class="${isDuplicate ? 'bg-slate-700 opacity-50 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500'} text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg shadow">
+                Approve ✅
+              </button>
+              <button onclick="rejectStudent('${req.utr}', '${req.round}')" class="bg-red-700 hover:bg-red-600 text-white font-bold text-[11px] px-2.5 py-1.5 rounded-lg shadow">
+                Reject ❌
+              </button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        container.innerHTML = "<p class='text-xs text-red-400'>Loading requests...</p>";
+      }
+  }
+       async function approveStudent(name, phone, utr, studentRound) {
+      try {
+        const round = String(studentRound || getRoundId());
+        const token = generateHandshakeToken(utr, round);
+
+        await fetch(APP_TOPIC, {
+          method: "POST",
+          body: JSON.stringify({ name, phone, utr, round: round, status: "approved", token: token })
+        });
+
+        saveToPermanentLedger({
+          round: round,
+          name,
+          phone,
+          utr,
+          amount: "₹50",
+          date: new Date().toLocaleDateString(),
+          time: new Date().toLocaleTimeString(),
+          status: "Admitted"
+        });
+
+        alert(`Student ${name} (PhonePe: ${phone}) Approved for Round ${round}!`);
+        fetchAdminRequests();
+        renderPermanentLedger();
+      } catch (e) {
+        alert("Approval failed.");
+      }
+    }
+
+    async function rejectStudent(utr, studentRound) {
+      if (confirm(`Reject UTR ${utr}?`)) {
+        try {
+          const round = String(studentRound || getRoundId());
+          await fetch(APP_TOPIC, {
+            method: "POST",
+            body: JSON.stringify({ utr: utr, round: round, status: "rejected" })
+          });
+          alert("Fake UTR Rejected!");
+          fetchAdminRequests();
+        } catch (e) {
+          alert("Rejection failed.");
+        }
+      }
+    }
+
+    // ROUND CANCEL: APPROVED GO TO REFUND, PENDING PURGED, SAME ROUND RESTARTS
     async function forceCancelRoundAndRefund() {
-      const round = getRoundId();
-      if (confirm("Cancel Round " + round + " and issue ₹50 refunds?")) {
+      const round = String(getRoundId());
+      if (confirm(`Cancel active Round ${round}? All approved students will be routed to Refunds, pending UTRs will be cleared, and Round ${round} will restart at 20:00.`)) {
+        try {
+          const [appRes, reqRes] = await Promise.all([
+            fetch(`${APP_TOPIC}/json?poll=1`),
+            fetch(`${REQ_TOPIC}/json?poll=1`)
+          ]);
+          const appText = await appRes.text();
+          const reqText = await reqRes.text();
+
+          const approvedList = [];
+          appText.trim().split("\n").forEach(line => {
+            if (!line) return;
+            try {
+              const p = JSON.parse(line);
+              const d = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
+              if (d && String(d.round) === round && d.status === "approved") {
+                approvedList.push(d);
+              }
+            } catch(e) {}
+          });
+
+          saveRefundsForRound(round, approvedList);
+
+          const purgeUtrs = [];
+          reqText.trim().split("\n").forEach(line => {
+            if (!line) return;
+            try {
+              const p = JSON.parse(line);
+              const d = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
+              if (d && String(d.round) === round && d.utr) {
+                purgeUtrs.push(d.utr);
+              }
+            } catch(e) {}
+          });
+          localStorage.setItem(`quiz_cancelled_utrs_r${round}`, JSON.stringify(purgeUtrs));
+
+        } catch (e) {}
+
+        const nowStr = String(Date.now());
+        localStorage.setItem(`quiz_round_start_${round}`, nowStr);
+
         await fetch(STATE_TOPIC, {
           method: "POST",
-          body: JSON.stringify({ round, state: "cancelled" })
+          body: JSON.stringify({ round: round, state: "cancelled", startTime: nowStr })
         });
-        alert("Round Cancelled. Check Pending Refunds section.");
+
+        alert(`Round ${round} Cancelled! Approved students sent to Refunds. Pending UTRs cleared. Round ${round} restarted at 20:00.`);
         renderRefundList();
+        fetchAdminRequests();
+      }
+    }
+
+    // HARD RESET TO ROUND 1
+    async function hardResetToRound1() {
+      if (confirm("Reset everything back to ROUND 1? This will set server & devices back to Round 1 at 20:00.")) {
+        const nowStr = String(Date.now());
+        localStorage.setItem("quiz_active_round", "1");
+        localStorage.setItem("quiz_round_start_1", nowStr);
+        localStorage.removeItem("quiz_round_valid_started_1");
+        localStorage.removeItem("quiz_round_valid_started_2");
+        localStorage.removeItem("quiz_round_valid_started_3");
+
+        await fetch(STATE_TOPIC, {
+          method: "POST",
+          body: JSON.stringify({ round: "1", state: "waiting", startTime: nowStr })
+        });
+
+        updateRoundDisplay();
+        fetchAdminRequests();
+        renderRefundList();
+        alert("✅ Successfully Reset to ROUND 1!");
+      }
+    }
+
+    async function adminResetTimer() {
+      const round = getRoundId();
+      if (confirm("Reset lobby timer to 20:00 for all participants in Round " + round + "?")) {
+        const nowStr = String(Date.now());
+        localStorage.setItem(`quiz_round_start_${round}`, nowStr);
+        try {
+          await fetch(STATE_TOPIC, {
+            method: "POST",
+            body: JSON.stringify({ round: String(round), state: "waiting", startTime: nowStr })
+          });
+          alert("20-Minute Timer Reset successfully across all student devices!");
+          syncLobbyState();
+        } catch (e) {
+          alert("Failed to reset timer. Check network connection.");
+        }
+      }
+    }
+       async function renderDropoffLeads() {
+      const box = document.getElementById("dropoffLeadsContainer");
+      if (!box) return;
+      try {
+        const res = await fetch(`${LEAD_TOPIC}/json?poll=1`);
+        const text = await res.text();
+        const leads = [];
+        text.trim().split("\n").forEach(line => {
+          if (!line) return;
+          try {
+            const p = JSON.parse(line);
+            const d = typeof p.message === "string" ? JSON.parse(p.message) : p.message;
+            if (d && d.type === "dropoff_lead") leads.push(d);
+          } catch(e) {}
+        });
+
+        document.getElementById("leadCountBadge").innerText = leads.length;
+        box.innerHTML = "";
+        if (leads.length === 0) {
+          box.innerHTML = "<p class='text-slate-500 py-1'>No incomplete leads yet.</p>";
+          return;
+        }
+
+        leads.slice(-10).reverse().forEach(l => {
+          const div = document.createElement("div");
+          div.className = "flex justify-between items-center p-1.5 bg-slate-900 rounded border border-slate-800";
+          div.innerHTML = `
+            <span>${l.name} (<span class="text-emerald-400 font-mono">${l.phone}</span>)</span>
+            <button onclick="copyToClipboard('${l.phone}', this)" class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-amber-300">Copy</button>
+          `;
+          box.appendChild(div);
+        });
+      } catch(e) {}
+    }
+
+    function saveToPermanentLedger(entry) {
+      const ledger = JSON.parse(localStorage.getItem("permanent_all_time_ledger") || "[]");
+      if (!ledger.some(x => x.utr === entry.utr)) {
+        ledger.unshift(entry);
+        localStorage.setItem("permanent_all_time_ledger", JSON.stringify(ledger));
+      }
+    }
+
+    function renderPermanentLedger() {
+      const ledger = JSON.parse(localStorage.getItem("permanent_all_time_ledger") || "[]");
+      const box = document.getElementById("permanentLedgerContainer");
+      box.innerHTML = "";
+
+      if (ledger.length === 0) {
+        box.innerHTML = "<p class='text-slate-500 py-1'>No permanent records yet.</p>";
+        return;
+      }
+
+      ledger.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "p-2 bg-slate-900 border border-slate-800 rounded flex justify-between items-center";
+        row.innerHTML = `
+          <div>
+            <span class="text-amber-400 font-bold">[R-${item.round}]</span> <span class="text-white">${item.name}</span>
+            <p class="text-slate-400">UTR: ${item.utr} • PhonePe: ${item.phone}</p>
+          </div>
+          <span class="text-emerald-400 font-bold">${item.amount}</span>
+        `;
+        box.appendChild(row);
+      });
+    }
+
+    function exportLedgerToCSV() {
+      const ledger = JSON.parse(localStorage.getItem("permanent_all_time_ledger") || "[]");
+      if (ledger.length === 0) {
+        alert("No records to export!");
+        return;
+      }
+
+      let csv = "Round,Student Name,PhonePe Number,UTR Number,Amount,Date,Time,Status\n";
+      ledger.forEach(row => {
+        csv += `"${row.round}","${row.name}","${row.phone}","${row.utr}","${row.amount}","${row.date}","${row.time}","${row.status}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `CBSE_Quiz_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+           function saveRefundsForRound(round, students) {
+      let refundList = JSON.parse(localStorage.getItem("pending_refunds_list") || "[]");
+      students.forEach(s => {
+        if (!refundList.some(r => r.utr === s.utr)) {
+          refundList.push({
+            round,
+            name: s.name,
+            phone: s.phone,
+            utr: s.utr,
+            amount: 50,
+            refunded: false
+          });
+        }
+      });
+      localStorage.setItem("pending_refunds_list", JSON.stringify(refundList));
+    }
+
+    function renderRefundList() {
+      const list = JSON.parse(localStorage.getItem("pending_refunds_list") || "[]");
+      const container = document.getElementById("pendingRefundsContainer");
+      container.innerHTML = "";
+
+      const pending = list.filter(x => !x.refunded);
+      document.getElementById("refundPendingBadge").innerText = `${pending.length} Pending`;
+
+      if (pending.length === 0) {
+        container.innerHTML = "<p class='text-xs text-slate-500 py-1'>No pending refunds. All clear!</p>";
+        return;
+      }
+
+      pending.forEach(r => {
+        const card = document.createElement("div");
+        card.className = "p-2.5 bg-slate-900 border border-red-800/60 rounded-xl flex justify-between items-center text-xs";
+        card.innerHTML = `
+          <div>
+            <span class="font-bold text-red-300">${r.name} (R-${r.round})</span>
+            <p class="text-[11px] text-emerald-400 font-mono font-bold">📱 PhonePe: ${r.phone}</p>
+            <p class="text-[10px] text-amber-400 font-mono">UTR: ${r.utr}</p>
+          </div>
+          <div class="flex gap-1.5">
+            <button onclick="copyToClipboard('${r.phone}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-2.5 py-1.5 rounded-lg">
+              📋 Copy No.
+            </button>
+            <button onclick="markRefundDone('${r.utr}')" class="bg-red-700 hover:bg-red-600 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg shadow">
+              Refund Done ✅
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function markRefundDone(utr) {
+      let list = JSON.parse(localStorage.getItem("pending_refunds_list") || "[]");
+      list = list.map(x => {
+        if (x.utr === utr) x.refunded = true;
+        return x;
+      });
+      localStorage.setItem("pending_refunds_list", JSON.stringify(list));
+      setTimeout(renderRefundList, 1000);
+    }
+
+    async function forceStartContest() {
+      const round = getRoundId();
+      if (confirm("Force start quiz now for Round " + round + "?")) {
+        await fetch(STATE_TOPIC, {
+          method: "POST",
+          body: JSON.stringify({ round, state: "started" })
+        });
+        alert("Broadcast sent! Quiz will start simultaneously for everyone.");
       }
     }
 
@@ -1396,8 +1983,8 @@
       localStorage.setItem(`quiz_payouts_r${round}`, JSON.stringify(stored));
       setTimeout(renderAllPayouts, 1000);
     }
-
-    async function fetchRoundLeaderboard() {
+    }
+        async function fetchRoundLeaderboard() {
       const round = getRoundId();
       const prizeTiers = [300, 200, 150, 100, 50];
 
@@ -1440,7 +2027,6 @@
       } catch (e) {}
     }
 
-    // SMART ROUND CONTROLS: REPEAT SAME ROUND VS ADVANCE NEXT ROUND
     async function restartSameRound() {
       const round = getRoundId();
       if (confirm(`Keep Round ${round} active and reset the 20-minute lobby countdown?`)) {
@@ -1492,4 +2078,3 @@
   </script>
 </body>
 </html>
-  
