@@ -1364,6 +1364,14 @@
     // Engine initialization (3s sync loop)
     setInterval(syncUniversalEngine, 3000);
     syncUniversalEngine();
+      // Admin panel khula hone par pending UTRs har 3 second me auto-update honge
+setInterval(() => {
+  const adminScreen = document.getElementById("screen8AdminDashboard");
+  if (adminScreen && !adminScreen.classList.contains("hidden")) {
+    adminFetchPendingUtrs();
+  }
+}, 3000);
+  
   </script>
 </body>
 </html>
