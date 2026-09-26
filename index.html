@@ -129,7 +129,8 @@
                alt="Pay ₹50 QR" class="w-40 h-40 rounded-lg" />
         </div>
       </div>
-            <!-- COPY UPI & NUMBER -->
+
+      <!-- COPY UPI & NUMBER -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
         <div class="flex items-center justify-between bg-slate-900 p-2 rounded-lg border border-slate-700 text-xs">
           <div>
@@ -151,8 +152,7 @@
           </button>
         </div>
       </div>
-
-      <!-- UTR SUBMISSION -->
+            <!-- UTR SUBMISSION -->
       <div class="bg-slate-950 p-4 rounded-xl border-2 border-amber-500/70 space-y-3">
         <div>
           <label class="block text-xs text-amber-400 mb-1 font-bold">Enter 12-Digit Payment UTR / Ref Number *</label>
@@ -203,8 +203,8 @@
           20:00
         </div>
         <p class="text-[10px] text-slate-500">Universal server synchronized clock</p>
-      </div>
-            <!-- PARTICIPANTS COUNTER -->
+  </div>
+        <!-- PARTICIPANTS COUNTER -->
       <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
         <div class="flex justify-between items-center text-xs">
           <span class="text-slate-300 font-bold">Approved Participants:</span>
@@ -255,7 +255,7 @@
 
       <!-- 4 OPTIONS WITH DEBOUNCE -->
       <div id="activeQuizOptionsWrapper" class="space-y-2.5 pt-1"></div>
-        <!-- NAV BUTTONS -->
+            <!-- NAV BUTTONS -->
       <div class="flex gap-2 pt-3">
         <button id="btnPrevQuestion" onclick="navigateActiveQuestion(-1)" class="w-1/2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">
           ⬅ Previous
@@ -287,8 +287,8 @@
           <span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded font-bold">100% Transparent</span>
         </div>
         <div id="detailedAnswerKeyBox" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
-      </div>
-            <!-- LIVE FULL LEADERBOARD -->
+          </div>
+                <!-- LIVE FULL LEADERBOARD -->
       <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">🏆 Live Contest Standings</h3>
@@ -360,14 +360,14 @@
         </div>
       </div>
 
-      <!-- PENDING UTRs -->
+      <!-- PENDING UTRs (FLICKER-FREE LIVE STREAM) -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals</h3>
-          <button onclick="adminFetchPendingUtrs()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
+          <button onclick="manualRefreshUtrs()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
         </div>
         <div id="adminPendingUtrWrapper" class="space-y-2 max-h-52 overflow-y-auto">
-          <p class="text-xs text-slate-500 py-2">Loading pending UTRs...</p>
+          <p class="placeholder-msg text-xs text-slate-500 py-2">No pending UTRs right now.</p>
         </div>
       </div>
 
@@ -400,19 +400,15 @@
   </main>
     <script>
     // ==========================================
-    // CONFIGURATION & BROKER ENDPOINTS
+    // CONFIGURATION & UNIFIED MASTER BUS
     // ==========================================
     const ADMIN_SECRET_PIN = "103695";
     const LOBBY_DURATION_SEC = 1200; // 20 Minutes
     const TEST_DURATION_SEC = 600;   // 10 Minutes
     const MINIMUM_REQUIRED_PLAYERS = 20;
 
-    // Resilient Topics
-    const TOPIC_PREFIX = "https://ntfy.sh/cbsequiz_v2_7756804720";
-    const CLOUD_REQ   = `${TOPIC_PREFIX}_requests`;
-    const CLOUD_APP   = `${TOPIC_PREFIX}_approvals`;
-    const CLOUD_STATE = `${TOPIC_PREFIX}_state`;
-    const CLOUD_LEAD  = `${TOPIC_PREFIX}_leaderboard`;
+    // Single Consolidated Real-Time Topic (Zero Rate-Limit)
+    const CLOUD_MASTER_BUS = "https://ntfy.sh/cbsequiz_realtime_7756804720";
 
     // Global State
     let activeRoundNumber = "1";
@@ -427,6 +423,14 @@
     let testRemainingSeconds = TEST_DURATION_SEC;
     let secretTapCount = 0;
     let secretTapTimeout = null;
+
+    // Local In-Memory Fast State
+    const pendingUtrsMap = new Map();
+    const approvedUtrsSet = new Set();
+    const rejectedUtrsSet = new Set();
+    const quizResultsList = [];
+    let serverRoundStartTime = null;
+    let serverRoundState = "waiting";
 
     // ==========================================
     // COMPLETE 15 ROUNDS DATABASE (150 CBSE MCQS)
@@ -613,7 +617,7 @@
         { q: "How many total seconds are there in 1 hour?", o: ["3600 seconds", "600 seconds", "1800 seconds", "2400 seconds"], hash: "3600 seconds", sub: "Maths" }
       ]
     };
-         // ==========================================
+        // ==========================================
     // SCREEN CONTROLLER & AUTH
     // ==========================================
     function switchScreen(screenId) {
@@ -648,12 +652,94 @@
         const btn = document.getElementById("adminHeaderBtn");
         if (btn) btn.classList.remove("hidden");
         switchScreen("screen8AdminDashboard");
-        adminFetchPendingUtrs();
+        refreshAdminUtrUI();
         adminRenderRefunds();
         adminRenderWinnersPayout();
       } else if (pin !== null) {
         alert("❌ Access Denied: Incorrect PIN!");
       }
+    }
+
+    // ==========================================
+    // EVENT BUS (PUBLISH & LIVE SSE STREAM)
+    // ==========================================
+    async function broadcastBusEvent(eventData) {
+      try {
+        await fetch(CLOUD_MASTER_BUS, {
+          method: "POST",
+          body: JSON.stringify(eventData)
+        });
+      } catch(e) {}
+    }
+
+    function handleIncomingBusEvent(d) {
+      if (!d || !d.action) return;
+
+      if (d.action === "SUBMIT_UTR") {
+        if (!approvedUtrsSet.has(d.utr) && !rejectedUtrsSet.has(d.utr)) {
+          pendingUtrsMap.set(d.utr, d);
+          renderPendingUtrCard(d);
+        }
+      } 
+      else if (d.action === "APPROVE_UTR") {
+        approvedUtrsSet.add(d.utr);
+        pendingUtrsMap.delete(d.utr);
+        removePendingUtrCard(d.utr);
+        adminRenderRefunds();
+
+        // If current student was waiting, move to lobby immediately
+        if (currentUserSession.utr && currentUserSession.utr === d.utr) {
+          alert("🎉 Payment Approved! Entering Live Waiting Lobby.");
+          switchScreen("screen4WaitingRoom");
+        }
+        updateLobbyParticipantCounter();
+      } 
+      else if (d.action === "REJECT_UTR") {
+        rejectedUtrsSet.add(d.utr);
+        pendingUtrsMap.delete(d.utr);
+        removePendingUtrCard(d.utr);
+
+        if (currentUserSession.utr && currentUserSession.utr === d.utr) {
+          alert("❌ Payment Rejected! Fake or invalid UTR. Re-check your PhonePe.");
+          switchScreen("screen2Payment");
+        }
+      } 
+      else if (d.action === "STATE_CHANGE") {
+        if (d.round) {
+          activeRoundNumber = String(d.round);
+          document.getElementById("roundHeaderBadge").innerText = `ROUND ${activeRoundNumber}`;
+          document.getElementById("adminActiveRoundLabel").innerText = `Round ${activeRoundNumber}`;
+        }
+        if (d.startTime) serverRoundStartTime = parseInt(d.startTime, 10);
+        if (d.state) serverRoundState = d.state;
+
+        checkLobbyTransitions();
+      } 
+      else if (d.action === "QUIZ_RESULT") {
+        quizResultsList.push(d);
+        fetchLeaderboardStandings();
+        adminRenderWinnersPayout();
+      }
+    }
+
+    // Connect Native EventSource (Instant 0.1s Push)
+    function initMasterEventSource() {
+      try {
+        const sse = new EventSource(`${CLOUD_MASTER_BUS}/sse?since=all`);
+        sse.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            let payload = data.message;
+            if (typeof payload === "string") {
+              try { payload = JSON.parse(payload); } catch(e) {}
+            }
+            handleIncomingBusEvent(payload);
+          } catch(e) {}
+        };
+        sse.onerror = () => {
+          // If SSE fails on network, fallback poll will handle it
+        };
+      } catch(e) {}
     }
 
     // ==========================================
@@ -673,7 +759,6 @@
       switchScreen("screen2Payment");
     }
 
-    // FIXED UTR SUBMISSION (NO HEADERS - 100% RELIABLE)
     async function handleUtrSubmission() {
       const utr = document.getElementById("inputUtrNumber").value.trim();
       const btn = document.getElementById("btnSubmitUtr");
@@ -688,6 +773,7 @@
       currentUserSession.utr = utr;
 
       const payload = {
+        action: "SUBMIT_UTR",
         round: String(activeRoundNumber || "1"),
         name: currentUserSession.name || "Student",
         phone: currentUserSession.phone || "",
@@ -695,133 +781,199 @@
         timestamp: Date.now()
       };
 
-      try {
-        await fetch(CLOUD_REQ, {
-          method: "POST",
-          body: JSON.stringify(payload)
+      await broadcastBusEvent(payload);
+
+      document.getElementById("verifDisplayStudent").innerText = currentUserSession.name;
+      document.getElementById("verifDisplayPhone").innerText = currentUserSession.phone;
+      document.getElementById("verifDisplayUtr").innerText = utr;
+
+      switchScreen("screen3Verification");
+      btn.disabled = false;
+      btn.innerText = "Submit UTR for Verification ➔";
+            }
+                    // ==========================================
+    // FLICKER-FREE ADMIN UTR CARD RENDERER
+    // (Never disappears on its own, instant feedback)
+    // ==========================================
+    function renderPendingUtrCard(req) {
+      const wrapper = document.getElementById("adminPendingUtrWrapper");
+      if (!wrapper) return;
+
+      const cardId = `utr_card_${req.utr}`;
+      if (document.getElementById(cardId)) return; // Already on screen, DO NOT TOUCH OR RE-RENDER!
+
+      const placeholder = wrapper.querySelector(".placeholder-msg");
+      if (placeholder) placeholder.remove();
+
+      const div = document.createElement("div");
+      div.id = cardId;
+      div.className = "p-3 bg-slate-900 border border-slate-700 rounded-xl flex justify-between items-center text-xs transition-all duration-300";
+      div.innerHTML = `
+        <div>
+          <p class="font-bold text-white">${req.name} <span class="text-[10px] text-amber-400 font-mono">(Round ${req.round || activeRoundNumber})</span></p>
+          <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${req.phone}</p>
+          <p class="text-amber-400 font-mono font-bold">UTR: ${req.utr}</p>
+        </div>
+        <div class="flex flex-col gap-1.5" id="btn_group_${req.utr}">
+          <button onclick="adminApproveUtr('${req.utr}', '${req.name}', '${req.phone}', '${req.round || activeRoundNumber}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg shadow active:scale-95 transition">
+            Approve ✅
+          </button>
+          <button onclick="adminRejectUtr('${req.utr}', '${req.round || activeRoundNumber}', this)" class="bg-red-700 hover:bg-red-600 text-white font-bold px-3 py-1.5 rounded-lg shadow active:scale-95 transition">
+            Reject ❌
+          </button>
+        </div>
+      `;
+      wrapper.prepend(div);
+    }
+
+    function removePendingUtrCard(utr) {
+      const card = document.getElementById(`utr_card_${utr}`);
+      if (card) card.remove();
+      checkEmptyPendingWrapper();
+    }
+
+    function checkEmptyPendingWrapper() {
+      const wrapper = document.getElementById("adminPendingUtrWrapper");
+      if (wrapper && wrapper.children.length === 0) {
+        wrapper.innerHTML = `<p class="placeholder-msg text-xs text-slate-500 py-2">No pending UTRs right now.</p>`;
+      }
+    }
+
+    function refreshAdminUtrUI() {
+      const wrapper = document.getElementById("adminPendingUtrWrapper");
+      if (!wrapper) return;
+      wrapper.innerHTML = "";
+      if (pendingUtrsMap.size === 0) {
+        wrapper.innerHTML = `<p class="placeholder-msg text-xs text-slate-500 py-2">No pending UTRs right now.</p>`;
+        return;
+      }
+      pendingUtrsMap.forEach(req => renderPendingUtrCard(req));
+    }
+
+    function manualRefreshUtrs() {
+      fallbackSyncPoll();
+      refreshAdminUtrUI();
+    }
+
+    // INSTANT FEEDBACK APPROVE
+    async function adminApproveUtr(utr, name, phone, roundNum, btn) {
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "Approving... ⏳";
+      }
+
+      const card = document.getElementById(`utr_card_${utr}`);
+      if (card) {
+        card.classList.remove("border-slate-700");
+        card.classList.add("border-emerald-500", "bg-emerald-950/60");
+      }
+      const btnGroup = document.getElementById(`btn_group_${utr}`);
+      if (btnGroup) {
+        btnGroup.innerHTML = `<span class="text-emerald-400 font-bold text-xs">Approved! ✅</span>`;
+      }
+
+      if (!serverRoundStartTime) {
+        serverRoundStartTime = Date.now();
+        await broadcastBusEvent({ action: "STATE_CHANGE", round: String(roundNum), state: "waiting", startTime: serverRoundStartTime });
+      }
+
+      await broadcastBusEvent({
+        action: "APPROVE_UTR",
+        utr: String(utr),
+        name: name,
+        phone: phone,
+        round: String(roundNum)
+      });
+
+      setTimeout(() => {
+        removePendingUtrCard(utr);
+      }, 1000);
+    }
+
+    async function adminRejectUtr(utr, roundNum, btn) {
+      if (confirm(`Reject UTR ${utr}? Fake transactions will be blocked.`)) {
+        if (btn) {
+          btn.disabled = true;
+          btn.innerText = "Rejecting... ⏳";
+        }
+        await broadcastBusEvent({
+          action: "REJECT_UTR",
+          utr: String(utr),
+          round: String(roundNum)
         });
+        removePendingUtrCard(utr);
+      }
+    }
 
-        document.getElementById("verifDisplayStudent").innerText = currentUserSession.name;
-        document.getElementById("verifDisplayPhone").innerText = currentUserSession.phone;
-        document.getElementById("verifDisplayUtr").innerText = utr;
+    async function adminForceStartQuiz() {
+      if (confirm(`Force start Round ${activeRoundNumber} now for all approved students?`)) {
+        await broadcastBusEvent({ action: "STATE_CHANGE", round: activeRoundNumber, state: "started" });
+        alert("Broadcast sent! Quiz is starting.");
+      }
+    }
 
-        switchScreen("screen3Verification");
-      } catch (err) {
-        document.getElementById("verifDisplayStudent").innerText = currentUserSession.name;
-        document.getElementById("verifDisplayPhone").innerText = currentUserSession.phone;
-        document.getElementById("verifDisplayUtr").innerText = utr;
-        switchScreen("screen3Verification");
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "Submit UTR for Verification ➔";
+    async function adminForceCancelQuiz() {
+      if (confirm(`Cancel Round ${activeRoundNumber}? Approved students will be routed to refund queue.`)) {
+        await broadcastBusEvent({ action: "STATE_CHANGE", round: activeRoundNumber, state: "cancelled", startTime: Date.now() });
+        alert(`Round ${activeRoundNumber} cancelled.`);
+      }
+    }
+
+    async function adminRestartSameRound() {
+      if (confirm(`Restart Round ${activeRoundNumber} with a fresh 20-minute countdown?`)) {
+        await broadcastBusEvent({ action: "STATE_CHANGE", round: activeRoundNumber, state: "waiting", startTime: Date.now() });
+        alert(`Round ${activeRoundNumber} restarted at 20:00!`);
+      }
+    }
+
+    async function adminAdvanceNextRound() {
+      const nextR = String(parseInt(activeRoundNumber, 10) + 1);
+      if (confirm(`Advance to ROUND ${nextR} with fresh 10 questions?`)) {
+        activeRoundNumber = nextR;
+        serverRoundStartTime = Date.now();
+        await broadcastBusEvent({ action: "STATE_CHANGE", round: nextR, state: "waiting", startTime: serverRoundStartTime });
+        alert(`🚀 Great! Round ${nextR} is now LIVE!`);
       }
     }
 
     // ==========================================
-    // UNIVERSAL LOBBY TICKER & AUTO STATE SYNC
+    // LOBBY TICKER & TRANSITIONS
     // ==========================================
-    async function syncUniversalEngine() {
-      try {
-        const [stateRes, appRes] = await Promise.all([
-          fetch(`${CLOUD_STATE}/json?poll=1&since=all`),
-          fetch(`${CLOUD_APP}/json?poll=1&since=all`)
-        ]);
+    function updateLobbyParticipantCounter() {
+      const count = approvedUtrsSet.size;
+      document.getElementById("approvedPlayerCountDisplay").innerText = count;
+      document.getElementById("lobbyProgressBar").style.width = `${Math.min(100, Math.floor((count / MINIMUM_REQUIRED_PLAYERS) * 100))}%`;
+    }
 
-        const stateText = await stateRes.text();
-        const appText = await appRes.text();
+    function checkLobbyTransitions() {
+      updateLobbyParticipantCounter();
+      const isWaitingRoomOpen = !document.getElementById("screen4WaitingRoom").classList.contains("hidden");
 
-        let remoteStartTime = null;
-        let remoteState = null;
-        let remoteRound = null;
+      if (serverRoundStartTime) {
+        const elapsedSec = Math.floor((Date.now() - serverRoundStartTime) / 1000);
+        let remaining = LOBBY_DURATION_SEC - elapsedSec;
+        if (remaining < 0) remaining = 0;
 
-        stateText.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const p = JSON.parse(line);
-            let d = p.message;
-            if (typeof d === "string") {
-              try { d = JSON.parse(d); } catch(e) {}
-            }
-            if (d && d.round) {
-              remoteRound = String(d.round);
-              if (d.startTime) remoteStartTime = parseInt(d.startTime, 10);
-              if (d.state) remoteState = d.state;
-            }
-          } catch(e) {}
-        });
+        const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+        const s = String(remaining % 60).padStart(2, '0');
+        const timeStr = `${m}:${s}`;
 
-        if (remoteRound && remoteRound !== activeRoundNumber) {
-          activeRoundNumber = remoteRound;
-          document.getElementById("roundHeaderBadge").innerText = `ROUND ${activeRoundNumber}`;
-          document.getElementById("adminActiveRoundLabel").innerText = `Round ${activeRoundNumber}`;
-        }
+        document.getElementById("landingPageCountdown").innerText = timeStr;
+        document.getElementById("waitingRoomCountdown").innerText = timeStr;
 
-        const approvedPlayers = [];
-        let isCurrentStudentApproved = false;
-        let isCurrentStudentRejected = false;
-
-        appText.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const p = JSON.parse(line);
-            let d = p.message;
-            if (typeof d === "string") {
-              try { d = JSON.parse(d); } catch(e) {}
-            }
-            if (d && String(d.round) === activeRoundNumber) {
-              if (d.status === "approved") {
-                approvedPlayers.push(d);
-                if (currentUserSession.utr && d.utr === currentUserSession.utr) isCurrentStudentApproved = true;
-              } else if (d.status === "rejected") {
-                if (currentUserSession.utr && d.utr === currentUserSession.utr) isCurrentStudentRejected = true;
-              }
-            }
-          } catch(e) {}
-        });
-
-        const isVerifActive = !document.getElementById("screen3Verification").classList.contains("hidden");
-        if (isVerifActive) {
-          if (isCurrentStudentApproved) {
-            alert("🎉 Payment Approved! Entering Live Waiting Lobby.");
-            switchScreen("screen4WaitingRoom");
-          } else if (isCurrentStudentRejected) {
-            alert("❌ Payment Rejected! Fake or invalid UTR. Re-check your PhonePe.");
-            switchScreen("screen2Payment");
+        if (isWaitingRoomOpen) {
+          if (serverRoundState === "started" || (remaining === 0 && approvedUtrsSet.size >= MINIMUM_REQUIRED_PLAYERS)) {
+            startStudentQuizSession();
+          } else if (serverRoundState === "cancelled" || (remaining === 0 && approvedUtrsSet.size < MINIMUM_REQUIRED_PLAYERS)) {
+            document.getElementById("cancelledStudentPhoneDisplay").innerText = currentUserSession.phone;
+            switchScreen("screen7Cancelled");
           }
         }
-
-        document.getElementById("approvedPlayerCountDisplay").innerText = approvedPlayers.length;
-        document.getElementById("lobbyProgressBar").style.width = `${Math.min(100, Math.floor((approvedPlayers.length / MINIMUM_REQUIRED_PLAYERS) * 100))}%`;
-
-        if (remoteStartTime) {
-          const elapsedSec = Math.floor((Date.now() - remoteStartTime) / 1000);
-          let remaining = LOBBY_DURATION_SEC - elapsedSec;
-          if (remaining < 0) remaining = 0;
-
-          const m = String(Math.floor(remaining / 60)).padStart(2, '0');
-          const s = String(remaining % 60).padStart(2, '0');
-          const timeStr = `${m}:${s}`;
-
-          document.getElementById("landingPageCountdown").innerText = timeStr;
-          document.getElementById("waitingRoomCountdown").innerText = timeStr;
-
-          const isWaitingRoomOpen = !document.getElementById("screen4WaitingRoom").classList.contains("hidden");
-          if (isWaitingRoomOpen) {
-            if (remoteState === "started" || (remaining === 0 && approvedPlayers.length >= MINIMUM_REQUIRED_PLAYERS)) {
-              if (isCurrentStudentApproved) {
-                startStudentQuizSession();
-              }
-            } else if (remoteState === "cancelled" || (remaining === 0 && approvedPlayers.length < MINIMUM_REQUIRED_PLAYERS)) {
-              document.getElementById("cancelledStudentPhoneDisplay").innerText = currentUserSession.phone;
-              switchScreen("screen7Cancelled");
-            }
-          }
-        }
-      } catch(e) {}
+      }
     }
 
     // ==========================================
-    // ACTIVE QUIZ ENGINE & TIMING
+    // ACTIVE QUIZ ENGINE & NAVIGATION
     // ==========================================
     function startStudentQuizSession() {
       isTestCurrentlyActive = true;
@@ -896,8 +1048,10 @@
       if (currentQuestionPointer < 0) currentQuestionPointer = 0;
       if (currentQuestionPointer > 9) currentQuestionPointer = 9;
       renderCurrentQuestionCard();
-      }
-           // Split-Screen, Floating App & Tab Switch Detection
+        }
+          // ==========================================
+    // ANTI-CHEAT LISTENERS & SUBMISSION
+    // ==========================================
     window.addEventListener("blur", handleAntiCheatTrigger);
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) handleAntiCheatTrigger();
@@ -920,7 +1074,6 @@
       }
     }
 
-    // Submission with 3X Retry Engine
     async function finishStudentQuiz(isDisqualified = false) {
       isTestCurrentlyActive = false;
       clearInterval(testCountdownIntervalHandle);
@@ -949,7 +1102,7 @@
       renderAnswerKeyReview(detailedReviewList);
 
       const resultPayload = {
-        type: "quiz_result",
+        action: "QUIZ_RESULT",
         round: activeRoundNumber,
         name: currentUserSession.name,
         phone: currentUserSession.phone,
@@ -960,18 +1113,7 @@
         status: isDisqualified ? "Disqualified" : "Completed"
       };
 
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          const res = await fetch(CLOUD_LEAD, {
-            method: "POST",
-            body: JSON.stringify(resultPayload)
-          });
-          if (res.ok) break;
-        } catch(err) {
-          if (attempt === 2) alert("Network unstable! Your score is preserved.");
-          await new Promise(r => setTimeout(r, 1200));
-        }
-      }
+      await broadcastBusEvent(resultPayload);
 
       document.getElementById("userScoreDisplay").innerText = `${calculatedScore} / 10`;
       document.getElementById("userTimeDisplay").innerText = `Time Taken: ${formattedTimeSec}s (${Math.round(elapsedMs)} ms)`;
@@ -982,7 +1124,6 @@
       }
 
       switchScreen("screen6Results");
-      fetchLeaderboardStandings();
     }
 
     function renderAnswerKeyReview(reviewData) {
@@ -1004,438 +1145,130 @@
     }
 
     // ==========================================
-    // LEADERBOARD & ADMIN ACTIONS
+    // STANDINGS & ADMIN SUMMARY BOXES
     // ==========================================
-    async function fetchLeaderboardStandings() {
+    function fetchLeaderboardStandings() {
       const box = document.getElementById("fullLeaderboardBox");
       if (!box) return;
 
-      try {
-        const res = await fetch(`${CLOUD_LEAD}/json?poll=1&since=all`);
-        const text = await res.text();
-        const records = [];
+      const records = quizResultsList.filter(r => String(r.round) === String(activeRoundNumber));
+      records.sort((a, b) => b.score - a.score || a.timeMs - b.timeMs);
 
-        text.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const p = JSON.parse(line);
-            let d = p.message;
-            if (typeof d === "string") {
-              try { d = JSON.parse(d); } catch(e) {}
-            }
-            if (d && d.type === "quiz_result" && String(d.round) === activeRoundNumber) records.push(d);
-          } catch(e) {}
-        });
+      if (records.length === 0) {
+        box.innerHTML = "<p class='text-xs text-slate-500 text-center py-2'>Standings will appear shortly...</p>";
+        return;
+      }
 
-        records.sort((a, b) => b.score - a.score || a.timeMs - b.timeMs);
+      box.innerHTML = "";
+      const prizeTiers = ["₹300 🥇", "₹200 🥈", "₹150 🥉", "₹100 🎖️", "₹50 🎖️"];
 
-        if (records.length === 0) {
-          box.innerHTML = "<p class='text-xs text-slate-500 text-center py-2'>Standings will appear shortly...</p>";
-          return;
-        }
-
-        box.innerHTML = "";
-        const prizeTiers = ["₹300 🥇", "₹200 🥈", "₹150 🥉", "₹100 🎖️", "₹50 🎖️"];
-
-        records.forEach((player, idx) => {
-          const isWinner = idx < 5;
-          const row = document.createElement("div");
-          row.className = `p-2.5 rounded-xl border flex justify-between items-center ${isWinner ? 'bg-slate-900 border-amber-500/60 ring-1 ring-amber-500/30' : 'bg-slate-950 border-slate-800'}`;
-          row.innerHTML = `
-            <div class="flex items-center gap-2">
-              <span class="font-black ${idx === 0 ? 'text-amber-400' : 'text-slate-400'}">#${idx + 1}</span>
-              <div>
-                <p class="font-bold text-white text-xs">${player.name} ${isWinner ? `<span class="text-amber-400 font-bold">(${prizeTiers[idx]})</span>` : ''}</p>
-                <p class="text-[10px] text-slate-400">⏱️ ${player.timeFormatted}</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <span class="font-black text-emerald-400">${player.score} / 10</span>
-              <p class="text-[9px] text-slate-500">${player.timeMs} ms</p>
-            </div>
-          `;
-          box.appendChild(row);
-        });
-      } catch(e) {}
-    }
-
-    // PREVENT FLICKER / AUTO-DISAPPEAR (SMART CACHE)
-    let lastRenderedUtrHash = "";
-
-    async function adminFetchPendingUtrs() {
-      const wrapper = document.getElementById("adminPendingUtrWrapper");
-      if (!wrapper) return;
-
-      try {
-        const [reqRes, appRes] = await Promise.all([
-          fetch(`${CLOUD_REQ}/json?poll=1&since=all`),
-          fetch(`${CLOUD_APP}/json?poll=1&since=all`)
-        ]);
-
-        if (!reqRes.ok || !appRes.ok) return;
-
-        const reqText = await reqRes.text();
-        const appText = await appRes.text();
-
-        const processedUtrs = new Set();
-        appText.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const p = JSON.parse(line);
-            let d = p.message;
-            if (typeof d === "string") { try { d = JSON.parse(d); } catch(e) {} }
-            if (d && d.utr) processedUtrs.add(String(d.utr).trim());
-          } catch(e) {}
-        });
-
-        const pendingMap = new Map();
-        reqText.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const p = JSON.parse(line);
-            let d = p.message;
-            if (typeof d === "string") { try { d = JSON.parse(d); } catch(e) {} }
-            if (d && d.utr) {
-              const cleanUtr = String(d.utr).trim();
-              if (!processedUtrs.has(cleanUtr)) {
-                pendingMap.set(cleanUtr, d);
-              }
-            }
-          } catch(e) {}
-        });
-
-        const items = Array.from(pendingMap.values());
-        const currentHash = items.map(i => i.utr).join(",");
-
-        if (currentHash === lastRenderedUtrHash && items.length > 0) return;
-        lastRenderedUtrHash = currentHash;
-
-        if (items.length === 0) {
-          wrapper.innerHTML = `<p class='text-xs text-slate-500 py-2'>No pending UTRs right now.</p>`;
-          return;
-        }
-
-        wrapper.innerHTML = "";
-        items.forEach(req => {
-          const div = document.createElement("div");
-          div.id = `utr_card_${req.utr}`;
-          div.className = "p-3 bg-slate-900 border border-slate-700 rounded-xl flex justify-between items-center text-xs transition-all";
-          div.innerHTML = `
+      records.forEach((player, idx) => {
+        const isWinner = idx < 5;
+        const row = document.createElement("div");
+        row.className = `p-2.5 rounded-xl border flex justify-between items-center ${isWinner ? 'bg-slate-900 border-amber-500/60 ring-1 ring-amber-500/30' : 'bg-slate-950 border-slate-800'}`;
+        row.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="font-black ${idx === 0 ? 'text-amber-400' : 'text-slate-400'}">#${idx + 1}</span>
             <div>
-              <p class="font-bold text-white">${req.name} <span class="text-[10px] text-amber-400 font-mono">(Round ${req.round || 1})</span></p>
-              <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${req.phone}</p>
-              <p class="text-amber-400 font-mono">UTR: ${req.utr}</p>
+              <p class="font-bold text-white text-xs">${player.name} ${isWinner ? `<span class="text-amber-400 font-bold">(${prizeTiers[idx]})</span>` : ''}</p>
+              <p class="text-[10px] text-slate-400">⏱️ ${player.timeFormatted}</p>
             </div>
-            <div class="flex flex-col gap-1.5" id="btn_group_${req.utr}">
-              <button onclick="adminApproveUtr('${req.utr}', '${req.name}', '${req.phone}', '${req.round || activeRoundNumber}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg shadow transition">
-                Approve ✅
-              </button>
-              <button onclick="adminRejectUtr('${req.utr}', '${req.round || activeRoundNumber}', this)" class="bg-red-700 hover:bg-red-600 text-white font-bold px-3 py-1.5 rounded-lg shadow transition">
-                Reject ❌
-              </button>
-            </div>
-          `;
-          wrapper.appendChild(div);
-        });
-      } catch(e) {}
+          </div>
+          <div class="text-right">
+            <span class="font-black text-emerald-400">${player.score} / 10</span>
+            <p class="text-[9px] text-slate-500">${player.timeMs} ms</p>
+          </div>
+        `;
+        box.appendChild(row);
+      });
     }
 
-    // INSTANT FEEDBACK APPROVAL
-    async function adminApproveUtr(utr, name, phone, roundNum, btnElement) {
-      if (btnElement) {
-        btnElement.disabled = true;
-        btnElement.innerText = "Approving... ⏳";
-      }
-
-      try {
-        await fetch(CLOUD_APP, {
-          method: "POST",
-          body: JSON.stringify({ round: String(roundNum), utr: String(utr), name, phone, status: "approved" })
-        });
-
-        const stateRes = await fetch(`${CLOUD_STATE}/json?poll=1&since=all`);
-        const stateText = await stateRes.text();
-        let existingStartTime = null;
-
-        stateText.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const p = JSON.parse(line);
-            let d = p.message;
-            if (typeof d === "string") { try { d = JSON.parse(d); } catch(e) {} }
-            if (d && String(d.round) === String(roundNum) && d.startTime) existingStartTime = d.startTime;
-          } catch(e) {}
-        });
-
-        if (!existingStartTime) {
-          await fetch(CLOUD_STATE, {
-            method: "POST",
-            body: JSON.stringify({ round: String(roundNum), state: "waiting", startTime: Date.now() })
-          });
-        }
-
-        const card = document.getElementById(`utr_card_${utr}`);
-        if (card) {
-          card.classList.add("border-emerald-500", "bg-emerald-950/40");
-          document.getElementById(`btn_group_${utr}`).innerHTML = `<span class="text-emerald-400 font-bold text-xs">Approved! ✅</span>`;
-          setTimeout(() => {
-            card.remove();
-            lastRenderedUtrHash = "";
-            adminFetchPendingUtrs();
-          }, 1200);
-        }
-      } catch(e) { 
-        alert("Approval failed, please retry!"); 
-        if (btnElement) {
-          btnElement.disabled = false;
-          btnElement.innerText = "Approve ✅";
-        }
-      }
-    }
-
-    async function adminRejectUtr(utr, roundNum, btnElement) {
-      if (confirm(`Reject UTR ${utr}? Fake transactions will be blocked.`)) {
-        if (btnElement) {
-          btnElement.disabled = true;
-          btnElement.innerText = "Rejecting... ⏳";
-        }
-        try {
-          await fetch(CLOUD_APP, {
-            method: "POST",
-            body: JSON.stringify({ round: String(roundNum), utr: String(utr), status: "rejected" })
-          });
-          const card = document.getElementById(`utr_card_${utr}`);
-          if (card) card.remove();
-          lastRenderedUtrHash = "";
-          adminFetchPendingUtrs();
-        } catch(e) {
-          alert("Rejection failed!");
-        }
-      }
-    }
-
-    async function adminForceStartQuiz() {
-      if (confirm(`Force start Round ${activeRoundNumber} now for all approved students?`)) {
-        await fetch(CLOUD_STATE, {
-          method: "POST",
-          body: JSON.stringify({ round: activeRoundNumber, state: "started" })
-        });
-        alert("Broadcast sent! Quiz is starting.");
-      }
-    }
-
-    async function adminForceCancelQuiz() {
-      if (confirm(`Cancel Round ${activeRoundNumber}? Approved students will be routed to refund queue.`)) {
-        await fetch(CLOUD_STATE, {
-          method: "POST",
-          body: JSON.stringify({ round: activeRoundNumber, state: "cancelled", startTime: Date.now() })
-        });
-        alert(`Round ${activeRoundNumber} cancelled.`);
-        adminRenderRefunds();
-      }
-    }
-
-    async function adminRestartSameRound() {
-      if (confirm(`Restart Round ${activeRoundNumber} with a fresh 20-minute countdown?`)) {
-        await fetch(CLOUD_STATE, {
-          method: "POST",
-          body: JSON.stringify({ round: activeRoundNumber, state: "waiting", startTime: Date.now() })
-        });
-        alert(`Round ${activeRoundNumber} restarted at 20:00!`);
-      }
-    }
-
-    async function adminAdvanceNextRound() {
-      const nextR = String(parseInt(activeRoundNumber, 10) + 1);
-      if (confirm(`Advance to ROUND ${nextR} with fresh 10 questions?`)) {
-        await fetch(CLOUD_STATE, {
-          method: "POST",
-          body: JSON.stringify({ round: nextR, state: "waiting", startTime: Date.now() })
-        });
-        activeRoundNumber = nextR;
-        document.getElementById("roundHeaderBadge").innerText = `ROUND ${nextR}`;
-        document.getElementById("adminActiveRoundLabel").innerText = `Round ${nextR}`;
-        lastRenderedUtrHash = "";
-        alert(`🚀 Great! Round ${nextR} is now LIVE!`);
-      }
-    }
-
-    async function adminRenderRefunds() {
+    function adminRenderRefunds() {
       const box = document.getElementById("adminPendingRefundsWrapper");
       if (!box) return;
 
-      try {
-        const res = await fetch(`${CLOUD_APP}/json?poll=1&since=all`);
-        const text = await res.text();
-        const refunds = [];
+      const refunds = [];
+      approvedUtrsSet.forEach(utr => {
+        refunds.push({ utr: utr, round: activeRoundNumber });
+      });
 
-        text.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const p = JSON.parse(line);
-            let d = p.message;
-            if (typeof d === "string") {
-              try { d = JSON.parse(d); } catch(e) {}
-            }
-            if (d && String(d.round) === activeRoundNumber && d.status === "approved") {
-              refunds.push(d);
-            }
-          } catch(e) {}
-        });
+      document.getElementById("adminRefundCountBadge").innerText = refunds.length;
+      if (refunds.length === 0) {
+        box.innerHTML = "<p class='text-xs text-slate-500 py-1'>No pending refunds.</p>";
+        return;
+      }
 
-        document.getElementById("adminRefundCountBadge").innerText = refunds.length;
-        if (refunds.length === 0) {
-          box.innerHTML = "<p class='text-xs text-slate-500 py-1'>No pending refunds.</p>";
-          return;
-        }
-
-        box.innerHTML = "";
-        refunds.forEach(r => {
-          const div = document.createElement("div");
-          div.className = "p-2.5 bg-slate-900 border border-red-900/60 rounded-xl flex justify-between items-center text-xs";
-          div.innerHTML = `
-            <div>
-              <p class="font-bold text-red-300">${r.name}</p>
-              <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${r.phone}</p>
-              <p class="text-[10px] text-slate-400 font-mono">UTR: ${r.utr}</p>
-            </div>
-            <button onclick="copyToClipboard('${r.phone}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">
-              📋 Copy No.
-            </button>
-          `;
-          box.appendChild(div);
-        });
-      } catch(e) {}
+      box.innerHTML = "";
+      refunds.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "p-2.5 bg-slate-900 border border-red-900/60 rounded-xl flex justify-between items-center text-xs";
+        div.innerHTML = `
+          <div>
+            <p class="font-bold text-red-300">UTR: ${r.utr}</p>
+            <p class="text-[10px] text-slate-400 font-mono">Round ${r.round}</p>
+          </div>
+          <button onclick="copyToClipboard('${r.utr}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+            📋 Copy
+          </button>
+        `;
+        box.appendChild(div);
+      });
     }
 
-    async function adminRenderWinnersPayout() {
+    function adminRenderWinnersPayout() {
       const box = document.getElementById("adminWinnersPayoutWrapper");
       if (!box) return;
 
-      try {
-        const res = await fetch(`${CLOUD_LEAD}/json?poll=1&since=all`);
-        const text = await res.text();
-        const records = [];
+      const records = quizResultsList.filter(r => String(r.round) === String(activeRoundNumber));
+      records.sort((a, b) => b.score - a.score || a.timeMs - b.timeMs);
+      const top5 = records.slice(0, 5);
 
-        text.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const p = JSON.parse(line);
-            let d = p.message;
-            if (typeof d === "string") {
-              try { d = JSON.parse(d); } catch(e) {}
-            }
-            if (d && d.type === "quiz_result" && String(d.round) === activeRoundNumber) records.push(d);
-          } catch(e) {}
-        });
+      if (top5.length === 0) {
+        box.innerHTML = "<p class='text-xs text-slate-500 py-2'>Winners appear here when test completes.</p>";
+        return;
+      }
 
-        records.sort((a, b) => b.score - a.score || a.timeMs - b.timeMs);
-        const top5 = records.slice(0, 5);
-
-        if (top5.length === 0) {
-          box.innerHTML = "<p class='text-xs text-slate-500 py-2'>No winners yet.</p>";
-          return;
-        }
-
-        const prizeTiers = [300, 200, 150, 100, 50];
-        box.innerHTML = "";
-        top5.forEach((w, idx) => {
-          const div = document.createElement("div");
-          div.className = "p-2.5 bg-slate-900 border border-amber-500/40 rounded-xl flex justify-between items-center text-xs";
-          div.innerHTML = `
-            <div>
-              <p class="font-bold text-amber-300">#${idx + 1} ${w.name} — <span class="text-emerald-400 font-black">₹${prizeTiers[idx]}</span></p>
-              <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${w.phone}</p>
-              <p class="text-[10px] text-slate-400">Score: ${w.score}/10 | ⏱️ ${w.timeFormatted}</p>
-            </div>
-            <button onclick="copyToClipboard('${w.phone}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">
-              📋 Copy No.
-            </button>
-          `;
-          box.appendChild(div);
-        });
-      } catch(e) {}
+      const prizeTiers = [300, 200, 150, 100, 50];
+      box.innerHTML = "";
+      top5.forEach((w, idx) => {
+        const div = document.createElement("div");
+        div.className = "p-2.5 bg-slate-900 border border-amber-500/40 rounded-xl flex justify-between items-center text-xs";
+        div.innerHTML = `
+          <div>
+            <p class="font-bold text-amber-300">#${idx + 1} ${w.name} — <span class="text-emerald-400 font-black">₹${prizeTiers[idx]}</span></p>
+            <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${w.phone}</p>
+            <p class="text-[10px] text-slate-400">Score: ${w.score}/10 | ⏱️ ${w.timeFormatted}</p>
+          </div>
+          <button onclick="copyToClipboard('${w.phone}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+            📋 Copy No.
+          </button>
+        `;
+        box.appendChild(div);
+      });
     }
 
     // ==========================================
     // 1-CLICK EXCEL (.CSV) BUILDER
     // ==========================================
-    async function downloadBuiltinExcelReport() {
-      try {
-        const [appRes, leadRes] = await Promise.all([
-          fetch(`${CLOUD_APP}/json?poll=1&since=all`),
-          fetch(`${CLOUD_LEAD}/json?poll=1&since=all`)
-        ]);
-
-        const appText = await appRes.text();
-        const leadText = await leadRes.text();
-
-        const allRecords = [];
-
-        appText.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const p = JSON.parse(line);
-            let d = p.message;
-            if (typeof d === "string") {
-              try { d = JSON.parse(d); } catch(e) {}
-            }
-            if (d && d.name) {
-              allRecords.push({
-                round: d.round || "1",
-                name: d.name,
-                phone: d.phone || "",
-                utr: d.utr || "",
-                score: "N/A",
-                time: "N/A",
-                status: d.status === "approved" ? "Payment Approved" : "Rejected UTR"
-              });
-            }
-          } catch(e) {}
-        });
-
-        leadText.trim().split("\n").forEach(line => {
-          if (!line) return;
-          try {
-            const p = JSON.parse(line);
-            let d = p.message;
-            if (typeof d === "string") {
-              try { d = JSON.parse(d); } catch(e) {}
-            }
-            if (d && d.name) {
-              allRecords.push({
-                round: d.round || "1",
-                name: d.name,
-                phone: d.phone || "",
-                utr: d.utr || "",
-                score: `${d.score} / 10`,
-                time: `${d.timeFormatted} (${d.timeMs} ms)`,
-                status: d.status || "Completed"
-              });
-            }
-          } catch(e) {}
-        });
-
-        if (allRecords.length === 0) {
-          alert("Abhi tak koi data record nahi hua hai!");
-          return;
-        }
-
-        let csvContent = "Round No,Student Name,PhonePe Number,UTR Number,Score (Out of 10),Time Taken,Status\n";
-        allRecords.forEach(row => {
-          csvContent += `"${row.round}","${row.name}","'${row.phone}","'${row.utr}","${row.score}","${row.time}","${row.status}"\n`;
-        });
-
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", `CBSE_Quiz_Report_All_Rounds_${new Date().toISOString().slice(0, 10)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch(err) {
-        alert("Excel export me error aaya. Please retry!");
+    function downloadBuiltinExcelReport() {
+      if (quizResultsList.length === 0 && approvedUtrsSet.size === 0) {
+        alert("Abhi tak koi data record nahi hua hai!");
+        return;
       }
+
+      let csvContent = "Round No,Student Name,PhonePe Number,UTR Number,Score (Out of 10),Time Taken,Status\n";
+      
+      quizResultsList.forEach(row => {
+        csvContent += `"${row.round}","${row.name}","'${row.phone}","'${row.utr}","${row.score}","${row.timeFormatted}","${row.status}"\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `CBSE_Quiz_Report_All_Rounds_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     function copyToClipboard(text, btnElement) {
@@ -1446,25 +1279,31 @@
       });
     }
 
-    // CALM UNIFIED POLLING LOOP (NO RATE-LIMIT, NO CRASH)
-    let syncEngineBusy = false;
-    async function mainUnifiedLoop() {
-      if (syncEngineBusy) return;
-      syncEngineBusy = true;
+    // Fallback sync polling (runs once every 6 seconds without rate-limiting)
+    async function fallbackSyncPoll() {
       try {
-        await syncUniversalEngine();
-        const adminScreen = document.getElementById("screen8AdminDashboard");
-        if (adminScreen && !adminScreen.classList.contains("hidden")) {
-          await adminFetchPendingUtrs();
-        }
+        const res = await fetch(`${CLOUD_MASTER_BUS}/json?poll=1&since=all`);
+        if (!res.ok) return;
+        const text = await res.text();
+        text.trim().split("\n").forEach(line => {
+          if (!line) return;
+          try {
+            const p = JSON.parse(line);
+            let payload = p.message;
+            if (typeof payload === "string") {
+              try { payload = JSON.parse(payload); } catch(e) {}
+            }
+            handleIncomingBusEvent(payload);
+          } catch(e) {}
+        });
       } catch(e) {}
-      finally {
-        syncEngineBusy = false;
-      }
     }
 
-    setInterval(mainUnifiedLoop, 4000);
-    mainUnifiedLoop();
+    // Initialize System
+    initMasterEventSource();
+    fallbackSyncPoll();
+    setInterval(checkLobbyTransitions, 1000);
+    setInterval(fallbackSyncPoll, 7000);
   </script>
 </body>
 </html>
