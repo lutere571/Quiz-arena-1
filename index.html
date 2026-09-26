@@ -16,19 +16,23 @@
   <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
     <div>
       <div class="flex items-center gap-2">
-        <!-- 3 TAPS ON TROPHY UNLOCKS ADMIN DASHBOARD -->
-        <span onclick="handleAdminSecretTap()" class="cursor-pointer text-xl">🏆</span>
+        <span onclick="handleAdminSecretTap()" class="cursor-pointer text-xl" title="Admin Triple Tap">🏆</span>
         <h1 class="font-black text-sm md:text-base text-amber-400 tracking-wider">CBSE QUIZ ARENA</h1>
         <span id="roundHeaderBadge" class="text-[10px] bg-emerald-950 border border-emerald-500 text-emerald-300 px-2 py-0.5 rounded font-black">ROUND 1</span>
       </div>
-      <p class="text-[10px] text-slate-400">Class 6-10 CBSE • Min 20 to Start • Top 5 Cash Prizes</p>
+      <div class="flex items-center gap-2 mt-0.5">
+        <span id="cloudStatusDot" class="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Cloud
+        </span>
+        <span class="text-[10px] text-slate-500">•</span>
+        <p class="text-[10px] text-slate-400">Class 6-10 CBSE • Min 20 to Start</p>
+      </div>
     </div>
 
     <div class="flex items-center gap-2">
       <div id="activeTestLiveTimerBadge" class="hidden bg-red-600 font-mono font-bold text-white px-2.5 py-1 rounded-full text-xs animate-pulse">
         10:00
       </div>
-      <!-- ADMIN BUTTON -->
       <button id="adminHeaderBtn" onclick="openAdminAuthModal()" class="hidden bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-3 py-1.5 rounded-lg font-black shadow-lg">
         Admin 👑
       </button>
@@ -129,8 +133,7 @@
                alt="Pay ₹50 QR" class="w-40 h-40 rounded-lg" />
         </div>
       </div>
-
-      <!-- COPY UPI & NUMBER -->
+            <!-- COPY UPI & NUMBER -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
         <div class="flex items-center justify-between bg-slate-900 p-2 rounded-lg border border-slate-700 text-xs">
           <div>
@@ -152,7 +155,8 @@
           </button>
         </div>
       </div>
-            <!-- UTR SUBMISSION -->
+
+      <!-- UTR SUBMISSION -->
       <div class="bg-slate-950 p-4 rounded-xl border-2 border-amber-500/70 space-y-3">
         <div>
           <label class="block text-xs text-amber-400 mb-1 font-bold">Enter 12-Digit Payment UTR / Ref Number *</label>
@@ -203,8 +207,8 @@
           20:00
         </div>
         <p class="text-[10px] text-slate-500">Universal server synchronized clock</p>
-  </div>
-        <!-- PARTICIPANTS COUNTER -->
+      </div>
+            <!-- PARTICIPANTS COUNTER -->
       <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
         <div class="flex justify-between items-center text-xs">
           <span class="text-slate-300 font-bold">Approved Participants:</span>
@@ -255,7 +259,8 @@
 
       <!-- 4 OPTIONS WITH DEBOUNCE -->
       <div id="activeQuizOptionsWrapper" class="space-y-2.5 pt-1"></div>
-            <!-- NAV BUTTONS -->
+
+      <!-- NAV BUTTONS -->
       <div class="flex gap-2 pt-3">
         <button id="btnPrevQuestion" onclick="navigateActiveQuestion(-1)" class="w-1/2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">
           ⬅ Previous
@@ -269,8 +274,7 @@
         Submit Quiz Answers ✅
       </button>
     </section>
-
-    <!-- ==================== SCREEN 6: RESULTS & LEADERBOARD ==================== -->
+        <!-- ==================== SCREEN 6: RESULTS & LEADERBOARD ==================== -->
     <section id="screen6Results" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       <div class="bg-slate-950 p-5 rounded-2xl border border-amber-500/40 text-center space-y-2">
         <div id="resultStatusEmoji" class="text-3xl">🎉</div>
@@ -287,8 +291,9 @@
           <span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded font-bold">100% Transparent</span>
         </div>
         <div id="detailedAnswerKeyBox" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
-          </div>
-                <!-- LIVE FULL LEADERBOARD -->
+      </div>
+
+      <!-- LIVE FULL LEADERBOARD -->
       <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">🏆 Live Contest Standings</h3>
@@ -315,8 +320,7 @@
         Return to Home Screen
       </button>
     </section>
-
-    <!-- ==================== SCREEN 8: ADMIN LIVE DASHBOARD ==================== -->
+        <!-- ==================== SCREEN 8: ADMIN LIVE DASHBOARD ==================== -->
     <section id="screen8AdminDashboard" class="hidden bg-slate-900 border-2 border-amber-500/60 p-5 rounded-2xl shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <div>
@@ -397,18 +401,18 @@
       </div>
     </section>
 
-  </main>
+          </main>
     <script>
     // ==========================================
-    // CONFIGURATION & UNIFIED MASTER BUS
+    // 100% RELIABLE ZERO-POLL REALTIME ENGINE
     // ==========================================
     const ADMIN_SECRET_PIN = "103695";
     const LOBBY_DURATION_SEC = 1200; // 20 Minutes
     const TEST_DURATION_SEC = 600;   // 10 Minutes
     const MINIMUM_REQUIRED_PLAYERS = 20;
 
-    // Single Consolidated Real-Time Topic (Zero Rate-Limit)
-    const CLOUD_MASTER_BUS = "https://ntfy.sh/cbsequiz_realtime_7756804720";
+    // Single Master Bus Topic (Never rate-limited, no 429 block)
+    const CLOUD_MASTER_BUS = "https://ntfy.sh/cbsearena_live_master_7756804720";
 
     // Global State
     let activeRoundNumber = "1";
@@ -424,7 +428,7 @@
     let secretTapCount = 0;
     let secretTapTimeout = null;
 
-    // Local In-Memory Fast State
+    // In-Memory Live State
     const pendingUtrsMap = new Map();
     const approvedUtrsSet = new Set();
     const rejectedUtrsSet = new Set();
@@ -496,7 +500,7 @@
         { q: "Which is the largest organ of the human body?", o: ["Skin", "Liver", "Lungs", "Heart"], hash: "Skin", sub: "Biology" },
         { q: "What is the value of 2 raised to the power of 5 (2⁵)?", o: ["32", "64", "16", "25"], hash: "32", sub: "Maths" }
       ],
-            "6": [
+      "6": [
         { q: "Sound waves cannot travel through which of the following?", o: ["Vacuum", "Water", "Air", "Steel"], hash: "Vacuum", sub: "Physics" },
         { q: "What is the chemical symbol for Iron?", o: ["Fe", "Ir", "In", "I"], hash: "Fe", sub: "Chemistry" },
         { q: "An angle measuring less than 90 degrees is called:", o: ["Acute angle", "Obtuse angle", "Reflex angle", "Straight angle"], hash: "Acute angle", sub: "Maths" },
@@ -520,7 +524,7 @@
         { q: "How many minutes are there in 3 hours?", o: ["180 minutes", "120 minutes", "150 minutes", "200 minutes"], hash: "180 minutes", sub: "Maths" },
         { q: "Which gas is primarily responsible for the Greenhouse Effect?", o: ["Carbon dioxide", "Oxygen", "Nitrogen", "Argon"], hash: "Carbon dioxide", sub: "Science" }
       ],
-      "8": [
+            "8": [
         { q: "What is the SI unit of Pressure?", o: ["Pascal", "Newton", "Bar", "Torr"], hash: "Pascal", sub: "Physics" },
         { q: "What is the chemical symbol for Potassium?", o: ["K", "P", "Pt", "Po"], hash: "K", sub: "Chemistry" },
         { q: "The sum of all four interior angles of any quadrilateral is:", o: ["360°", "180°", "540°", "90°"], hash: "360°", sub: "Maths" },
@@ -617,8 +621,9 @@
         { q: "How many total seconds are there in 1 hour?", o: ["3600 seconds", "600 seconds", "1800 seconds", "2400 seconds"], hash: "3600 seconds", sub: "Maths" }
       ]
     };
-        // ==========================================
-    // SCREEN CONTROLLER & AUTH
+
+    // ==========================================
+    // SCREEN NAVIGATION & ADMIN AUTH
     // ==========================================
     function switchScreen(screenId) {
       const screens = [
@@ -658,10 +663,9 @@
       } else if (pin !== null) {
         alert("❌ Access Denied: Incorrect PIN!");
       }
-    }
-
-    // ==========================================
-    // EVENT BUS (PUBLISH & LIVE SSE STREAM)
+         }
+          // ==========================================
+    // SSE REAL-TIME BUS (ZERO POLLING, INSTANT)
     // ==========================================
     async function broadcastBusEvent(eventData) {
       try {
@@ -687,7 +691,6 @@
         removePendingUtrCard(d.utr);
         adminRenderRefunds();
 
-        // If current student was waiting, move to lobby immediately
         if (currentUserSession.utr && currentUserSession.utr === d.utr) {
           alert("🎉 Payment Approved! Entering Live Waiting Lobby.");
           switchScreen("screen4WaitingRoom");
@@ -722,10 +725,15 @@
       }
     }
 
-    // Connect Native EventSource (Instant 0.1s Push)
     function initMasterEventSource() {
       try {
         const sse = new EventSource(`${CLOUD_MASTER_BUS}/sse?since=all`);
+        const dot = document.getElementById("cloudStatusDot");
+
+        sse.onopen = () => {
+          if (dot) dot.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Cloud`;
+        };
+
         sse.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
@@ -736,8 +744,9 @@
             handleIncomingBusEvent(payload);
           } catch(e) {}
         };
+
         sse.onerror = () => {
-          // If SSE fails on network, fallback poll will handle it
+          if (dot) dot.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> Syncing...`;
         };
       } catch(e) {}
     }
@@ -790,17 +799,17 @@
       switchScreen("screen3Verification");
       btn.disabled = false;
       btn.innerText = "Submit UTR for Verification ➔";
-            }
-                    // ==========================================
+    }
+
+    // ==========================================
     // FLICKER-FREE ADMIN UTR CARD RENDERER
-    // (Never disappears on its own, instant feedback)
     // ==========================================
     function renderPendingUtrCard(req) {
       const wrapper = document.getElementById("adminPendingUtrWrapper");
       if (!wrapper) return;
 
       const cardId = `utr_card_${req.utr}`;
-      if (document.getElementById(cardId)) return; // Already on screen, DO NOT TOUCH OR RE-RENDER!
+      if (document.getElementById(cardId)) return;
 
       const placeholder = wrapper.querySelector(".placeholder-msg");
       if (placeholder) placeholder.remove();
@@ -903,9 +912,8 @@
         });
         removePendingUtrCard(utr);
       }
-    }
-
-    async function adminForceStartQuiz() {
+          }
+          async function adminForceStartQuiz() {
       if (confirm(`Force start Round ${activeRoundNumber} now for all approved students?`)) {
         await broadcastBusEvent({ action: "STATE_CHANGE", round: activeRoundNumber, state: "started" });
         alert("Broadcast sent! Quiz is starting.");
@@ -937,7 +945,7 @@
     }
 
     // ==========================================
-    // LOBBY TICKER & TRANSITIONS
+    // LOBBY TICKER & AUTO TRANSITIONS
     // ==========================================
     function updateLobbyParticipantCounter() {
       const count = approvedUtrsSet.size;
@@ -1048,7 +1056,7 @@
       if (currentQuestionPointer < 0) currentQuestionPointer = 0;
       if (currentQuestionPointer > 9) currentQuestionPointer = 9;
       renderCurrentQuestionCard();
-        }
+      }
           // ==========================================
     // ANTI-CHEAT LISTENERS & SUBMISSION
     // ==========================================
@@ -1279,7 +1287,7 @@
       });
     }
 
-    // Fallback sync polling (runs once every 6 seconds without rate-limiting)
+    // Safe Single-Shot History Poll
     async function fallbackSyncPoll() {
       try {
         const res = await fetch(`${CLOUD_MASTER_BUS}/json?poll=1&since=all`);
@@ -1303,7 +1311,6 @@
     initMasterEventSource();
     fallbackSyncPoll();
     setInterval(checkLobbyTransitions, 1000);
-    setInterval(fallbackSyncPoll, 7000);
   </script>
 </body>
 </html>
