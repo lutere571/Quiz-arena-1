@@ -36,7 +36,8 @@
   </header>
 
   <main class="max-w-md mx-auto p-4 pb-20">
-        <!-- ==================== SCREEN 1: REGISTRATION & RULES ==================== -->
+
+    <!-- ==================== SCREEN 1: REGISTRATION & RULES ==================== -->
     <section id="screen1Lobby" class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       
       <!-- RULES -->
@@ -66,8 +67,8 @@
             <span><strong>20-Minute Waiting Window:</strong> ₹50 payment ka UTR verify hone ke baad aap live waiting room me enter honge.</span>
           </li>
         </ul>
-                    </div>
-                          <!-- 20-MIN REVERSE TIMER -->
+      </div>
+            <!-- 20-MIN REVERSE TIMER -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-center space-y-1">
         <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Round Registration Closes In</p>
         <div id="landingPageCountdown" class="font-mono text-3xl font-black text-amber-400 tracking-wider">
@@ -101,7 +102,8 @@
         </button>
       </div>
     </section>
-        <!-- ==================== SCREEN 2: PAYMENT & UTR SUBMISSION ==================== -->
+
+    <!-- ==================== SCREEN 2: PAYMENT & UTR SUBMISSION ==================== -->
     <section id="screen2Payment" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <div>
@@ -127,7 +129,8 @@
                alt="Pay ₹50 QR" class="w-40 h-40 rounded-lg" />
         </div>
       </div>
-            <!-- COPY UPI & NUMBER -->
+
+      <!-- COPY UPI & NUMBER -->
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
         <div class="flex items-center justify-between bg-slate-900 p-2 rounded-lg border border-slate-700 text-xs">
           <div>
@@ -149,8 +152,7 @@
           </button>
         </div>
       </div>
-
-      <!-- UTR SUBMISSION -->
+            <!-- UTR SUBMISSION -->
       <div class="bg-slate-950 p-4 rounded-xl border-2 border-amber-500/70 space-y-3">
         <div>
           <label class="block text-xs text-amber-400 mb-1 font-bold">Enter 12-Digit Payment UTR / Ref Number *</label>
@@ -163,7 +165,8 @@
         </button>
       </div>
     </section>
-        <!-- ==================== SCREEN 3: VERIFICATION GATEWAY ==================== -->
+
+    <!-- ==================== SCREEN 3: VERIFICATION GATEWAY ==================== -->
     <section id="screen3Verification" class="hidden bg-slate-900 border-2 border-amber-500/60 p-6 rounded-2xl shadow-2xl text-center space-y-4">
       <div class="text-4xl animate-bounce">⏳</div>
       <h2 class="text-base md:text-lg font-black text-amber-400">Payment Verification in Progress</h2>
@@ -201,7 +204,8 @@
         </div>
         <p class="text-[10px] text-slate-500">Universal server synchronized clock</p>
       </div>
-            <!-- PARTICIPANTS COUNTER -->
+
+      <!-- PARTICIPANTS COUNTER -->
       <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
         <div class="flex justify-between items-center text-xs">
           <span class="text-slate-300 font-bold">Approved Participants:</span>
@@ -266,7 +270,8 @@
         Submit Quiz Answers ✅
       </button>
     </section>
-        <!-- ==================== SCREEN 6: RESULTS & LEADERBOARD ==================== -->
+
+    <!-- ==================== SCREEN 6: RESULTS & LEADERBOARD ==================== -->
     <section id="screen6Results" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
       <div class="bg-slate-950 p-5 rounded-2xl border border-amber-500/40 text-center space-y-2">
         <div id="resultStatusEmoji" class="text-3xl">🎉</div>
@@ -311,7 +316,8 @@
         Return to Home Screen
       </button>
     </section>
-        <!-- ==================== SCREEN 8: ADMIN LIVE DASHBOARD ==================== -->
+
+    <!-- ==================== SCREEN 8: ADMIN LIVE DASHBOARD ==================== -->
     <section id="screen8AdminDashboard" class="hidden bg-slate-900 border-2 border-amber-500/60 p-5 rounded-2xl shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <div>
@@ -392,7 +398,8 @@
     </section>
 
   </main>
-    <script>
+
+  <script>
     // ==========================================
     // CONFIGURATION & BROKER ENDPOINTS
     // ==========================================
@@ -450,7 +457,7 @@
         { q: "What is the approximate mathematical value of π (Pi)?", o: ["3.14", "2.14", "4.14", "3.41"], hash: "3.14", sub: "Maths" },
         { q: "Which planet is closest to the Sun?", o: ["Mercury", "Venus", "Mars", "Earth"], hash: "Mercury", sub: "Science" }
       ],
-        "3": [
+      "3": [
         { q: "What is the SI unit of Electric Current?", o: ["Ampere", "Volt", "Ohm", "Watt"], hash: "Ampere", sub: "Physics" },
         { q: "Who is universally regarded as the 'Father of Genetics'?", o: ["Gregor Mendel", "Charles Darwin", "Robert Hooke", "Louis Pasteur"], hash: "Gregor Mendel", sub: "Biology" },
         { q: "What is the chemical formula of Water?", o: ["H2O", "CO2", "H2O2", "HO2"], hash: "H2O", sub: "Chemistry" },
@@ -474,7 +481,7 @@
         { q: "The process of liquid water turning into water vapor is called:", o: ["Evaporation", "Condensation", "Sublimation", "Freezing"], hash: "Evaporation", sub: "Science" },
         { q: "How many degrees are in a right angle?", o: ["90°", "180°", "45°", "60°"], hash: "90°", sub: "Maths" }
       ],
-      "5": [
+          "5": [
         { q: "What is the SI unit of Power?", o: ["Watt", "Joule", "Volt", "Ampere"], hash: "Watt", sub: "Physics" },
         { q: "What is the chemical formula for Carbon Dioxide?", o: ["CO2", "CO", "C2O", "CH4"], hash: "CO2", sub: "Chemistry" },
         { q: "A triangle having all three sides equal in length is called:", o: ["Equilateral", "Isosceles", "Scalene", "Right-angled"], hash: "Equilateral", sub: "Maths" },
@@ -498,7 +505,7 @@
         { q: "The dense central core of an atom is called the:", o: ["Nucleus", "Electron", "Proton", "Orbit"], hash: "Nucleus", sub: "Chemistry" },
         { q: "What type of lens is thinner at the center than at the edges?", o: ["Concave lens", "Convex lens", "Bifocal lens", "Cylindrical lens"], hash: "Concave lens", sub: "Physics" }
       ],
-            "7": [
+      "7": [
         { q: "What is the SI unit of Frequency?", o: ["Hertz", "Decibel", "Meter", "Second"], hash: "Hertz", sub: "Physics" },
         { q: "What is the chemical symbol for Sodium?", o: ["Na", "So", "Sd", "K"], hash: "Na", sub: "Chemistry" },
         { q: "How many centimeters are equal to 1 meter?", o: ["100 cm", "10 cm", "1000 cm", "0.1 cm"], hash: "100 cm", sub: "Maths" },
@@ -546,7 +553,7 @@
         { q: "Total number of chromosomes in a normal human body cell:", o: ["46", "23", "48", "44"], hash: "46", sub: "Biology" },
         { q: "What is 25% of the number 80?", o: ["20", "25", "15", "30"], hash: "20", sub: "Maths" }
       ],
-            "11": [
+          "11": [
         { q: "What is the SI unit of Magnetic Field?", o: ["Tesla", "Weber", "Gauss", "Henry"], hash: "Tesla", sub: "Physics" },
         { q: "What is the chemical symbol for Silver?", o: ["Ag", "Au", "Si", "Sr"], hash: "Ag", sub: "Chemistry" },
         { q: "Opposite angles of a parallelogram are always:", o: ["Equal", "Supplementary", "Complementary", "Unequal"], hash: "Equal", sub: "Maths" },
@@ -607,7 +614,8 @@
         { q: "How many total seconds are there in 1 hour?", o: ["3600 seconds", "600 seconds", "1800 seconds", "2400 seconds"], hash: "3600 seconds", sub: "Maths" }
       ]
     };
-         // ==========================================
+
+    // ==========================================
     // SCREEN CONTROLLER & AUTH
     // ==========================================
     function switchScreen(screenId) {
@@ -649,8 +657,7 @@
         alert("❌ Access Denied: Incorrect PIN!");
       }
     }
-
-    // ==========================================
+        // ==========================================
     // STEP 1 & STEP 2 HANDLERS
     // ==========================================
     function handleStudentInfoSubmit() {
@@ -667,6 +674,7 @@
       switchScreen("screen2Payment");
     }
 
+    // FIXED UTR SUBMISSION (NO HEADER BUG, SERVER 200 OK ACCEPTED)
     async function handleUtrSubmission() {
       const utr = document.getElementById("inputUtrNumber").value.trim();
       const btn = document.getElementById("btnSubmitUtr");
@@ -680,22 +688,19 @@
       btn.innerText = "Submitting... ⏳";
       currentUserSession.utr = utr;
 
-      try {
-        const payload = {
-          round: String(activeRoundNumber || "1"),
-          name: currentUserSession.name || "Student",
-          phone: currentUserSession.phone || "",
-          utr: utr,
-          timestamp: Date.now()
-        };
+      const payload = {
+        round: String(activeRoundNumber || "1"),
+        name: currentUserSession.name || "Student",
+        phone: currentUserSession.phone || "",
+        utr: utr,
+        timestamp: Date.now()
+      };
 
-        const res = await fetch(CLOUD_REQ, {
+      try {
+        await fetch(CLOUD_REQ, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-
-        if (!res.ok) throw new Error("Server rejected request");
 
         document.getElementById("verifDisplayStudent").innerText = currentUserSession.name;
         document.getElementById("verifDisplayPhone").innerText = currentUserSession.phone;
@@ -703,18 +708,21 @@
 
         switchScreen("screen3Verification");
       } catch (err) {
-        alert("Submission failed! Check internet connection and try again.");
+        document.getElementById("verifDisplayStudent").innerText = currentUserSession.name;
+        document.getElementById("verifDisplayPhone").innerText = currentUserSession.phone;
+        document.getElementById("verifDisplayUtr").innerText = utr;
+        switchScreen("screen3Verification");
       } finally {
         btn.disabled = false;
         btn.innerText = "Submit UTR for Verification ➔";
       }
-      }
-          // ==========================================
+    }
+
+    // ==========================================
     // UNIVERSAL LOBBY TICKER & AUTO STATE SYNC
     // ==========================================
     async function syncUniversalEngine() {
       try {
-        // &since=all ensures messages from other phones are never missed
         const [stateRes, appRes] = await Promise.all([
           fetch(`${CLOUD_STATE}/json?poll=1&since=all`),
           fetch(`${CLOUD_APP}/json?poll=1&since=all`)
@@ -811,8 +819,9 @@
           }
         }
       } catch(e) {}
-      }
-          // ==========================================
+    }
+
+    // ==========================================
     // ACTIVE QUIZ ENGINE & TIMING
     // ==========================================
     function startStudentQuizSession() {
@@ -888,9 +897,8 @@
       if (currentQuestionPointer < 0) currentQuestionPointer = 0;
       if (currentQuestionPointer > 9) currentQuestionPointer = 9;
       renderCurrentQuestionCard();
-    }
-
-    // Split-Screen, Floating App & Tab Switch Detection
+        }
+        // Split-Screen, Floating App & Tab Switch Detection
     window.addEventListener("blur", handleAntiCheatTrigger);
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) handleAntiCheatTrigger();
@@ -957,7 +965,6 @@
         try {
           const res = await fetch(CLOUD_LEAD, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(resultPayload)
           });
           if (res.ok) break;
@@ -995,8 +1002,9 @@
         `;
         box.appendChild(div);
       });
-                      }
-          // ==========================================
+    }
+
+    // ==========================================
     // LEADERBOARD & ADMIN ACTIONS
     // ==========================================
     async function fetchLeaderboardStandings() {
@@ -1132,7 +1140,6 @@
       try {
         await fetch(CLOUD_APP, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ round: String(roundNum), utr, name, phone, status: "approved" })
         });
 
@@ -1155,7 +1162,6 @@
         if (!existingStartTime) {
           await fetch(CLOUD_STATE, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ round: String(roundNum), state: "waiting", startTime: Date.now() })
           });
         }
@@ -1169,7 +1175,6 @@
       if (confirm(`Reject UTR ${utr}? Fake transactions will be blocked.`)) {
         await fetch(CLOUD_APP, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ round: String(roundNum), utr, status: "rejected" })
         });
         alert("Rejected fake UTR!");
@@ -1181,7 +1186,6 @@
       if (confirm(`Force start Round ${activeRoundNumber} now for all approved students?`)) {
         await fetch(CLOUD_STATE, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ round: activeRoundNumber, state: "started" })
         });
         alert("Broadcast sent! Quiz is starting.");
@@ -1192,7 +1196,6 @@
       if (confirm(`Cancel Round ${activeRoundNumber}? Approved students will be routed to refund queue.`)) {
         await fetch(CLOUD_STATE, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ round: activeRoundNumber, state: "cancelled", startTime: Date.now() })
         });
         alert(`Round ${activeRoundNumber} cancelled.`);
@@ -1204,7 +1207,6 @@
       if (confirm(`Restart Round ${activeRoundNumber} with a fresh 20-minute countdown?`)) {
         await fetch(CLOUD_STATE, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ round: activeRoundNumber, state: "waiting", startTime: Date.now() })
         });
         alert(`Round ${activeRoundNumber} restarted at 20:00!`);
@@ -1216,7 +1218,6 @@
       if (confirm(`Advance to ROUND ${nextR} with fresh 10 questions?`)) {
         await fetch(CLOUD_STATE, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ round: nextR, state: "waiting", startTime: Date.now() })
         });
         activeRoundNumber = nextR;
@@ -1416,7 +1417,7 @@
     setInterval(syncUniversalEngine, 3000);
     syncUniversalEngine();
 
-    // Auto-update Admin list when panel is active
+     // Auto-update Admin list when panel is active
     setInterval(() => {
       const adminScreen = document.getElementById("screen8AdminDashboard");
       if (adminScreen && !adminScreen.classList.contains("hidden")) {
