@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#020617">
+<title>CBSE Mega Quiz Arena (Class 6-10)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{slate:{950:'#020617'},indigo:{950:'#1e1b4b'}}}}};
+</script>
+<style>
+html,body{min-height:100%;background:#020617;color:#e2e8f0}
+body{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}.glass{background:rgba(15,23,42,.82);backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.16)}
+.card{box-shadow:0 18px 50px rgba(0,0,0,.25)}
+.hidden-screen{display:none!important}
+.fade-out{animation:fadeOut .45s ease forwards}
+@keyframes fadeOut{to{opacity:0;transform:translateY(-6px);max-height:0;margin:0;padding:0;overflow:hidden}}
+.pulse-dot{animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.timer-pulse{animation:timerPulse 1s infinite}
+@keyframes timerPulse{50%{transform:scale(1.03)}}
+.option{transition:.16s}.option.selected{border-color:#818cf8;background:rgba(99,102,241,.2)}
+.option.correct{border-color:#34d399;background:rgba(16,185,129,.14)}
+.option.wrong{border-color:#fb7185;background:rgba(244,63,94,.12)}
+.progress-bar{transition:width .35s ease}
+.modal-backdrop{background:rgba(2,6,23,.78);backdrop-filter:blur(5px)}
+.toast{animation:toastIn .25s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+input:focus{outline:none;box-shadow:0 0 0 2px rgba(129,140,248,.55)}
+</style>
+</head>
+<body>
+<header class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur">
+  <div class="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-3">
+    <button id="secretTrophy" class="text-2xl select-none" title="Contest logo">🏆</button>
+    <div class="min-w-0 flex-1">
+      <div class="font-black tracking-tight text-base sm:text-lg">CBSE Mega Quiz Arena <span class="text-indigo-400">(Class 6-10)</span></div>
+      <div class="flex items-center gap-2 text-[11px] text-slate-400">
+        <span id="roundBadge" class="rounded-full bg-indigo-500/15 px-2 py-0.5 text-indigo-300">ROUND 1</span>
+        <span class="inline-flex items-center gap-1"><i id="cloudDot" class="pulse-dot h-2 w-2 rounded-full bg-emerald-400"></i><span id="cloudText">Local live</span></span>
+      </div>
+    </div>
+    <div id="headerTimer" class="hidden text-lg font-black tabular-nums text-amber-300">10:00</div>
+    <button id="adminHeaderBtn" class="hidden rounded-lg bg-indigo-600 px-3 py-2 text-xs font-bold hover:bg-indigo-500">Admin</button>
+  </div>
+</header>
+
+<main class="mx-auto max-w-7xl px-4 py-6">
+  <div id="toastHost" class="fixed right-4 top-20 z-[70] space-y-2"></div>
+
+  <section id="screen-lobby" class="space-y-5">
+    <div class="grid lg:grid-cols-[1.3fr_.7fr] gap-5">
+      <div class="glass card rounded-3xl p-5 sm:p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div><div class="text-xs font-bold uppercase tracking-[.22em] text-indigo-300">Official Contest</div>
+          <h1 class="mt-2 text-3xl sm:text-5xl font-black">Mega Quiz Arena</h1>
+          <p class="mt-3 text-slate-400">10 CBSE MCQs • 10 minutes • Classes 6-10</p></div>
+          <div class="rounded-2xl bg-amber-400/10 p-3 text-3xl">🏆</div>
+        </div>
+        <div class="mt-6 grid sm:grid-cols-3 gap-3">
+          <div class="rounded-2xl bg-slate-900 p-4"><div class="text-xs text-slate-400">Entry</div><div class="text-xl font-black">₹50</div></div>
+          <div class="rounded-2xl bg-slate-900 p-4"><div class="text-xs text-slate-400">Quorum</div><div class="text-xl font-black">20 students</div></div>
+          <div class="rounded-2xl bg-slate-900 p-4"><div class="text-xs text-slate-400">Quiz</div><div class="text-xl font-black">10 / 600s</div></div>
+        </div>
+        <div class="mt-5 rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 text-sm">
+          <b class="text-rose-300">Anti-cheat:</b> switching tabs/windows or triggering a split-screen resize gives one warning; the second detected offense disqualifies the student and records a zero.
+        </div>
+      </div>
+      <div class="glass card rounded-3xl p-5">
+        <div class="text-xs uppercase tracking-widest text-slate-400">Round lobby closes in</div>
+        <div id="lobbyTimer" class="mt-2 text-5xl font-black tabular-nums text-amber-300">20:00</div>
+        <div class="mt-5 h-3 overflow-hidden rounded-full bg-slate-800"><div id="lobbyProgress" class="progress-bar h-full w-0 bg-gradient-to-r from-indigo-500 to-emerald-400"></div></div>
+        <div class="mt-2 text-sm text-slate-400"><span id="approvedCountLobby">0</span> / 20 approved</div>
+      </div>
+    </div>
+    <div class="glass card rounded-3xl p-5 sm:p-7">
+      <div class="flex items-center gap-2"><span class="rounded-lg bg-indigo-500/15 px-2 py-1 text-xs font-bold text-indigo-300">STEP 1</span><h2 class="text-xl font-black">Registration</h2></div>
+      <form id="registrationForm" class="mt-5 grid sm:grid-cols-2 gap-4">
+        <label class="block"><span class="text-sm text-slate-300">Student Full Name</span><input id="studentName" required minlength="2" maxlength="80" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3" placeholder="Enter full name"></label>
+        <label class="block"><span class="text-sm text-slate-300">10-digit PhonePe Mobile Number</span><input id="studentPhone" required inputmode="numeric" maxlength="10" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3" placeholder="10-digit mobile"></label>
+        <div class="sm:col-span-2"><button class="w-full sm:w-auto rounded-xl bg-indigo-600 px-6 py-3 font-bold hover:bg-indigo-500">Continue to Payment →</button></div>
+      </form>
+      <div class="mt-5 grid md:grid-cols-2 gap-4 text-sm text-slate-400">
+        <div class="rounded-2xl bg-slate-900 p-4"><b class="text-slate-200">Prize distribution</b><br>₹300 • ₹200 • ₹150 • ₹100 • ₹50</div>
+        <div class="rounded-2xl bg-slate-900 p-4"><b class="text-slate-200">Quorum rule</b><br>If fewer than 20 are approved when the 20-minute lobby closes, the round is cancelled and a ₹50 refund ledger entry is created.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-payment" class="hidden-screen max-w-3xl mx-auto">
+    <div class="glass card rounded-3xl p-5 sm:p-8">
+      <div class="flex items-center gap-2"><span class="rounded-lg bg-amber-500/15 px-2 py-1 text-xs font-bold text-amber-300">STEP 2</span><h2 class="text-2xl font-black">Payment & UTR</h2></div>
+      <p class="mt-2 text-slate-400">Pay exactly ₹50, then enter the 12-digit UTR/transaction reference.</p>
+      <div class="mt-6 grid md:grid-cols-2 gap-6 items-center">
+        <div class="text-center">
+          <img id="upiQr" class="mx-auto rounded-2xl bg-white p-2" width="170" height="170" alt="UPI QR code">
+          <a id="upiIntent" class="mt-4 inline-flex w-full justify-center rounded-xl bg-indigo-600 px-4 py-3 font-bold hover:bg-indigo-500" href="#">Open PhonePe / UPI App to Pay ₹50</a>
+        </div>
+        <div class="space-y-3">
+          <div class="rounded-xl bg-slate-900 p-4"><div class="text-xs text-slate-500">UPI ID</div><div class="flex items-center justify-between gap-2"><b>7756804720@ybl</b><button data-copy="7756804720@ybl" class="copyBtn rounded-lg bg-slate-800 px-2 py-1 text-xs">Copy</button></div></div>
+          <div class="rounded-xl bg-slate-900 p-4"><div class="text-xs text-slate-500">PhonePe Number</div><div class="flex items-center justify-between gap-2"><b>7756804720</b><button data-copy="7756804720" class="copyBtn rounded-lg bg-slate-800 px-2 py-1 text-xs">Copy</button></div></div>
+        </div>
+      </div>
+      <form id="utrForm" class="mt-7">
+        <label class="block"><span class="text-sm text-slate-300">12-digit UTR</span><input id="utrInput" required inputmode="numeric" maxlength="12" pattern="[0-9]{12}" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-lg tracking-widest" placeholder="123456789012"></label>
+        <button class="mt-4 w-full rounded-xl bg-emerald-600 px-5 py-3 font-bold hover:bg-emerald-500">Submit UTR for Verification ✓</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="screen-verification" class="hidden-screen max-w-2xl mx-auto">
+    <div class="glass card rounded-3xl p-8 text-center">
+      <div class="text-6xl animate-pulse">⌛</div><h2 class="mt-4 text-2xl font-black">Verification Gateway</h2>
+      <p class="mt-2 text-slate-400">Your payment reference is awaiting admin approval.</p>
+      <div class="mt-6 rounded-2xl bg-slate-900 p-5 text-left space-y-2 text-sm"><div><span class="text-slate-500">Name:</span> <b id="verifyName"></b></div><div><span class="text-slate-500">PhonePe:</span> <b id="verifyPhone"></b></div><div><span class="text-slate-500">UTR:</span> <b id="verifyUtr"></b></div></div>
+      <p class="mt-5 text-xs text-slate-500">This screen remains stable while approval data is polled.</p>
+    </div>
+  </section>
+
+  <section id="screen-waiting" class="hidden-screen max-w-3xl mx-auto">
+    <div class="glass card rounded-3xl p-5 sm:p-8 text-center">
+      <div class="inline-flex rounded-full bg-emerald-500/15 px-3 py-1 text-sm font-bold text-emerald-300">Payment Approved ✓</div>
+      <h2 class="mt-4 text-3xl font-black">Live Waiting Lobby</h2>
+      <div id="waitingTimer" class="mt-4 text-6xl font-black tabular-nums text-amber-300">20:00</div>
+      <div class="mt-5 text-sm text-slate-400"><b id="approvedCountWaiting">0 / 20</b> Required</div>
+      <div class="mt-3 h-4 overflow-hidden rounded-full bg-slate-800"><div id="waitingProgress" class="progress-bar h-full bg-gradient-to-r from-indigo-500 to-emerald-400" style="width:0%"></div></div>
+      <a id="whatsappInvite" target="_blank" rel="noopener" class="mt-6 inline-flex rounded-xl bg-emerald-600 px-5 py-3 font-bold hover:bg-emerald-500">WhatsApp Share / Invite</a>
+      <p class="mt-5 text-xs text-slate-500">The quiz starts at 00:00 only if at least 20 participants are approved, unless an admin force-starts the round.</p>
+    </div>
+  </section>
+
+  <section id="screen-quiz" class="hidden-screen">
+    <div class="grid lg:grid-cols-[1fr_280px] gap-5">
+      <div class="glass card rounded-3xl p-5 sm:p-8">
+        <div class="flex items-center justify-between gap-3"><span id="subjectBadge" class="rounded-full bg-indigo-500/15 px-3 py-1 text-xs font-bold text-indigo-300">SCIENCE</span><span id="questionIndex" class="text-sm font-bold text-slate-400">Question 1 of 10</span></div>
+        <div class="mt-4 flex items-center justify-between"><h2 id="questionText" class="text-xl sm:text-2xl font-black leading-relaxed"></h2><div id="quizTimer" class="shrink-0 ml-3 rounded-xl bg-amber-400/10 px-3 py-2 text-xl font-black tabular-nums text-amber-300">10:00</div></div>
+        <div id="cheatBanner" class="hidden mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200"></div>
+        <div id="options" class="mt-6 grid gap-3"></div>
+        <div class="mt-6 flex items-center justify-between gap-3"><button id="prevBtn" class="rounded-xl border border-slate-700 px-4 py-3 font-bold disabled:opacity-30">← Previous</button><button id="nextBtn" class="rounded-xl bg-indigo-600 px-5 py-3 font-bold hover:bg-indigo-500">Next →</button></div>
+      </div>
+      <aside class="glass rounded-3xl p-5 h-fit"><div class="text-sm font-bold">Answer Progress</div><div id="qDots" class="mt-4 grid grid-cols-5 gap-2"></div><div class="mt-5 text-xs text-slate-500">A second anti-cheat offense automatically records 0 and submits the quiz.</div></aside>
+    </div>
+  </section>
+
+  <section id="screen-results" class="hidden-screen space-y-5">
+    <div class="grid lg:grid-cols-[.7fr_1.3fr] gap-5">
+      <div class="glass card rounded-3xl p-6 text-center"><div class="text-sm text-slate-400">Your Score</div><div id="scoreBig" class="mt-1 text-6xl font-black text-emerald-300">0 / 10</div><div class="mt-3 text-slate-400">Exact time: <b id="timeTaken"></b></div><div id="resultDisq" class="mt-3 text-rose-300 font-bold"></div></div>
+      <div class="glass card rounded-3xl p-6"><div class="flex items-center justify-between"><h2 class="text-xl font-black">Live Leaderboard</h2><button id="refreshStandings" class="refreshBtn rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold">Refresh 🔄</button></div><div id="standingsList" class="mt-4 space-y-2"></div></div>
+    </div>
+    <div class="glass card rounded-3xl p-6"><h2 class="text-xl font-black">Detailed Answer Key</h2><div id="answerKey" class="mt-4 space-y-3"></div></div>
+  </section>
+
+  <section id="screen-cancelled" class="hidden-screen max-w-2xl mx-auto">
+    <div class="glass card rounded-3xl p-8 text-center"><div class="text-6xl">↩️</div><h2 class="mt-4 text-3xl font-black">Round Cancelled</h2><p class="mt-2 text-slate-400">Fewer than 20 approved students joined before the lobby deadline.</p><div class="mt-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-5"><div class="text-sm text-emerald-300">Refund ledger status</div><div class="mt-1 text-3xl font-black">₹50 • 100% Refund</div><div class="mt-1 text-sm text-slate-300">PhonePe: <b id="refundPhone"></b></div></div><p class="mt-5 text-xs text-slate-500">This static application records the refund as assured in its ledger. Actual money transfer requires a payment-provider/backend integration.</p></div>
+  </section>
+
+  <section id="screen-admin" class="hidden-screen">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-5"><div><div class="text-xs uppercase tracking-widest text-indigo-300">Secret Admin</div><h2 class="text-3xl font-black">Live Dashboard</h2></div><button id="adminClose" class="rounded-xl border border-slate-700 px-4 py-2 font-bold">Close</button></div>
+    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-3">
+      <div class="glass rounded-2xl p-4"><div class="text-xs text-slate-400">Round</div><div id="adminRound" class="text-2xl font-black"></div></div>
+      <div class="glass rounded-2xl p-4"><div class="text-xs text-slate-400">Approved</div><div id="adminApproved" class="text-2xl font-black"></div></div>
+      <div class="glass rounded-2xl p-4"><div class="text-xs text-slate-400">Pending UTR</div><div id="adminPending" class="text-2xl font-black"></div></div>
+      <div class="glass rounded-2xl p-4"><div class="text-xs text-slate-400">Round status</div><div id="adminStatus" class="text-2xl font-black text-emerald-300"></div></div>
+    </div>
+    <div class="mt-5 grid lg:grid-cols-2 gap-4">
+      <button id="forceStart" class="rounded-2xl bg-indigo-600 p-4 font-black text-left hover:bg-indigo-500">🚀 Force Start Now<br><span class="text-xs font-normal opacity-80">Start active quiz immediately.</span></button>
+      <button id="cancelRound" class="rounded-2xl bg-rose-600/80 p-4 font-black text-left hover:bg-rose-500">🛑 Cancel Round & Refund<br><span class="text-xs font-normal opacity-80">Archive and wipe the live screen.</span></button>
+      <button id="restartRound" class="rounded-2xl bg-amber-600/80 p-4 font-black text-left hover:bg-amber-500">🔄 Restart Same Round<br><span class="text-xs font-normal opacity-80">Archive and reset lobby.</span></button>
+      <button id="nextRound" class="rounded-2xl bg-emerald-600/80 p-4 font-black text-left hover:bg-emerald-500">⏭️ Next Round<br><span class="text-xs font-normal opacity-80">Archive and increment round.</span></button>
+    </div>
+    <div class="mt-5"><button id="exportCsv" class="w-full rounded-2xl bg-slate-800 p-4 font-black hover:bg-slate-700">⬇️ Master Audited Excel (.CSV) Export</button></div>
+
+    <div class="mt-6 grid xl:grid-cols-2 gap-5">
+      <div class="glass rounded-3xl p-5"><div class="flex justify-between items-center"><h3 class="font-black text-lg">Pending UTR Approvals</h3><button id="refreshPending" class="refreshBtn rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold">Refresh 🔄</button></div><div id="pendingList" class="mt-4 space-y-3"></div></div>
+      <div class="glass rounded-3xl p-5"><div class="flex justify-between items-center"><h3 class="font-black text-lg">Top 5 Winners Payout</h3><button id="refreshWinners" class="refreshBtn rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold">Refresh 🔄</button></div><div id="winnerList" class="mt-4 space-y-3"></div></div>
+      <div class="glass rounded-3xl p-5 xl:col-span-2"><h3 class="font-black text-lg">Pending Refunds</h3><div id="refundList" class="mt-4 space-y-2"></div></div>
+    </div>
+  </section>
+</main>
+
+<div id="pinModal" class="hidden fixed inset-0 z-[60] modal-backdrop items-center justify-center p-4">
+ <div class="glass rounded-3xl p-6 w-full max-w-sm"><h3 class="text-xl font-black">Admin PIN</h3><p class="text-sm text-slate-400 mt-1">Enter the 6-digit admin PIN.</p><input id="pinInput" inputmode="numeric" maxlength="6" type="password" class="mt-4 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-center tracking-[.4em]"><div class="mt-4 grid grid-cols-2 gap-3"><button id="pinCancel" class="rounded-xl border border-slate-700 py-3 font-bold">Cancel</button><button id="pinSubmit" class="rounded-xl bg-indigo-600 py-3 font-bold">Unlock</button></div></div>
+</div>
+
+<script>
+(() => {
+"use strict";
+
+const API_KEY="cbseMegaQuizArenaV2Api";
+const SESSION_KEY="cbseMegaQuizArenaV2Session";
+const ADMIN_TOKEN_KEY="cbseMegaQuizArenaV2Admin";
+const API_URL_KEY="cbseMegaQuizArenaV2Url";
+const PRIZES=[300,200,150,100,50];
+const QUIZ_SECONDS=600;
+const QUORUM=20;
+let apiUrl=localStorage.getItem(API_URL_KEY)||"";
+let session=readJson(SESSION_KEY,null);
+let adminToken=localStorage.getItem(ADMIN_TOKEN_KEY)||"";
+let model=null;
+let quizTicker=null, pollTicker=null, adminTicker=null;
+let secretTaps=0,tapTimer=null;
+let lastRenderKey="";
+let offenseLock=0;
+
+const $=id=>document.getElementById(id);
+function readJson(k,d){try{return JSON.parse(localStorage.getItem(k)||"null")||d}catch{return d}}
+function writeJson(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function fmt(sec){sec=Math.max(0,Math.ceil(Number(sec)||0));return `${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`}
+function toast(msg,type="info"){const el=document.createElement("div");el.className=`toast rounded-xl border px-4 py-3 text-sm font-bold shadow-2xl ${type==="ok"?"border-emerald-500/30 bg-emerald-500/15 text-emerald-200":type==="bad"?"border-rose-500/30 bg-rose-500/15 text-rose-200":"border-indigo-500/30 bg-slate-900 text-slate-200"}`;el.textContent=msg;$('toastHost').appendChild(el);setTimeout(()=>el.remove(),2600)}
+function show(id){document.querySelectorAll("main section").forEach(s=>s.classList.toggle("hidden-screen",s.id!==`screen-${id}`));$('adminHeaderBtn').classList.toggle("hidden",!adminToken)}
+function setCloud(ok,text){$('cloudDot').classList.toggle('bg-emerald-400',ok);$('cloudDot').classList.toggle('bg-rose-400',!ok);$('cloudText').textContent=text}
+function saveSession(){writeJson(SESSION_KEY,session)}
+function clearSession(){session=null;localStorage.removeItem(SESSION_KEY)}
+function setupPayment(){const data="upi://pay?pa=7756804720@ybl&pn=CBSE%20Quiz%20Master&am=50";$('upiQr').src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data="+encodeURIComponent(data);$('upiIntent').href=data}
+function openSetup(){
+ let m=$('apiSetupModal');
+ if(!m){m=document.createElement('div');m.id='apiSetupModal';m.className='fixed inset-0 z-[80] modal-backdrop flex items-center justify-center p-4';m.innerHTML=`<div class="glass rounded-3xl p-6 w-full max-w-lg"><h3 class="text-xl font-black">Online Setup</h3><p class="mt-2 text-sm text-slate-400">Paste your Google Apps Script Web App URL ending in <b>/exec</b>. This is required for multi-device live play.</p><input id="apiUrlInput" class="mt-4 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3" placeholder="https://script.google.com/macros/s/.../exec"><div class="mt-4 grid grid-cols-2 gap-3"><button id="apiCancel" class="rounded-xl border border-slate-700 py-3 font-bold">Cancel</button><button id="apiSave" class="rounded-xl bg-indigo-600 py-3 font-bold">Save & Connect</button></div><p class="mt-4 text-xs text-slate-500">The URL is stored only in this browser. Do not share your admin token.</p></div>`;document.body.appendChild(m);$('apiCancel').onclick=()=>m.remove();$('apiSave').onclick=async()=>{const v=$('apiUrlInput').value.trim().replace(/\/$/,"");if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(v))return toast('Enter a valid Apps Script /exec URL.','bad');apiUrl=v;localStorage.setItem(API_URL_KEY,v);m.remove();await boot(true)};}
+ $('apiUrlInput').value=apiUrl;
+}
+async function api(action,payload={}){
+ if(!apiUrl){openSetup();throw new Error('ONLINE_SETUP_REQUIRED')}
+ const body={action,...payload};if(session?.token)body.token=session.token;if(adminToken)body.adminToken=adminToken;
+ const res=await fetch(apiUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),cache:'no-store'});
+ const data=await res.json().catch(()=>null);if(!res.ok||!data)throw new Error('Server response error');if(!data.ok)throw new Error(data.error||'Request failed');return data;
+}
+async function refresh(silent=false){
+ try{const d=await api('getState');model=d;setCloud(true,'Online live');renderModel();return d}catch(e){setCloud(false,'Offline / setup');if(!silent&&e.message!=='ONLINE_SETUP_REQUIRED')toast(e.message||'Connection failed.','bad');return null}
+}
+function roundInfo(){return model?.round||{round:1,status:'LOBBY',lobbyStarted:Date.now(),lobbyDuration:1200,activeStarted:null}}
+function participant(){return model?.participant||null}
+function questions(){return model?.questions||[]}
+function lobbyRemaining(){const r=roundInfo();return Math.max(0,(Number(r.lobbyStarted)+Number(r.lobbyDuration)*1000-Date.now())/1000)}
+function quizRemaining(){const p=participant();if(!p?.quizStartedAt)return QUIZ_SECONDS;return Math.max(0,QUIZ_SECONDS-(Date.now()-Number(p.quizStartedAt))/1000)}
+function approvedCount(){return Number(model?.counts?.approved||0)}
+function renderModel(){
+ const r=roundInfo(),p=participant(),status=r.status;
+ if(adminToken && $('screen-admin') && !$('screen-admin').classList.contains('hidden-screen')){syncHeader();return;}
+ $('roundBadge').textContent=`ROUND ${r.round}`;$('adminRound').textContent=`ROUND ${r.round}`;$('adminApproved').textContent=approvedCount();$('adminStatus').textContent=status;$('adminPending').textContent=Number(model?.counts?.pending||0);
+ const key=JSON.stringify({status,pid:p?.id,ps:p?.status,q:p?.currentQuestion,score:p?.score,round:r.round,approved:approvedCount(),pending:model?.counts?.pending,finished:p?.finishedAt});
+ if(key===lastRenderKey)return;lastRenderKey=key;
+ if(status==='QUIZ'&&p?.status==='QUIZ'){show('quiz');renderQuiz();startQuizTicker()}
+ else if(p?.status==='PENDING'){show('verification');$('verifyName').textContent=p.name;$('verifyPhone').textContent=p.phone;$('verifyUtr').textContent=p.utr||''}
+ else if(p?.status==='APPROVED'){show('waiting');renderWaiting()}
+ else if(p?.status==='FINISHED'||p?.status==='DISQUALIFIED'||status==='RESULTS'){show('results');renderResults()}
+ else if(status==='CANCELLED'){show('cancelled');$('refundPhone').textContent=p?.phone||'Registered PhonePe number'}
+ else {show('lobby');renderLobby()}
+ if(adminToken&&$('screen-admin')&&!$('screen-admin').classList.contains('hidden-screen'))renderAdmin();
+ syncHeader();
+}
+function syncHeader(){const r=roundInfo();$('roundBadge').textContent=`ROUND ${r.round}`;$('headerTimer').classList.toggle('hidden',r.status!=='QUIZ'||participant()?.status!=='QUIZ');if(r.status==='QUIZ'&&participant()?.status==='QUIZ')$('headerTimer').textContent=fmt(quizRemaining())}
+function renderLobby(){const rem=lobbyRemaining();$('lobbyTimer').textContent=fmt(rem);$('approvedCountLobby').textContent=approvedCount();$('lobbyProgress').style.width=Math.min(100,approvedCount()/QUORUM*100)+'%'}
+function renderWaiting(){const rem=lobbyRemaining();$('waitingTimer').textContent=fmt(rem);$('approvedCountWaiting').textContent=`${approvedCount()} / ${QUORUM}`;$('waitingProgress').style.width=Math.min(100,approvedCount()/QUORUM*100)+'%';$('whatsappInvite').href='https://wa.me/?text='+encodeURIComponent(`Join CBSE Mega Quiz Arena Round ${roundInfo().round}! Entry ₹50, 10 MCQs in 10 minutes. Contact the quiz admin for payment details.`)}
+function renderQuiz(){const p=participant(),qs=questions(),i=Math.min(9,Number(p?.currentQuestion||0)),q=qs[i];if(!q)return;$('subjectBadge').textContent=q.subject.toUpperCase();$('questionIndex').textContent=`Question ${i+1} of 10`;$('questionText').textContent=q.q;$('prevBtn').disabled=i===0;$('nextBtn').textContent=i===9?'Submit Quiz Answers ✅':'Next →';$('quizTimer').textContent=fmt(quizRemaining());$('options').innerHTML=q.options.map((o,j)=>`<button class="option rounded-2xl border border-slate-700 bg-slate-900 p-4 text-left font-semibold ${p.answers?.[q.id]===j?'selected':''}" data-opt="${j}"><span class="mr-2 text-indigo-300">${String.fromCharCode(65+j)}.</span>${esc(o)}</button>`).join('');$('qDots').innerHTML=qs.map((x,j)=>`<button data-jump="${j}" class="rounded-lg p-2 text-center text-xs font-bold ${p.answers?.[x.id]!==undefined?'bg-indigo-600':'bg-slate-800'}">${j+1}</button>`).join('')}
+function renderResults(){const p=participant();$('scoreBig').textContent=`${p?.score||0} / 10`;$('timeTaken').textContent=p?.timeTaken!=null?`${Number(p.timeTaken).toFixed(3)}s`:'—';$('resultDisq').textContent=p?.disqualified?'DISQUALIFIED — score recorded as 0':'';const qs=questions();const answers=p?.answers||{};const key=p?.answerKey||[];$('answerKey').innerHTML=key.length?key.map((x,i)=>{const chosen=answers[x.id];const ok=chosen===x.answer;return `<div class="rounded-2xl border ${ok?'border-emerald-500/20':'border-rose-500/20'} bg-slate-900 p-4"><div class="text-sm font-bold">${i+1}. ${esc(x.q)}</div><div class="mt-2 grid sm:grid-cols-2 gap-2 text-sm"><div>Your choice: <b>${chosen===undefined?'Not answered':esc(x.options[chosen])}</b></div><div>Correct: <b class="text-emerald-300">${esc(x.options[x.answer])}</b></div></div><div class="mt-1 font-bold ${ok?'text-emerald-300':'text-rose-300'}">${ok?'✓ Correct':'✗ Incorrect'}</div></div>`}).join(''):'<div class="text-sm text-slate-500">Answer key will appear after server submission.</div>';renderStandings()}
+function renderStandings(){const arr=model?.standings||[];$('standingsList').innerHTML=arr.length?arr.map((s,i)=>`<div class="flex items-center gap-3 rounded-xl bg-slate-900 p-3"><div class="w-8 text-center font-black">${i<5?['🥇','🥈','🥉','🎖️','🎖️'][i]:i+1}</div><div class="min-w-0 flex-1"><b>${esc(s.name)}</b><div class="text-xs text-slate-500">${Number(s.timeTaken||0).toFixed(3)}s</div></div><div class="font-black">${s.score}/10</div>${i<5?`<span class="text-xs font-bold text-amber-300">₹${PRIZES[i]}</span>`:''}</div>`).join(''):'<div class="text-sm text-slate-500">No finished participants yet.</div>'}
+async function registration(e){e.preventDefault();const name=$('studentName').value.trim(),phone=$('studentPhone').value.replace(/\D/g,'');if(name.length<2||!/^[6-9]\d{9}$/.test(phone))return toast('Enter a valid full name and 10-digit Indian mobile number.','bad');try{const d=await api('register',{name,phone});session={token:d.token,participantId:d.participantId};saveSession();toast('Registration saved. Pay ₹50 and submit your UTR.','ok');await refresh()}catch(e){toast(e.message||'Registration failed.','bad')}}
+async function submitUTR(e){e.preventDefault();const utr=$('utrInput').value.trim();if(!/^\d{12}$/.test(utr))return toast('UTR must contain exactly 12 digits.','bad');try{await api('submitUTR',{utr});toast('UTR submitted for admin verification.','ok');await refresh()}catch(e){toast(e.message||'UTR submission failed.','bad')}}
+async function startQuiz(){try{await api('startQuiz');await refresh()}catch(e){toast(e.message||'Quiz could not start.','bad')}}
+async function saveAnswer(j){const p=participant(),q=questions()[Number(p.currentQuestion||0)];if(!q)return;try{await api('saveAnswer',{questionId:q.id,answerIndex:j});await refresh(true)}catch(e){toast(e.message||'Answer not saved.','bad')}}
+async function submitQuiz(){try{await api('finishQuiz',{answers:participant()?.answers||{}});await refresh()}catch(e){toast(e.message||'Quiz submission failed.','bad')}}
+async function offense(){const now=Date.now();if(now-offenseLock<2500)return;offenseLock=now;try{const d=await api('antiCheat');$('cheatBanner').textContent=d.disqualified?'Second anti-cheat offense: disqualified.':'⚠️ Warning: anti-cheat offense detected. A second offense will disqualify you.';$('cheatBanner').classList.remove('hidden');toast(d.disqualified?'Disqualified.':'Anti-cheat warning issued.',d.disqualified?'bad':'info');await refresh()}catch(e){}}
+function startQuizTicker(){clearInterval(quizTicker);quizTicker=setInterval(()=>{const r=roundInfo(),p=participant();if(r.status!=='QUIZ'||p?.status!=='QUIZ'){clearInterval(quizTicker);return}const left=quizRemaining();$('quizTimer').textContent=fmt(left);$('headerTimer').textContent=fmt(left);if(left<=0){clearInterval(quizTicker);submitQuiz()}},250)}
+function flashRefresh(btn){const t=btn.textContent;btn.textContent='Updated! ✓';setTimeout(()=>btn.textContent=t,900)}
+async function adminLogin(){const pin=$('pinInput').value.trim();if(!/^\d{6}$/.test(pin))return toast('Enter the 6-digit admin PIN.','bad');try{const d=await api('adminLogin',{pin});adminToken=d.adminToken;localStorage.setItem(ADMIN_TOKEN_KEY,adminToken);$('pinModal').classList.add('hidden');$('pinModal').classList.remove('flex');$('pinInput').value='';toast('Admin unlocked.','ok');await refresh();show('admin');await renderAdmin()}catch(e){toast(e.message||'Incorrect PIN.','bad')}}
+async function renderAdmin(){if(!adminToken)return;try{const d=await api('adminState');model={...model,...d};$('adminRound').textContent=`ROUND ${roundInfo().round}`;$('adminApproved').textContent=approvedCount();$('adminPending').textContent=d.counts?.pending||0;$('adminStatus').textContent=roundInfo().status;renderPending(d.pending||[]);renderWinners(d.winners||[]);renderRefunds(d.refunds||[])}catch(e){toast(e.message||'Admin data failed.','bad')}}
+function renderPending(rows){const host=$('pendingList');host.innerHTML=rows.length?rows.map(p=>`<div data-id="${esc(p.id)}" class="pendingCard rounded-2xl border border-slate-700 bg-slate-900 p-4"><div class="flex justify-between gap-3"><div><b>${esc(p.name)}</b><div class="text-xs text-slate-500">${esc(p.phone)} • UTR ${esc(p.utr)}</div></div><div class="flex gap-2"><button data-action="approve" data-id="${esc(p.id)}" class="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold">Approve ✅</button><button data-action="reject" data-id="${esc(p.id)}" class="rounded-lg bg-rose-600/80 px-3 py-2 text-xs font-bold">Reject ❌</button></div></div></div>`).join(''):'<div class="text-sm text-slate-500">No pending UTRs.</div>'}
+function renderWinners(rows){const host=$('winnerList');host.innerHTML=rows.length?rows.map(w=>`<div data-id="${esc(w.id)}" class="winnerCard rounded-2xl border border-slate-700 bg-slate-900 p-4"><div class="flex items-center gap-3"><div class="flex-1"><b>${esc(w.name)}</b><div class="text-xs text-slate-500">${esc(w.phone)}</div></div><span class="font-black text-amber-300">₹${w.prize}</span></div><div class="mt-3 flex gap-2"><button data-waction="copy" data-id="${esc(w.id)}" class="rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold">Copy PhonePe</button><button data-waction="paid" data-id="${esc(w.id)}" class="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold">PAID! ✅</button><button data-waction="remove" data-id="${esc(w.id)}" class="rounded-lg bg-rose-600/80 px-3 py-2 text-xs font-bold">REMOVED ❌</button></div></div>`).join(''):'<div class="text-sm text-slate-500">No payout records yet.</div>'}
+function renderRefunds(rows){$('refundList').innerHTML=rows.length?rows.map(r=>`<div class="flex items-center justify-between gap-3 rounded-xl bg-slate-900 p-3"><div><b>${esc(r.name)}</b><div class="text-xs text-slate-500">Round ${r.round} • ${esc(r.phone)}</div></div><div class="text-right"><div class="font-black">₹${r.amount}</div><div class="text-xs text-amber-300">${esc(r.status)}</div></div></div>`).join(''):'<div class="text-sm text-slate-500">No refund ledger entries.</div>'}
+async function adminAction(action,payload={}){try{await api(action,payload);await refresh(true);await renderAdmin()}catch(e){toast(e.message||'Admin action failed.','bad')}}
+function exportCSV(data){const lines=[];const push=x=>lines.push(x);push('CBSE Mega Quiz Arena - Master Audited Excel CSV');push(`Generated,${new Date().toISOString()}`);push('');push('SECTION 1: Top Winners - Cash Transferred (Paid)');push('Round,Name,PhonePe,Prize,Status,Paid At');(data.paidWinners||[]).forEach(w=>push([w.round,w.name,w.phone,w.prize,w.status,w.paidAt||''].map(csv).join(',')));push('');push('SECTION 2: Top Winners - Unpaid / Due Payouts');push('Round,Name,PhonePe,Prize,Status');(data.dueWinners||[]).forEach(w=>push([w.round,w.name,w.phone,w.prize,w.status].map(csv).join(',')));push('');push('SECTION 3: Disqualified / Removed Winners List');push('Round,Name,PhonePe,Prize,Status,Removed At');(data.removed||[]).forEach(w=>push([w.round,w.name,w.phone,w.prize||'',w.status,w.removedAt||''].map(csv).join(',')));push('');push('SECTION 4: 100% Refunds Log (Cancelled Rounds)');push('Round,Name,PhonePe,Amount,Status,Created At');(data.refunds||[]).forEach(r=>push([r.round,r.name,r.phone,r.amount,r.status,r.createdAt||''].map(csv).join(',')));push('');push('SECTION 5: General Participation Log (Ranks 6+)');push('Round,Rank,Name,PhonePe,Score,Time Seconds,Status');(data.participation||[]).forEach(s=>push([s.round,s.rank,s.name,s.phone,s.score,s.timeTaken,s.status].map(csv).join(',')));const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`CBSE_Mega_Quiz_Round_${roundInfo().round}_Master_Audit.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('CSV export generated.','ok')}
+function csv(v){return `"${String(v??'').replaceAll('"','""')}"`}
+async function boot(force=false){if(!apiUrl){setCloud(false,'Setup required');if(force)openSetup();else setTimeout(openSetup,350);return}setupPayment();await refresh();clearInterval(pollTicker);pollTicker=setInterval(()=>refresh(true),2000)}
+
+$('registrationForm').addEventListener('submit',registration);
+$('utrForm').addEventListener('submit',submitUTR);
+$('options').addEventListener('click',e=>{const b=e.target.closest('[data-opt]');if(b)saveAnswer(Number(b.dataset.opt));const j=e.target.closest('[data-jump]');if(j){const p=participant();if(p){p.currentQuestion=Number(j.dataset.jump);renderQuiz()}}});
+$('prevBtn').onclick=()=>{const p=participant();if(p&&p.currentQuestion>0){p.currentQuestion--;renderQuiz()}};
+$('nextBtn').onclick=()=>{const p=participant();if(!p)return;if(Number(p.currentQuestion)===9)submitQuiz();else{p.currentQuestion++;renderQuiz()}};
+$('refreshStandings').onclick=async()=>{await refresh();flashRefresh($('refreshStandings'))};
+$('refreshPending').onclick=async()=>{await renderAdmin();flashRefresh($('refreshPending'))};
+$('refreshWinners').onclick=async()=>{await renderAdmin();flashRefresh($('refreshWinners'))};
+$('forceStart').onclick=()=>confirm('Force start this round now?')&&adminAction('forceStart');
+$('cancelRound').onclick=()=>confirm('Cancel this round and create ₹50 refund ledger entries?')&&adminAction('cancelRound');
+$('restartRound').onclick=()=>confirm('Archive current round and restart the same round?')&&adminAction('restartRound');
+$('nextRound').onclick=()=>confirm('Archive current round and move to the next round?')&&adminAction('nextRound');
+$('exportCsv').onclick=async()=>{try{const d=await api('exportData');exportCSV(d)}catch(e){toast(e.message||'Export failed.','bad')}};
+$('adminClose').onclick=()=>{show('lobby');refresh()};
+$('adminHeaderBtn').onclick=async()=>{show('admin');await renderAdmin()};
+$('secretTrophy').onclick=()=>{secretTaps++;clearTimeout(tapTimer);tapTimer=setTimeout(()=>secretTaps=0,1200);if(secretTaps>=3){secretTaps=0;$('pinModal').classList.remove('hidden');$('pinModal').classList.add('flex');$('pinInput').focus()}};
+$('pinCancel').onclick=()=>{$('pinModal').classList.add('hidden');$('pinModal').classList.remove('flex')};
+$('pinSubmit').onclick=adminLogin;
+$('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin()});
+$('options').addEventListener('contextmenu',e=>e.preventDefault());
+$('copyBtn')?.addEventListener('click',()=>{});
+document.addEventListener('click',e=>{const c=e.target.closest('.copyBtn');if(c){navigator.clipboard?.writeText(c.dataset.copy);toast('Copied ✓','ok')}const a=e.target.closest('[data-action]');if(a){if(a.dataset.action==='approve')adminAction('approve',{participantId:a.dataset.id});else if(a.dataset.action==='reject')adminAction('reject',{participantId:a.dataset.id})}const w=e.target.closest('[data-waction]');if(w){const id=w.dataset.id,act=w.dataset.waction;if(act==='copy'){const row=[...(model?.winners||[])].find(x=>x.id===id);if(row)navigator.clipboard?.writeText(row.phone);toast('PhonePe number copied.','ok')}else adminAction(act==='paid'?'markPaid':'removeWinner',{winnerId:id})}});
+
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&roundInfo().status==='QUIZ'&&participant()?.status==='QUIZ')offense()});
+
+boot();
+})();
+
+</script>
+</body>
+</html>
