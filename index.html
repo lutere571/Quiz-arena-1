@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#020617">
+<title>CBSE Mega Quiz Arena (Class 6-10)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{slate:{950:'#020617'},indigo:{950:'#1e1b4b'}}}}};
+</script>
+<style>
+html,body{min-height:100%;background:#020617;color:#e2e8f0}
+body{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}.glass{background:rgba(15,23,42,.82);backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.16)}
+.card{box-shadow:0 18px 50px rgba(0,0,0,.25)}
+.hidden-screen{display:none!important}
+.fade-out{animation:fadeOut .45s ease forwards}
+@keyframes fadeOut{to{opacity:0;transform:translateY(-6px);max-height:0;margin:0;padding:0;overflow:hidden}}
+.pulse-dot{animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.timer-pulse{animation:timerPulse 1s infinite}
+@keyframes timerPulse{50%{transform:scale(1.03)}}
+.option{transition:.16s}.option.selected{border-color:#818cf8;background:rgba(99,102,241,.2)}
+.option.correct{border-color:#34d399;background:rgba(16,185,129,.14)}
+.option.wrong{border-color:#fb7185;background:rgba(244,63,94,.12)}
+.progress-bar{transition:width .35s ease}
+.modal-backdrop{background:rgba(2,6,23,.78);backdrop-filter:blur(5px)}
+.toast{animation:toastIn .25s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+input:focus{outline:none;box-shadow:0 0 0 2px rgba(129,140,248,.55)}
+
+<style>
+#onlineSetup{display:none}
+.online-badge{font-size:11px;padding:3px 7px;border-radius:999px;background:rgba(16,185,129,.12);color:#6ee7b7;border:1px solid rgba(16,185,129,.25)}
+</style>
+</style>
+</head>
+<body>
+<header class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur">
+  <div class="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-3">
+    <button id="secretTrophy" class="text-2xl select-none" title="Contest logo">🏆</button>
+    <div class="min-w-0 flex-1">
+      <div class="font-black tracking-tight text-base sm:text-lg">CBSE Mega Quiz Arena <span class="text-indigo-400">(Class 6-10)</span></div>
+      <div class="flex items-center gap-2 text-[11px] text-slate-400">
+        <span id="roundBadge" class="rounded-full bg-indigo-500/15 px-2 py-0.5 text-indigo-300">ROUND 1</span>
+        <span class="inline-flex items-center gap-1"><i id="cloudDot" class="pulse-dot h-2 w-2 rounded-full bg-emerald-400"></i><span id="cloudText">Online-ready</span></span>
+      </div>
+    </div>
+    <div id="headerTimer" class="hidden text-lg font-black tabular-nums text-amber-300">10:00</div>
+    <button id="adminHeaderBtn" class="hidden rounded-lg bg-indigo-600 px-3 py-2 text-xs font-bold hover:bg-indigo-500">Admin</button>
+  </div>
+</header>
+
+<main class="mx-auto max-w-7xl px-4 py-6">
+  <div id="toastHost" class="fixed right-4 top-20 z-[70] space-y-2"></div>
+
+  <section id="screen-lobby" class="space-y-5">
+    <div class="grid lg:grid-cols-[1.3fr_.7fr] gap-5">
+      <div class="glass card rounded-3xl p-5 sm:p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div><div class="text-xs font-bold uppercase tracking-[.22em] text-indigo-300">Official Contest</div>
+          <h1 class="mt-2 text-3xl sm:text-5xl font-black">Mega Quiz Arena</h1>
+          <p class="mt-3 text-slate-400">10 CBSE MCQs • 10 minutes • Classes 6-10</p></div>
+          <div class="rounded-2xl bg-amber-400/10 p-3 text-3xl">🏆</div>
+        </div>
+        <div class="mt-6 grid sm:grid-cols-3 gap-3">
+          <div class="rounded-2xl bg-slate-900 p-4"><div class="text-xs text-slate-400">Entry</div><div class="text-xl font-black">₹50</div></div>
+          <div class="rounded-2xl bg-slate-900 p-4"><div class="text-xs text-slate-400">Quorum</div><div class="text-xl font-black">20 students</div></div>
+          <div class="rounded-2xl bg-slate-900 p-4"><div class="text-xs text-slate-400">Quiz</div><div class="text-xl font-black">10 / 600s</div></div>
+        </div>
+        <div class="mt-5 rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 text-sm">
+          <b class="text-rose-300">Anti-cheat:</b> switching tabs/windows or triggering a split-screen resize gives one warning; the second detected offense disqualifies the student and records a zero.
+        </div>
+      </div>
+      <div class="glass card rounded-3xl p-5">
+        <div class="text-xs uppercase tracking-widest text-slate-400">Round lobby closes in</div>
+        <div id="lobbyTimer" class="mt-2 text-5xl font-black tabular-nums text-amber-300">20:00</div>
+        <div class="mt-5 h-3 overflow-hidden rounded-full bg-slate-800"><div id="lobbyProgress" class="progress-bar h-full w-0 bg-gradient-to-r from-indigo-500 to-emerald-400"></div></div>
+        <div class="mt-2 text-sm text-slate-400"><span id="approvedCountLobby">0</span> / 20 approved</div>
+      </div>
+    </div>
+    <div class="glass card rounded-3xl p-5 sm:p-7">
+      <div class="flex items-center gap-2"><span class="rounded-lg bg-indigo-500/15 px-2 py-1 text-xs font-bold text-indigo-300">STEP 1</span><h2 class="text-xl font-black">Registration</h2></div>
+      <form id="registrationForm" class="mt-5 grid sm:grid-cols-2 gap-4">
+        <label class="block"><span class="text-sm text-slate-300">Student Full Name</span><input id="studentName" required minlength="2" maxlength="80" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3" placeholder="Enter full name"></label>
+        <label class="block"><span class="text-sm text-slate-300">10-digit PhonePe Mobile Number</span><input id="studentPhone" required inputmode="numeric" maxlength="10" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3" placeholder="10-digit mobile"></label>
+        <div class="sm:col-span-2"><button class="w-full sm:w-auto rounded-xl bg-indigo-600 px-6 py-3 font-bold hover:bg-indigo-500">Continue to Payment →</button></div>
+      </form>
+      <div class="mt-5 grid md:grid-cols-2 gap-4 text-sm text-slate-400">
+        <div class="rounded-2xl bg-slate-900 p-4"><b class="text-slate-200">Prize distribution</b><br>₹300 • ₹200 • ₹150 • ₹100 • ₹50</div>
+        <div class="rounded-2xl bg-slate-900 p-4"><b class="text-slate-200">Quorum rule</b><br>If fewer than 20 are approved when the 20-minute lobby closes, the round is cancelled and a ₹50 refund ledger entry is created.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-payment" class="hidden-screen max-w-3xl mx-auto">
+    <div class="glass card rounded-3xl p-5 sm:p-8">
+      <div class="flex items-center gap-2"><span class="rounded-lg bg-amber-500/15 px-2 py-1 text-xs font-bold text-amber-300">STEP 2</span><h2 class="text-2xl font-black">Payment & UTR</h2></div>
+      <p class="mt-2 text-slate-400">Pay exactly ₹50, then enter the 12-digit UTR/transaction reference.</p>
+      <div class="mt-6 grid md:grid-cols-2 gap-6 items-center">
+        <div class="text-center">
+          <img id="upiQr" class="mx-auto rounded-2xl bg-white p-2" width="170" height="170" alt="UPI QR code">
+          <a id="upiIntent" class="mt-4 inline-flex w-full justify-center rounded-xl bg-indigo-600 px-4 py-3 font-bold hover:bg-indigo-500" href="#">Open PhonePe / UPI App to Pay ₹50</a>
+        </div>
+        <div class="space-y-3">
+          <div class="rounded-xl bg-slate-900 p-4"><div class="text-xs text-slate-500">UPI ID</div><div class="flex items-center justify-between gap-2"><b>7756804720@ybl</b><button data-copy="7756804720@ybl" class="copyBtn rounded-lg bg-slate-800 px-2 py-1 text-xs">Copy</button></div></div>
+          <div class="rounded-xl bg-slate-900 p-4"><div class="text-xs text-slate-500">PhonePe Number</div><div class="flex items-center justify-between gap-2"><b>7756804720</b><button data-copy="7756804720" class="copyBtn rounded-lg bg-slate-800 px-2 py-1 text-xs">Copy</button></div></div>
+        </div>
+      </div>
+      <form id="utrForm" class="mt-7">
+        <label class="block"><span class="text-sm text-slate-300">12-digit UTR</span><input id="utrInput" required inputmode="numeric" maxlength="12" pattern="[0-9]{12}" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-lg tracking-widest" placeholder="123456789012"></label>
+        <button class="mt-4 w-full rounded-xl bg-emerald-600 px-5 py-3 font-bold hover:bg-emerald-500">Submit UTR for Verification ✓</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="screen-verification" class="hidden-screen max-w-2xl mx-auto">
+    <div class="glass card rounded-3xl p-8 text-center">
+      <div class="text-6xl animate-pulse">⌛</div><h2 class="mt-4 text-2xl font-black">Verification Gateway</h2>
+      <p class="mt-2 text-slate-400">Your payment reference is awaiting admin approval.</p>
+      <div class="mt-6 rounded-2xl bg-slate-900 p-5 text-left space-y-2 text-sm"><div><span class="text-slate-500">Name:</span> <b id="verifyName"></b></div><div><span class="text-slate-500">PhonePe:</span> <b id="verifyPhone"></b></div><div><span class="text-slate-500">UTR:</span> <b id="verifyUtr"></b></div></div>
+      <p class="mt-5 text-xs text-slate-500">This screen remains stable while approval data is polled.</p>
+    </div>
+  </section>
+
+  <section id="screen-waiting" class="hidden-screen max-w-3xl mx-auto">
+    <div class="glass card rounded-3xl p-5 sm:p-8 text-center">
+      <div class="inline-flex rounded-full bg-emerald-500/15 px-3 py-1 text-sm font-bold text-emerald-300">Payment Approved ✓</div>
+      <h2 class="mt-4 text-3xl font-black">Live Waiting Lobby</h2>
+      <div id="waitingTimer" class="mt-4 text-6xl font-black tabular-nums text-amber-300">20:00</div>
+      <div class="mt-5 text-sm text-slate-400"><b id="approvedCountWaiting">0 / 20</b> Required</div>
+      <div class="mt-3 h-4 overflow-hidden rounded-full bg-slate-800"><div id="waitingProgress" class="progress-bar h-full bg-gradient-to-r from-indigo-500 to-emerald-400" style="width:0%"></div></div>
+      <a id="whatsappInvite" target="_blank" rel="noopener" class="mt-6 inline-flex rounded-xl bg-emerald-600 px-5 py-3 font-bold hover:bg-emerald-500">WhatsApp Share / Invite</a>
+      <p class="mt-5 text-xs text-slate-500">The quiz starts at 00:00 only if at least 20 participants are approved, unless an admin force-starts the round.</p>
+    </div>
+  </section>
+
+  <section id="screen-quiz" class="hidden-screen">
+    <div class="grid lg:grid-cols-[1fr_280px] gap-5">
+      <div class="glass card rounded-3xl p-5 sm:p-8">
+        <div class="flex items-center justify-between gap-3"><span id="subjectBadge" class="rounded-full bg-indigo-500/15 px-3 py-1 text-xs font-bold text-indigo-300">SCIENCE</span><span id="questionIndex" class="text-sm font-bold text-slate-400">Question 1 of 10</span></div>
+        <div class="mt-4 flex items-center justify-between"><h2 id="questionText" class="text-xl sm:text-2xl font-black leading-relaxed"></h2><div id="quizTimer" class="shrink-0 ml-3 rounded-xl bg-amber-400/10 px-3 py-2 text-xl font-black tabular-nums text-amber-300">10:00</div></div>
+        <div id="cheatBanner" class="hidden mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200"></div>
+        <div id="options" class="mt-6 grid gap-3"></div>
+        <div class="mt-6 flex items-center justify-between gap-3"><button id="prevBtn" class="rounded-xl border border-slate-700 px-4 py-3 font-bold disabled:opacity-30">← Previous</button><button id="nextBtn" class="rounded-xl bg-indigo-600 px-5 py-3 font-bold hover:bg-indigo-500">Next →</button></div>
+      </div>
+      <aside class="glass rounded-3xl p-5 h-fit"><div class="text-sm font-bold">Answer Progress</div><div id="qDots" class="mt-4 grid grid-cols-5 gap-2"></div><div class="mt-5 text-xs text-slate-500">A second anti-cheat offense automatically records 0 and submits the quiz.</div></aside>
+    </div>
+  </section>
+
+  <section id="screen-results" class="hidden-screen space-y-5">
+    <div class="grid lg:grid-cols-[.7fr_1.3fr] gap-5">
+      <div class="glass card rounded-3xl p-6 text-center"><div class="text-sm text-slate-400">Your Score</div><div id="scoreBig" class="mt-1 text-6xl font-black text-emerald-300">0 / 10</div><div class="mt-3 text-slate-400">Exact time: <b id="timeTaken"></b></div><div id="resultDisq" class="mt-3 text-rose-300 font-bold"></div></div>
+      <div class="glass card rounded-3xl p-6"><div class="flex items-center justify-between"><h2 class="text-xl font-black">Live Leaderboard</h2><button id="refreshStandings" class="refreshBtn rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold">Refresh 🔄</button></div><div id="standingsList" class="mt-4 space-y-2"></div></div>
+    </div>
+    <div class="glass card rounded-3xl p-6"><h2 class="text-xl font-black">Detailed Answer Key</h2><div id="answerKey" class="mt-4 space-y-3"></div></div>
+  </section>
+
+  <section id="screen-cancelled" class="hidden-screen max-w-2xl mx-auto">
+    <div class="glass card rounded-3xl p-8 text-center"><div class="text-6xl">↩️</div><h2 class="mt-4 text-3xl font-black">Round Cancelled</h2><p class="mt-2 text-slate-400">Fewer than 20 approved students joined before the lobby deadline.</p><div class="mt-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-5"><div class="text-sm text-emerald-300">Refund ledger status</div><div class="mt-1 text-3xl font-black">₹50 • 100% Refund</div><div class="mt-1 text-sm text-slate-300">PhonePe: <b id="refundPhone"></b></div></div><p class="mt-5 text-xs text-slate-500">This static application records the refund as assured in its ledger. Actual money transfer requires a payment-provider/backend integration.</p></div>
+  </section>
+
+  
+<div id="onlineSetup" class="glass rounded-2xl p-5 mb-5">
+  <div class="flex items-center justify-between gap-3">
+    <div><div class="text-xs uppercase tracking-widest text-indigo-300">Online setup</div>
+    <h3 class="text-xl font-black">Backend connection</h3></div>
+    <span id="onlineStateBadge" class="online-badge">Local mode</span>
+  </div>
+  <p class="mt-2 text-sm text-slate-400">Paste your deployed Google Apps Script Web App URL once. The browser stores it on this device.</p>
+  <div class="mt-3 flex flex-col sm:flex-row gap-2">
+    <input id="backendUrlInput" class="flex-1 rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm" placeholder="https://script.google.com/macros/s/.../exec">
+    <button id="saveBackendBtn" class="rounded-xl bg-indigo-600 px-4 py-3 font-bold">Save URL</button>
+  </div>
+  <div class="mt-3 text-xs text-slate-500">For a real multi-device contest, deploy the included <b>Code.gs</b> and connect this URL.</div>
+</div>
+<section id="screen-admin" class="hidden-screen">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-5"><div><div class="text-xs uppercase tracking-widest text-indigo-300">Secret Admin</div><h2 class="text-3xl font-black">Live Dashboard</h2></div><button id="adminClose" class="rounded-xl border border-slate-700 px-4 py-2 font-bold">Close</button></div>
+    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-3">
+      <div class="glass rounded-2xl p-4"><div class="text-xs text-slate-400">Round</div><div id="adminRound" class="text-2xl font-black"></div></div>
+      <div class="glass rounded-2xl p-4"><div class="text-xs text-slate-400">Approved</div><div id="adminApproved" class="text-2xl font-black"></div></div>
+      <div class="glass rounded-2xl p-4"><div class="text-xs text-slate-400">Pending UTR</div><div id="adminPending" class="text-2xl font-black"></div></div>
+      <div class="glass rounded-2xl p-4"><div class="text-xs text-slate-400">Round status</div><div id="adminStatus" class="text-2xl font-black text-emerald-300"></div></div>
+    </div>
+    <div class="mt-5 grid lg:grid-cols-2 gap-4">
+      <button id="forceStart" class="rounded-2xl bg-indigo-600 p-4 font-black text-left hover:bg-indigo-500">🚀 Force Start Now<br><span class="text-xs font-normal opacity-80">Start active quiz immediately.</span></button>
+      <button id="cancelRound" class="rounded-2xl bg-rose-600/80 p-4 font-black text-left hover:bg-rose-500">🛑 Cancel Round & Refund<br><span class="text-xs font-normal opacity-80">Archive and wipe the live screen.</span></button>
+      <button id="restartRound" class="rounded-2xl bg-amber-600/80 p-4 font-black text-left hover:bg-amber-500">🔄 Restart Same Round<br><span class="text-xs font-normal opacity-80">Archive and reset lobby.</span></button>
+      <button id="nextRound" class="rounded-2xl bg-emerald-600/80 p-4 font-black text-left hover:bg-emerald-500">⏭️ Next Round<br><span class="text-xs font-normal opacity-80">Archive and increment round.</span></button>
+    </div>
+    <div class="mt-5"><button id="exportCsv" class="w-full rounded-2xl bg-slate-800 p-4 font-black hover:bg-slate-700">⬇️ Master Audited Excel (.CSV) Export</button></div>
+
+    <div class="mt-6 grid xl:grid-cols-2 gap-5">
+      <div class="glass rounded-3xl p-5"><div class="flex justify-between items-center"><h3 class="font-black text-lg">Pending UTR Approvals</h3><button id="refreshPending" class="refreshBtn rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold">Refresh 🔄</button></div><div id="pendingList" class="mt-4 space-y-3"></div></div>
+      <div class="glass rounded-3xl p-5"><div class="flex justify-between items-center"><h3 class="font-black text-lg">Top 5 Winners Payout</h3><button id="refreshWinners" class="refreshBtn rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold">Refresh 🔄</button></div><div id="winnerList" class="mt-4 space-y-3"></div></div>
+      <div class="glass rounded-3xl p-5 xl:col-span-2"><h3 class="font-black text-lg">Pending Refunds</h3><div id="refundList" class="mt-4 space-y-2"></div></div>
+    </div>
+  </section>
+</main>
+
+<div id="pinModal" class="hidden fixed inset-0 z-[60] modal-backdrop items-center justify-center p-4">
+ <div class="glass rounded-3xl p-6 w-full max-w-sm"><h3 class="text-xl font-black">Admin PIN</h3><p class="text-sm text-slate-400 mt-1">Enter the 6-digit admin PIN.</p><input id="pinInput" inputmode="numeric" maxlength="6" type="password" class="mt-4 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-center tracking-[.4em]"><div class="mt-4 grid grid-cols-2 gap-3"><button id="pinCancel" class="rounded-xl border border-slate-700 py-3 font-bold">Cancel</button><button id="pinSubmit" class="rounded-xl bg-indigo-600 py-3 font-bold">Unlock</button></div></div>
+</div>
+
+<script>
+(() => {
+"use strict";
+
+/* ------------------------- Question bank: 15 x 10 ------------------------- */
+const R = (round, subject, items) => items.map((q,i)=>({id:`R${round}Q${i+1}`,round,subject,q:q[0],options:q[1],answer:q[2],explain:q[3]||""}));
+const questionBank = [
+...R(1,"Science",[
+["Which organ pumps blood throughout the human body?",["Lungs","Heart","Kidney","Stomach"],1],
+["Which process by which green plants make food is called?",["Respiration","Digestion","Photosynthesis","Excretion"],2],
+["The SI unit of length is:",["Centimetre","Metre","Kilometre","Millimetre"],1],
+["Which material is attracted by a magnet?",["Wood","Glass","Iron","Plastic"],2],
+["Water changes into vapour mainly by:",["Freezing","Evaporation","Condensation","Melting"],1],
+["Which gas is most abundant in Earth's atmosphere?",["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],1],
+["A shadow is formed when light is:",["Reflected only","Blocked by an opaque object","Produced by sound","Bent by water"],1],
+["Which is a renewable source of energy?",["Coal","Petroleum","Solar energy","Natural gas"],2],
+["The force that pulls objects toward Earth is:",["Friction","Gravity","Magnetism","Buoyancy"],2],
+["Which part of a plant absorbs most water from soil?",["Flower","Root","Fruit","Leaf"],1]
+]),
+...R(2,"Maths",[
+["The HCF of 18 and 24 is:",["3","6","9","12"],1],
+["3/4 expressed as a decimal is:",["0.25","0.34","0.75","1.25"],2],
+["The perimeter of a square of side 7 cm is:",["14 cm","21 cm","28 cm","49 cm"],2],
+["An angle of 90° is called:",["Acute","Right","Obtuse","Straight"],1],
+["The value of 2³ × 2² is:",["16","32","64","8"],1],
+["A triangle with all three sides equal is:",["Scalene","Isosceles","Equilateral","Right"],2],
+["If x + 9 = 17, x equals:",["6","7","8","9"],2],
+["The mean of 4, 6, 8 and 10 is:",["6","7","8","9"],1],
+["Which is a prime number?",["21","27","29","39"],2],
+["The area of a rectangle 8 cm by 5 cm is:",["13 cm²","26 cm²","40 cm²","80 cm²"],2]
+]),
+...R(3,"Physics",[
+["Speed is calculated as:",["Time ÷ distance","Distance ÷ time","Distance × time","Mass ÷ volume"],1],
+["Which instrument measures electric current?",["Voltmeter","Ammeter","Barometer","Thermometer"],1],
+["The unit of force is:",["Joule","Watt","Newton","Pascal"],2],
+["A plane mirror generally forms an image that is:",["Real and inverted","Virtual and erect","Real and enlarged","Virtual and inverted"],1],
+["Sound cannot travel through:",["Air","Water","Steel","Vacuum"],3],
+["The SI unit of power is:",["Watt","Newton","Joule","Ohm"],0],
+["A convex lens can be used as a:",["Magnifying glass","Periscope mirror","Barometer","Compass"],0],
+["Friction generally acts:",["In the direction of motion","Opposite relative motion","Only upward","Only downward"],1],
+["Which color has the longest wavelength in visible light?",["Violet","Blue","Green","Red"],3],
+["Electrical resistance is measured in:",["Ohm","Ampere","Volt","Watt"],0]
+]),
+...R(4,"Chemistry",[
+["The smallest unit of an element retaining its chemical properties is an:",["Atom","Cell","Tissue","Crystal"],0],
+["The chemical formula of water is:",["CO₂","H₂O","O₂","NaCl"],1],
+["A substance with pH less than 7 is generally:",["Neutral","Acidic","Basic","Metallic"],1],
+["Common salt is chemically:",["NaOH","HCl","NaCl","KClO₃"],2],
+["Rusting of iron requires oxygen and:",["Nitrogen","Water/moisture","Helium","Carbon dioxide only"],1],
+["Which is a physical change?",["Burning paper","Rusting iron","Melting ice","Cooking food"],2],
+["The gas used by plants during photosynthesis is:",["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],2],
+["A base turns red litmus:",["Red","Blue","Green","Yellow"],1],
+["Which method separates insoluble solid from liquid?",["Filtration","Distillation","Sublimation","Chromatography"],0],
+["The symbol for sodium is:",["S","So","Na","Sd"],2]
+]),
+...R(5,"Biology",[
+["The basic structural unit of life is the:",["Organ","Cell","Tissue","Organ system"],1],
+["Which organ is mainly responsible for filtering blood?",["Heart","Kidney","Lung","Brain"],1],
+["The green pigment in leaves is:",["Haemoglobin","Chlorophyll","Melanin","Keratin"],1],
+["Which blood cells help fight infections?",["Red blood cells","White blood cells","Platelets","Plasma"],1],
+["The human breathing organ is the:",["Liver","Lungs","Kidneys","Pancreas"],1],
+["Which plant tissue carries water upward?",["Phloem","Xylem","Epidermis","Cambium"],1],
+["The process of breaking down food to release energy is:",["Respiration","Photosynthesis","Transpiration","Pollination"],0],
+["Which part of a flower develops into a fruit after fertilisation?",["Sepal","Ovary","Anther","Stigma"],1],
+["DNA is mainly located in the:",["Cell wall","Nucleus","Vacuole","Ribosome"],1],
+["A group of similar cells performing a function is called:",["Tissue","Organ","Organism","System"],0]
+]),
+...R(6,"Science",[
+["Which vitamin is mainly produced in skin in sunlight?",["Vitamin A","Vitamin B12","Vitamin C","Vitamin D"],3],
+["The boiling point of pure water at sea level is:",["0°C","50°C","100°C","212°C only"],2],
+["Which is a good conductor of electricity?",["Rubber","Copper","Wood","Plastic"],1],
+["The movement of particles from higher to lower concentration is:",["Diffusion","Filtration","Sedimentation","Decantation"],0],
+["Which layer protects Earth from much ultraviolet radiation?",["Troposphere","Ozone layer","Lithosphere","Hydrosphere"],1],
+["A food chain normally begins with:",["Consumers","Decomposers","Producers","Carnivores"],2],
+["Which disease is caused by a deficiency of vitamin C?",["Rickets","Scurvy","Night blindness","Beriberi"],1],
+["The instrument used to measure temperature is:",["Thermometer","Ammeter","Hygrometer","Seismograph"],0],
+["Which metal is liquid at room temperature?",["Iron","Mercury","Aluminium","Copper"],1],
+["The change of water vapour into liquid is:",["Evaporation","Condensation","Sublimation","Freezing"],1]
+]),
+...R(7,"Maths",[
+["The LCM of 6 and 8 is:",["12","18","24","48"],2],
+["The fraction equivalent to 2/3 is:",["3/4","4/6","6/8","8/12"],1],
+["The sum of angles in a triangle is:",["90°","180°","270°","360°"],1],
+["If 5x = 45, x is:",["5","8","9","10"],2],
+["The square root of 144 is:",["10","11","12","14"],2],
+["0.125 as a fraction in simplest form is:",["1/4","1/8","1/10","1/12"],1],
+["A parallelogram has opposite sides that are:",["Unequal","Parallel and equal","Always perpendicular","Curved"],1],
+["The probability of getting a head on a fair coin is:",["0","1/4","1/2","1"],2],
+["The median of 3, 7, 9, 12, 15 is:",["7","8","9","12"],2],
+["25% of 200 is:",["25","40","50","75"],2]
+]),
+...R(8,"Physics",[
+["Inertia is the tendency of an object to:",["Change mass","Resist change in its state of motion","Produce light","Float"],1],
+["Work is done when a force causes:",["Mass","Displacement","Temperature only","Color change"],1],
+["The energy of a moving object is:",["Potential","Kinetic","Chemical","Nuclear"],1],
+["Pressure is force divided by:",["Area","Volume","Time","Mass"],0],
+["Which mirror is commonly used as a rear-view mirror?",["Plane","Convex","Concave","Parabolic only"],1],
+["The frequency of a sound determines its:",["Loudness","Pitch","Speed","Echo"],1],
+["A fuse wire protects a circuit from:",["Low voltage","Excess current","Low temperature","Magnetism"],1],
+["The image formed by a pinhole camera is usually:",["Erect","Inverted","Always magnified","Not formed"],1],
+["Heat transfer through direct contact is:",["Radiation","Conduction","Convection","Reflection"],1],
+["The acceleration due to gravity near Earth's surface is about:",["1.8 m/s²","9.8 m/s²","98 m/s²","0.98 m/s²"],1]
+]),
+...R(9,"Chemistry",[
+["An element is made of:",["Different kinds of atoms only","One kind of atom","Only molecules","Only ions"],1],
+["CO₂ is a:",["Element","Compound","Mixture","Alloy"],1],
+["Which is an example of a mixture?",["Oxygen","Distilled water","Air","Sodium chloride"],2],
+["The process of changing a solid directly into gas is:",["Fusion","Sublimation","Condensation","Freezing"],1],
+["Acids react with many metals to release:",["Oxygen","Hydrogen","Nitrogen","Chlorine"],1],
+["Which indicator is naturally obtained from lichens?",["Litmus","Turmeric","Phenolphthalein","Methyl orange"],0],
+["The formula for carbon dioxide is:",["CO","CO₂","C₂O","C₂O₂"],1],
+["Which is an alloy?",["Copper","Iron","Brass","Sulfur"],2],
+["Evaporation causes cooling because:",["High-energy particles escape","Mass increases","Heat is created","Pressure becomes zero"],0],
+["A neutral solution has pH approximately:",["1","5","7","14"],2]
+]),
+...R(10,"Biology",[
+["Which organelle is known as the powerhouse of the cell?",["Nucleus","Mitochondrion","Vacuole","Golgi body"],1],
+["Photosynthesis mainly occurs in:",["Chloroplasts","Mitochondria","Nuclei","Lysosomes"],0],
+["The human heart normally has how many chambers?",["2","3","4","5"],2],
+["Which blood component helps clotting?",["Platelets","RBCs","WBCs","Plasma only"],0],
+["The transfer of pollen from anther to stigma is:",["Germination","Pollination","Fertilisation","Respiration"],1],
+["Which system controls and coordinates body activities?",["Digestive","Nervous","Skeletal","Excretory"],1],
+["The process by which a seed begins to grow is:",["Respiration","Germination","Transpiration","Pollination"],1],
+["Which part of the digestive system absorbs most digested nutrients?",["Stomach","Small intestine","Large intestine","Oesophagus"],1],
+["Asexual reproduction in yeast commonly occurs by:",["Budding","Fragmentation","Spore formation only","Binary fission"],0],
+["The tiny air sacs in lungs are called:",["Nephrons","Alveoli","Villi","Axons"],1]
+]),
+...R(11,"Science",[
+["Which natural satellite orbits Earth?",["Mars","Moon","Venus","Sun"],1],
+["A lunar eclipse occurs when:",["Moon is between Sun and Earth","Earth is between Sun and Moon","Sun is between Earth and Moon","Clouds cover Moon"],1],
+["Which soil is generally best for many crops because it balances drainage and water retention?",["Sandy","Clayey","Loamy","Gravel"],2],
+["The process of removing waste from the body is called:",["Nutrition","Excretion","Growth","Reproduction"],1],
+["Which microorganism is used to make curd?",["Lactobacillus","Rhizobium","Plasmodium","Yeast only"],0],
+["Which gas is essential for aerobic respiration?",["Oxygen","Carbon dioxide","Nitrogen","Methane"],0],
+["An ecosystem includes:",["Only animals","Only plants","Living organisms and their environment","Only soil"],2],
+["Which resource is non-renewable?",["Wind","Solar","Coal","Sunlight"],2],
+["The hardest natural substance is:",["Iron","Diamond","Quartz","Graphite"],1],
+["Which organ helps humans maintain balance and coordination?",["Cerebellum","Stomach","Liver","Thyroid"],0]
+]),
+...R(12,"Maths",[
+["The value of 7 × 8 − 12 is:",["44","48","52","56"],0],
+["A number divisible by 2 must be:",["Odd","Even","Prime","Negative"],1],
+["The reciprocal of 5/7 is:",["5/7","7/5","−7/5","1/5"],1],
+["The area of a triangle is:",["base × height","1/2 × base × height","2 × base × height","base + height"],1],
+["If a:b = 2:3 and a = 10, b is:",["12","15","20","30"],1],
+["The coordinates of the origin are:",["(1,1)","(0,1)","(1,0)","(0,0)"],3],
+["A cube has how many faces?",["4","6","8","12"],1],
+["The sum of the first five natural numbers 1,2,3,4,5 is:",["10","15","20","25"],1],
+["If an angle is 125°, it is:",["Acute","Right","Obtuse","Straight"],2],
+["The decimal 0.6 equals:",["3/5","2/3","6/100","1/6"],0]
+]),
+...R(13,"Physics",[
+["The SI unit of energy is:",["Watt","Joule","Newton","Volt"],1],
+["A device that converts electrical energy into mechanical energy is an:",["Electric motor","Bulb","Fuse","Cell"],0],
+["The direction of conventional current in an external circuit is from:",["Negative to positive terminal","Positive to negative terminal","Both randomly","Earth to cell"],1],
+["The bending of light when it passes between media is:",["Reflection","Refraction","Diffraction only","Dispersion only"],1],
+["White light splitting into colors is called:",["Reflection","Dispersion","Conduction","Polarisation"],1],
+["The time taken for one complete oscillation is:",["Frequency","Amplitude","Time period","Wavelength"],2],
+["A body at rest has zero:",["Mass","Speed","Weight","Volume"],1],
+["Which quantity has both magnitude and direction?",["Distance","Speed","Mass","Velocity"],3],
+["The energy stored due to position is:",["Kinetic energy","Potential energy","Sound energy","Light energy"],1],
+["A simple machine that has a wheel and rope is a:",["Pulley","Wedge","Screw","Lever only"],0]
+]),
+...R(14,"Chemistry",[
+["The atomic number of an element equals the number of:",["Neutrons","Protons","Shells","Molecules"],1],
+["Electrons carry what charge?",["Positive","Negative","Neutral","Variable only"],1],
+["The nucleus contains:",["Only electrons","Protons and neutrons","Only neutrons","Electrons and photons"],1],
+["NaOH is commonly called:",["Sodium hydroxide","Sodium chloride","Sodium carbonate","Hydrogen chloride"],0],
+["Which gas turns limewater milky?",["Oxygen","Carbon dioxide","Hydrogen","Nitrogen"],1],
+["The separation of salt from salt solution by heating is mainly:",["Evaporation","Filtration","Magnetic separation","Sieving"],0],
+["Which metal is highly reactive and stored under kerosene?",["Sodium","Copper","Silver","Gold"],0],
+["A catalyst generally:",["Slows every reaction","Changes reaction rate without being consumed","Becomes the product","Changes atomic number"],1],
+["The products of a neutralisation reaction are generally:",["Salt and water","Metal and oxygen","Only acid","Only base"],0],
+["Which particle determines the chemical identity of an element's atomic number?",["Proton","Neutron","Electron only","Photon"],0]
+]),
+...R(15,"Biology",[
+["Which part of the brain is mainly associated with thinking and memory?",["Cerebrum","Cerebellum","Medulla","Spinal cord"],0],
+["Insulin is produced by the:",["Pancreas","Liver","Kidney","Thyroid"],0],
+["The functional unit of the kidney is the:",["Neuron","Nephron","Alveolus","Villus"],1],
+["Which plant hormone promotes growth toward light?",["Auxin","Insulin","Adrenaline","Thyroxine"],0],
+["Mendel studied inheritance using:",["Pea plants","Mango trees","Bacteria","Frogs"],0],
+["The exchange of oxygen and carbon dioxide in lungs occurs mainly across:",["Alveolar walls","Stomach wall","Skin only","Kidney tubules"],0],
+["Which disease is caused by a virus?",["Malaria","Tuberculosis","Measles","Typhoid"],2],
+["A trait expressed in a heterozygous condition is called:",["Recessive","Dominant","Acquired","Mutated only"],1],
+["The male reproductive cell in humans is the:",["Ovum","Sperm","Zygote","Embryo"],1],
+["Which process produces genetically identical offspring in many single-celled organisms?",["Sexual reproduction","Asexual reproduction","Pollination","Cross-pollination"],1]
+])
+].flat();
+
+const PRIZES=[300,200,150,100,50];
+const KEY="cbseMegaQuizArena.v3";
+const DEFAULT={
+ version:3, round:1, status:"LOBBY", lobbyStarted:Date.now(), lobbyDuration:1200,
+ activeStarted:null, participants:[], pendingUTRs:[], standings:[], winners:[], refunds:[], removedWinners:[],
+ archive:[], currentStudent:null, selectedRoundQuestions:[]
+};
+let state=load();
+let secretTaps=0, tapTimer=null, renderLock=false, quizTicker=null, lobbyTicker=null, verificationTicker=null;
+const $=id=>document.getElementById(id);
+const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+function load(){try{return Object.assign({},structuredClone(DEFAULT),JSON.parse(localStorage.getItem(KEY)||"{}"))}catch{return structuredClone(DEFAULT)}}
+function uid(){return crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}`}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function fmt(sec){sec=Math.max(0,Math.ceil(sec));return `${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`}
+function toast(msg,type="info"){const el=document.createElement("div");el.className=`toast rounded-xl border px-4 py-3 text-sm font-bold shadow-2xl ${type==="ok"?"border-emerald-500/30 bg-emerald-500/15 text-emerald-200":type==="bad"?"border-rose-500/30 bg-rose-500/15 text-rose-200":"border-indigo-500/30 bg-slate-900 text-slate-200"}`;el.textContent=msg;$("toastHost").appendChild(el);setTimeout(()=>el.remove(),2200)}
+function show(id){document.querySelectorAll("main section").forEach(s=>s.classList.toggle("hidden-screen",s.id!==`screen-${id}`)); $("adminHeaderBtn").classList.toggle("hidden",!state.adminAuthenticated)}
+function adminOpen(){state.adminAuthenticated=true;save();show("admin");renderAdmin()}
+function adminClose(){state.adminAuthenticated=false;save();show("lobby")}
+function currentParticipant(){return state.participants.find(p=>p.id===state.currentStudent)}
+function activeQuestions(){let q=state.selectedRoundQuestions;if(!q?.length){const round=((state.round-1)%15)+1;q=questionBank.filter(x=>x.round===round);state.selectedRoundQuestions=q.map(x=>x.id);save()}return state.selectedRoundQuestions.map(id=>questionBank.find(q=>q.id===id)).filter(Boolean)}
+function syncHeader(){ $("roundBadge").textContent=`ROUND ${state.round}`; $("headerTimer").classList.toggle("hidden",state.status!=="QUIZ"); $("cloudText").textContent="Online-ready"; }
+function lobbyRemaining(){return Math.max(0,state.lobbyStarted+state.lobbyDuration*1000-Date.now())/1000}
+function approved(){return state.participants.filter(p=>p.round===state.round&&p.status==="APPROVED")}
+function pending(){return state.pendingUTRs.filter(p=>p.round===state.round&&p.status==="PENDING")}
+function archiveCurrent(reason){state.archive.push({archivedAt:new Date().toISOString(),round:state.round,reason,participants:state.participants.filter(p=>p.round===state.round),standings:state.standings.filter(s=>s.round===state.round),winners:state.winners.filter(w=>w.round===state.round),pendingUTRs:state.pendingUTRs.filter(p=>p.round===state.round)});state.participants=state.participants.filter(p=>p.round!==state.round);state.pendingUTRs=state.pendingUTRs.filter(p=>p.round!==state.round);state.standings=state.standings.filter(s=>s.round!==state.round);state.winners=state.winners.filter(w=>w.round!==state.round)}
+function resetRound(reason,increment=false){
+ archiveCurrent(reason);
+ if(increment)state.round++;
+ state.status="LOBBY";state.lobbyStarted=Date.now();state.activeStarted=null;state.currentStudent=null;state.selectedRoundQuestions=questionBank.filter(q=>q.round===((state.round-1)%15)+1).map(q=>q.id);state.adminAuthenticated=state.adminAuthenticated;
+ save();clearIntervals();syncHeader();show("lobby");renderLobby();toast(`Round ${state.round} reset: live screen wiped.`,"ok")
+}
+function clearIntervals(){[quizTicker,lobbyTicker,verificationTicker].forEach(x=>x&&clearInterval(x));quizTicker=lobbyTicker=verificationTicker=null}
+function renderLobby(){const a=approved().length;const rem=lobbyRemaining();$("lobbyTimer").textContent=fmt(rem);$("approvedCountLobby").textContent=a;$("lobbyProgress").style.width=Math.min(100,a/20*100)+"%";syncHeader()}
+function registration(e){e.preventDefault();const name=$("studentName").value.trim(),phone=$("studentPhone").value.replace(/\D/g,"");if(name.length<2||!/^[6-9]\d{9}$/.test(phone))return toast("Enter a valid full name and 10-digit Indian mobile number.","bad");state.currentStudent=uid();const p={id:state.currentStudent,round:state.round,name,phone,utr:"",status:"REGISTERED",createdAt:Date.now(),answers:{},offenses:0,score:0,timeTaken:null,disqualified:false};state.participants.push(p);save();show("payment");toast("Registration saved. Pay ₹50 and submit your UTR.","ok");onlineCall("register",{participant:p,round:state.round}).then(syncOnlineState)}
+function setupPayment(){const data="upi://pay?pa=7756804720@ybl&pn=CBSE%20Quiz%20Master&am=50";$("upiQr").src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data="+encodeURIComponent(data);$("upiIntent").href=data}
+function submitUTR(e){e.preventDefault();const utr=$("utrInput").value.trim(),p=currentParticipant();if(!p)return show("lobby");if(!/^\d{12}$/.test(utr))return toast("UTR must contain exactly 12 digits.","bad");p.utr=utr;p.status="PENDING";state.pendingUTRs.push({id:uid(),participantId:p.id,round:state.round,name:p.name,phone:p.phone,utr,status:"PENDING",createdAt:Date.now()});save();onlineCall("submitUTR",{participantId:p.id,round:state.round,name:p.name,phone:p.phone,utr}).then(syncOnlineState);$("verifyName").textContent=p.name;$("verifyPhone").textContent=p.phone;$("verifyUtr").textContent=utr;show("verification");toast("UTR submitted for admin verification.","ok");startVerificationPolling()}
+function startVerificationPolling(){clearInterval(verificationTicker);verificationTicker=setInterval(()=>{const p=currentParticipant();if(!p)return;if(p.status==="APPROVED"){clearInterval(verificationTicker);show("waiting");renderWaiting();}else if(p.status==="REJECTED"){clearInterval(verificationTicker);toast("UTR rejected. Please contact the quiz administrator.","bad");show("payment")}},700)}
+function renderWaiting(){const a=approved().length,rem=lobbyRemaining();$("waitingTimer").textContent=fmt(rem);$("approvedCountWaiting").textContent=`${a} / 20`;$("waitingProgress").style.width=Math.min(100,a/20*100)+"%";$("whatsappInvite").href="https://wa.me/?text="+encodeURIComponent(`Join CBSE Mega Quiz Arena Round ${state.round}! Entry ₹50, 10 MCQs in 10 minutes. Contact the quiz admin for payment details.`)}
+function enterQuiz(){const p=currentParticipant();if(!p)return;state.status="QUIZ";state.activeStarted=Date.now();p.quizStarted=Date.now();p.answers=p.answers||{};p.currentQuestion=0;p.offenses=0;save();show("quiz");renderQuiz();startQuizTicker()}
+function startQuizTicker(){clearInterval(quizTicker);quizTicker=setInterval(()=>{const p=currentParticipant();if(!p)return;const left=Math.max(0,600-(Date.now()-p.quizStarted)/1000);$("quizTimer").textContent=fmt(left);$("headerTimer").textContent=fmt(left);if(left<=0){clearInterval(quizTicker);finishQuiz(true)}},100)}
+function renderQuiz(){const p=currentParticipant(),qs=activeQuestions(),i=p.currentQuestion||0,q=qs[i];$("subjectBadge").textContent=q.subject.toUpperCase();$("questionIndex").textContent=`Question ${i+1} of 10`;$("questionText").textContent=q.q;$("prevBtn").disabled=i===0;$("nextBtn").textContent=i===9?"Submit Quiz Answers ✅":"Next →";$("options").innerHTML=q.options.map((o,j)=>`<button class="option rounded-2xl border border-slate-700 bg-slate-900 p-4 text-left font-semibold ${p.answers[q.id]===j?"selected":""}" data-opt="${j}"><span class="mr-2 text-indigo-300">${String.fromCharCode(65+j)}.</span>${esc(o)}</button>`).join("");$("qDots").innerHTML=qs.map((x,j)=>`<div class="rounded-lg p-2 text-center text-xs font-bold ${p.answers[x.id]!==undefined?"bg-indigo-600":"bg-slate-800"}">${j+1}</div>`).join("")}
+function selectOption(j){const p=currentParticipant(),q=activeQuestions()[p.currentQuestion];if(p.answers[q.id]===j)return;p.answers[q.id]=j;save();renderQuiz()}
+function finishQuiz(timeout=false){const p=currentParticipant();if(!p)return;const qs=activeQuestions();let score=0;qs.forEach(q=>{if(p.answers[q.id]===q.answer)score++});p.score=p.disqualified?0:score;p.timeTaken=Math.min(600,Math.max(0,(Date.now()-p.quizStarted)/1000));p.status="FINISHED";state.status="RESULTS";state.standings=state.standings.filter(s=>s.participantId!==p.id);state.standings.push({participantId:p.id,round:state.round,name:p.name,phone:p.phone,score:p.score,timeTaken:p.timeTaken,disqualified:p.disqualified,finishedAt:Date.now()});save();clearIntervals();show("results");renderResults();toast(timeout?"Time expired; answers submitted.":"Quiz submitted successfully.","ok")}
+function sortedStandings(){return state.standings.filter(s=>s.round===state.round&&!s.disqualified).sort((a,b)=>b.score-a.score||a.timeTaken-b.timeTaken)}
+function renderResults(){const p=currentParticipant();$("scoreBig").textContent=`${p?.score||0} / 10`;$("timeTaken").textContent=p?`${p.timeTaken.toFixed(3)}s`:"—";$("resultDisq").textContent=p?.disqualified?"DISQUALIFIED — score recorded as 0":"";const qs=activeQuestions();$("answerKey").innerHTML=qs.map((q,i)=>{const chosen=p?.answers[q.id],ok=chosen===q.answer;return `<div class="rounded-2xl border ${ok?"border-emerald-500/20":"border-rose-500/20"} bg-slate-900 p-4"><div class="text-sm font-bold">${i+1}. ${esc(q.q)}</div><div class="mt-2 grid sm:grid-cols-2 gap-2 text-sm"><div>Your choice: <b>${chosen===undefined?"Not answered":esc(q.options[chosen])}</b></div><div>Correct: <b class="text-emerald-300">${esc(q.options[q.answer])}</b></div></div><div class="mt-1 font-bold ${ok?"text-emerald-300":"text-rose-300"}">${ok?"✓ Correct":"✗ Incorrect"}</div></div>`}).join("");renderStandings()}
+function renderStandings(){const arr=sortedStandings();$("standingsList").innerHTML=arr.length?arr.map((s,i)=>`<div class="flex items-center gap-3 rounded-xl bg-slate-900 p-3"><div class="w-8 text-center font-black">${i<5?["🥇","🥈","🥉","🎖️","🎖️"][i]:i+1}</div><div class="min-w-0 flex-1"><b>${esc(s.name)}</b><div class="text-xs text-slate-500">${s.timeTaken.toFixed(3)}s</div></div><div class="font-black">${s.score}/10</div>${i<5?`<span class="text-xs font-bold text-amber-300">₹${PRIZES[i]}</span>`:""}</div>`).join(""):`<div class="text-sm text-slate-500">No finished participants yet.</div>`}
+function buildWinners(){const arr=sortedStandings().slice(0,5);state.winners=arr.map((s,i)=>{const old=state.winners.find(w=>w.participantId===s.participantId);return old||{id:uid(),participantId:s.participantId,round:s.round,name:s.name,phone:s.phone,prize:PRIZES[i],status:"DUE",createdAt:Date.now()}});save()}
+function renderAdmin(){syncHeader();$("adminRound").textContent=`ROUND ${state.round}`;$("adminApproved").textContent=approved().length;$("adminPending").textContent=pending().length;$("adminStatus").textContent=state.status;renderPending();renderWinners();renderRefunds()}
+function renderPending(){const host=$("pendingList");const rows=pending();const existing=new Map([...host.children].map(x=>[x.dataset.id,x]));rows.forEach(p=>{let el=existing.get(p.id);if(!el){el=document.createElement("div");el.dataset.id=p.id;el.className="pendingCard rounded-2xl border border-slate-700 bg-slate-900 p-4";host.appendChild(el)}el.innerHTML=`<div class="flex justify-between gap-3"><div><b>${esc(p.name)}</b><div class="text-xs text-slate-500">${esc(p.phone)} • UTR ${esc(p.utr)}</div></div><div class="flex gap-2"><button data-action="approve" data-id="${p.id}" class="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold">Approve ✅</button><button data-action="reject" data-id="${p.id}" class="rounded-lg bg-rose-600/80 px-3 py-2 text-xs font-bold">Reject ❌</button></div></div>`});existing.forEach((el,id)=>{if(!rows.some(x=>x.id===id))el.remove()});if(!rows.length&&!host.children.length)host.innerHTML='<div class="text-sm text-slate-500">No pending UTRs.</div>'}
+function renderWinners(){buildWinners();const host=$("winnerList"),rows=state.winners.filter(w=>w.round===state.round&&w.status==="DUE");host.innerHTML=rows.length?rows.map(w=>`<div data-id="${w.id}" class="winnerCard rounded-2xl border border-slate-700 bg-slate-900 p-4"><div class="flex items-center gap-3"><div class="flex-1"><b>${esc(w.name)}</b><div class="text-xs text-slate-500">${esc(w.phone)}</div></div><span class="font-black text-amber-300">₹${w.prize}</span></div><div class="mt-3 flex gap-2"><button data-waction="copy" data-id="${w.id}" class="rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold">Copy</button><button data-waction="paid" data-id="${w.id}" class="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold">Paid ✅</button><button data-waction="remove" data-id="${w.id}" class="rounded-lg bg-rose-600/80 px-3 py-2 text-xs font-bold">Remove ❌</button></div></div>`).join(""):'<div class="text-sm text-slate-500">No due winners yet.</div>'}
+function renderRefunds(){const host=$("refundList"),rows=state.refunds.filter(r=>r.round===state.round&&r.status==="DUE");host.innerHTML=rows.length?rows.map(r=>`<div class="flex items-center gap-3 rounded-xl bg-slate-900 p-3"><div class="flex-1"><b>${esc(r.name)}</b><div class="text-xs text-slate-500">${esc(r.phone)}</div></div><button data-copy="${esc(r.phone)}" class="copyBtn rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold">Copy Phone</button><span class="text-emerald-300 font-bold">₹50</span></div>`).join(""):'<div class="text-sm text-slate-500">No pending refunds.</div>'}
+function flashCard(el,msg,kind="ok"){el.classList.add(kind==="ok"?"border-emerald-400":"border-rose-400");const old=el.innerHTML;el.innerHTML=`<div class="py-2 font-black ${kind==="ok"?"text-emerald-300":"text-rose-300"}">${msg}</div>`;setTimeout(()=>el.classList.add("fade-out"),350);setTimeout(()=>{el.remove();renderAdmin()},800)}
+function approve(id){const x=state.pendingUTRs.find(p=>p.id===id),p=x&&state.participants.find(p=>p.id===x.participantId);if(!x||!p)return;x.status="APPROVED";p.status="APPROVED";save();onlineCall("approve",{pendingId:id,participantId:p.id,round:state.round}).then(syncOnlineState);const el=document.querySelector(`.pendingCard[data-id="${CSS.escape(id)}"]`);if(el)flashCard(el,"Approved! ✅");else renderAdmin();toast("Student approved.","ok")}
+function reject(id){const x=state.pendingUTRs.find(p=>p.id===id),p=x&&state.participants.find(p=>p.id===x.participantId);if(!x||!p)return;x.status="REJECTED";p.status="REJECTED";save();onlineCall("reject",{pendingId:id,participantId:p.id,round:state.round}).then(syncOnlineState);const el=document.querySelector(`.pendingCard[data-id="${CSS.escape(id)}"]`);if(el)flashCard(el,"Rejected ❌","bad");else renderAdmin();toast("UTR rejected.","bad")}
+function payout(id,action){const w=state.winners.find(x=>x.id===id);if(!w)return;const el=document.querySelector(`.winnerCard[data-id="${CSS.escape(id)}"]`);if(action==="paid"){w.status="PAID";w.paidAt=Date.now();if(el)flashCard(el,"PAID! ✅")}else{w.status="REMOVED";state.removedWinners.push({...w,removedAt:Date.now()});if(el)flashCard(el,"REMOVED ❌","bad")}save();toast(action==="paid"?"Winner marked paid.":"Winner removed.",action==="paid"?"ok":"bad")}
+function createRefunds(){approved().forEach(p=>{if(!state.refunds.some(r=>r.participantId===p.id))state.refunds.push({id:uid(),participantId:p.id,round:state.round,name:p.name,phone:p.phone,amount:50,status:"DUE",createdAt:Date.now()})});save()}
+function cancelRound(){
+ const mine=currentParticipant();
+ const phone=mine?.phone||"Registered PhonePe number";
+ createRefunds();
+ archiveCurrent("CANCELLED");
+ state.status="CANCELLED";
+ state.activeStarted=null;
+ state.lobbyStarted=Date.now();
+ save(); clearIntervals(); syncHeader();
+ show("cancelled"); $("refundPhone").textContent=phone;
+ toast("Round cancelled and refund ledger archived.","ok");
+}
+function forceStart(){if(approved().length<1)return toast("Approve at least one participant before force-starting.","bad");enterQuiz()}
+function exportCSV(){
+ const lines=[],push=x=>lines.push(x);
+ push("CBSE Mega Quiz Arena - Master Audited Excel CSV");push(`Generated,${new Date().toISOString()}`);push("");
+ push("SECTION 1: Top Winners - Cash Transferred (Paid)");push("Round,Name,PhonePe,Prize,Status,Paid At");
+ state.winners.filter(w=>w.status==="PAID").forEach(w=>push([w.round,w.name,w.phone,w.prize,w.status,new Date(w.paidAt).toISOString()].map(csv).join(",")));
+ push("");push("SECTION 2: Top Winners - Unpaid / Due Payouts");push("Round,Name,PhonePe,Prize,Status");
+ state.winners.filter(w=>w.status==="DUE").forEach(w=>push([w.round,w.name,w.phone,w.prize,w.status].map(csv).join(",")));
+ push("");push("SECTION 3: Disqualified / Removed Winners List");push("Round,Name,PhonePe,Prize,Status,Removed At");
+ [...state.removedWinners,...state.standings.filter(s=>s.disqualified).map(s=>({...s,prize:"",status:"DISQUALIFIED"}))].forEach(w=>push([w.round,w.name,w.phone,w.prize||"",w.status,w.removedAt?new Date(w.removedAt).toISOString():""].map(csv).join(",")));
+ push("");push("SECTION 4: 100% Refunds Log (Cancelled Rounds)");push("Round,Name,PhonePe,Amount,Status,Created At");
+ state.refunds.forEach(r=>push([r.round,r.name,r.phone,r.amount,r.status,new Date(r.createdAt).toISOString()].map(csv).join(",")));
+ push("");push("SECTION 5: General Participation Log (Ranks 6+)");push("Round,Rank,Name,PhonePe,Score,Time Seconds,Status");
+ const all=[...state.standings,...state.archive.flatMap(a=>a.standings||[])].filter(Boolean);
+ const seen=new Set();
+ const rankGroups=new Map();
+ all.forEach(x=>{const k=String(x.round);if(!rankGroups.has(k))rankGroups.set(k,[]);rankGroups.get(k).push(x)});
+ rankGroups.forEach(group=>group.sort((a,b)=>b.score-a.score||a.timeTaken-b.timeTaken));
+ all.sort((a,b)=>a.round-b.round||b.score-a.score||a.timeTaken-b.timeTaken).forEach(s=>{
+   const k=`${s.round}:${s.participantId}`; if(seen.has(k))return; seen.add(k);
+   const rank=(rankGroups.get(String(s.round))||[]).findIndex(x=>x.participantId===s.participantId)+1;
+   if(rank>=6)push([s.round,rank,s.name,s.phone,s.score,s.timeTaken?.toFixed(3),s.disqualified?"DISQUALIFIED":"FINISHED"].map(csv).join(","))
+ });
+ const blob=new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`CBSE_Mega_Quiz_Round_${state.round}_Master_Audit.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("CSV export generated.","ok")
+}
+function csv(v){return `"${String(v??"").replaceAll('"','""')}"`}
+function antiCheat(){const p=currentParticipant();if(!p||state.status!=="QUIZ")return;p.offenses=(p.offenses||0)+1;if(p.offenses===1){$("cheatBanner").textContent="⚠️ Warning: anti-cheat offense detected. A second offense will disqualify you."; $("cheatBanner").classList.remove("hidden");toast("Anti-cheat warning issued.","bad");setTimeout(()=>{$("cheatBanner").classList.add("hidden")},5000)}else{p.disqualified=true;p.status="DISQUALIFIED";p.score=0;save();toast("Second anti-cheat offense: disqualified.","bad");finishQuiz(false)}}
+
+async function syncOnlineState(){
+  const r=await onlineCall("snapshot",{round:state.round});
+  if(!r || !r.ok) return;
+  if(Array.isArray(r.participants)){
+    for(const remote of r.participants){
+      const local=state.participants.find(p=>p.id===remote.id);
+      if(local){
+        const keep={answers:local.answers||{},currentQuestion:local.currentQuestion||0,quizStarted:local.quizStarted,offenses:local.offenses||0};
+        Object.assign(local,remote,keep);
+      } else state.participants.push(remote);
+    }
+  }
+  if(Array.isArray(r.pendingUTRs)){
+    state.pendingUTRs=state.pendingUTRs.filter(x=>x.round!==state.round);
+    state.pendingUTRs.push(...r.pendingUTRs);
+  }
+  if(r.status) state.status=r.status;
+  if(typeof r.round==="number") state.round=r.round;
+  save();
+  if(state.adminAuthenticated) renderAdmin();
+  else {
+    const p=currentParticipant();
+    if(p?.status==="APPROVED" && document.getElementById("screen-verification") && !document.getElementById("screen-verification").classList.contains("hidden-screen")) renderWaiting();
+  }
+}
+setInterval(()=>{if(getBackendUrl())syncOnlineState()},3000);
+
+document.addEventListener("visibilitychange",()=>{if(document.hidden)antiCheat()});
+window.addEventListener("blur",()=>antiCheat());
+let lastW=innerWidth;window.addEventListener("resize",()=>{if(Math.abs(innerWidth-lastW)>120){lastW=innerWidth;antiCheat()}});
+$("registrationForm").addEventListener("submit",registration);
+$("utrForm").addEventListener("submit",submitUTR);
+$("options").addEventListener("click",e=>{const b=e.target.closest("[data-opt]");if(b){const now=Date.now();if(now-(window._optLock||0)<150)return;window._optLock=now;selectOption(Number(b.dataset.opt))}});
+$("prevBtn").onclick=()=>{const p=currentParticipant();if(p&&p.currentQuestion>0){p.currentQuestion--;save();renderQuiz()}};
+$("nextBtn").onclick=()=>{const p=currentParticipant();if(!p)return;if(p.currentQuestion===9)finishQuiz(false);else{p.currentQuestion++;save();renderQuiz()}};
+$("refreshStandings").onclick=()=>{renderStandings();flashRefresh($("refreshStandings"))};
+$("refreshPending").onclick=()=>{renderPending();flashRefresh($("refreshPending"))};
+$("refreshWinners").onclick=()=>{renderWinners();flashRefresh($("refreshWinners"))};
+function flashRefresh(btn){const t=btn.textContent;btn.textContent="Updated! ✓";setTimeout(()=>btn.textContent=t,900)}
+$("forceStart").onclick=forceStart;
+$("cancelRound").onclick=()=>{if(confirm("Cancel this round and create ₹50 refund ledger entries?"))cancelRound()};
+$("restartRound").onclick=()=>{if(confirm("Archive current round and restart the same round?"))resetRound("RESTARTED",false)};
+$("nextRound").onclick=()=>{if(confirm("Archive current round and move to the next round?"))resetRound("NEXT_ROUND",true)};
+$("exportCsv").onclick=exportCSV;
+$("adminClose").onclick=adminClose;
+$("adminHeaderBtn").onclick=()=>{show("admin");renderAdmin()};
+$("secretTrophy").onclick=()=>{secretTaps++;clearTimeout(tapTimer);tapTimer=setTimeout(()=>secretTaps=0,1200);if(secretTaps>=3){secretTaps=0;$("pinModal").classList.remove("hidden");$("pinModal").classList.add("flex");$("pinInput").focus()}};
+$("pinCancel").onclick=()=>{$("pinModal").classList.add("hidden");$("pinModal").classList.remove("flex")};
+$("pinSubmit").onclick=()=>{if($("pinInput").value==="103695"){$("pinModal").classList.add("hidden");$("pinModal").classList.remove("flex");adminOpen();$("pinInput").value=""}else toast("Incorrect PIN.","bad")};
+window.addEventListener("storage",e=>{
+ if(e.key!==KEY)return;
+ const fresh=load();
+ const admin=state.adminAuthenticated;
+ state=fresh; state.adminAuthenticated=admin;
+ syncHeader();
+ if(admin) renderAdmin();
+ else if(state.status==="QUIZ"&&currentParticipant()){show("quiz");renderQuiz()}
+ else if(state.status==="RESULTS"&&currentParticipant()){show("results");renderResults()}
+ else if(state.status==="WAITING"&&currentParticipant()){show("waiting");renderWaiting()}
+ else if(state.status==="CANCELLED"){show("cancelled");$("refundPhone").textContent=state.archive.at(-1)?.participants?.find(p=>p.id===state.currentStudent)?.phone||"Registered PhonePe number"}
+ else {show("lobby");renderLobby()}
+});
+document.addEventListener("click",e=>{const c=e.target.closest(".copyBtn");if(c){navigator.clipboard?.writeText(c.dataset.copy);toast("Copied ✓","ok")}const a=e.target.closest("[data-action]");if(a){a.dataset.action==="approve"?approve(a.dataset.id):reject(a.dataset.id)}const w=e.target.closest("[data-waction]");if(w){const id=w.dataset.id,act=w.dataset.waction;if(act==="copy"){const x=state.winners.find(y=>y.id===id);navigator.clipboard?.writeText(x.phone);toast("PhonePe number copied.","ok")}else payout(id,act)}});
+function lobbyLoop(){renderLobby();if(state.status==="LOBBY"&&lobbyRemaining()<=0){if(approved().length>=20){enterQuiz()}else{createRefunds();const mine=currentParticipant();if(mine){show("cancelled");$("refundPhone").textContent=mine.phone}state.status="CANCELLED";save();toast("Lobby closed below quorum; refund ledger created.","bad")}}else if(state.status==="LOBBY"){const p=currentParticipant();if(p?.status==="APPROVED"){show("waiting");renderWaiting()} }else if(state.status==="WAITING"){renderWaiting()}}
+function boot(){setupPayment();initOnlineSetup();syncOnlineState();syncHeader();if(state.status==="QUIZ"&&currentParticipant()){show("quiz");renderQuiz();startQuizTicker()}else if(state.status==="RESULTS"&&currentParticipant()){show("results");renderResults()}else if(state.status==="WAITING"&&currentParticipant()){show("waiting");renderWaiting()}else if(state.status==="CANCELLED"){show("cancelled");$("refundPhone").textContent=state.archive.at(-1)?.participants?.find(p=>p.id===state.currentStudent)?.phone||"Registered PhonePe number"}else{show("lobby");renderLobby()}clearInterval(lobbyTicker);lobbyTicker=setInterval(lobbyLoop,500);if(state.adminAuthenticated)renderAdmin()}
+boot();
+})();
+</script>
+</body>
+</html>
