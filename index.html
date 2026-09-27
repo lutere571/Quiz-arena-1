@@ -16,7 +16,7 @@
   <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
     <div>
       <div class="flex items-center gap-2">
-        <span onclick="handleAdminSecretTap()" class="cursor-pointer text-xl select-none" title="Admin Triple Tap">🏆</span>
+        <span onclick="handleAdminSecretTap()" class="cursor-pointer text-xl" title="Admin Triple Tap">🏆</span>
         <h1 class="font-black text-sm md:text-base text-amber-400 tracking-wider">CBSE QUIZ ARENA</h1>
         <span id="roundHeaderBadge" class="text-[10px] bg-emerald-950 border border-emerald-500 text-emerald-300 px-2 py-0.5 rounded font-black">ROUND 1</span>
       </div>
@@ -102,7 +102,7 @@
           <p class="text-[10px] text-slate-400 mt-1">Cash prizes aur refunds isi number par transfer honge.</p>
         </div>
 
-        <button id="btnProceedPayment" onclick="handleStudentInfoSubmit()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg text-sm transition mt-2">
+        <button id="btnSaveStudentInfo" onclick="handleStudentInfoSubmit()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg text-sm transition mt-2">
           Save Details & Proceed to Pay ₹50 ➔
         </button>
       </div>
@@ -177,7 +177,7 @@
       <div class="text-4xl animate-bounce">⏳</div>
       <h2 class="text-base md:text-lg font-black text-amber-400">Payment Verification in Progress</h2>
       <p class="text-xs text-slate-300 leading-relaxed font-medium">
-        Aapka UTR verify hone ke liye Admin dashboard par bheja gaya hai. Please thoda wait karein.
+        Aapka UTR verify hone ke liye Admin ke paas bhej diya gaya hai. Please 10-30 seconds wait karein.
       </p>
 
       <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left space-y-1.5 text-xs font-mono">
@@ -199,7 +199,7 @@
 
       <div class="space-y-1">
         <h2 class="text-lg font-black text-white">Live Quiz Waiting Lobby</h2>
-        <p class="text-xs text-slate-400">Timer complete hote hi ya 20 log judte hi sabhi ka test shuru hoga.</p>
+        <p class="text-xs text-slate-400">Timer 00:00 hote hi ya 20 log judte hi sabhi ka test ek sath start hoga.</p>
       </div>
 
       <!-- TIMER DISPLAY -->
@@ -231,8 +231,8 @@
       <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-left text-xs space-y-1 text-slate-400">
         <p class="text-white font-bold">Rules for this stage:</p>
         <p>• Is page ko refresh ya close mat karein.</p>
-        <p>• Countdown complete hone par test screen apne aap start hogi.</p>
-        <p>• 20 se kam bacchon par round cancel hokar ₹50 refund ho jayega.</p>
+        <p>• Countdown complete hone par test screen apne aap khulegi.</p>
+        <p>• 20 se kam bacchon par round auto-cancel hokar ₹50 refund mil jayega.</p>
       </div>
     </section>
 
@@ -301,7 +301,7 @@
       <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">🏆 Live Contest Standings</h3>
-          <button onclick="pollBackendState()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
+          <button onclick="fetchLeaderboardStandings()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
         </div>
         <div id="fullLeaderboardBox" class="space-y-2 max-h-72 overflow-y-auto font-mono text-xs"></div>
       </div>
@@ -316,7 +316,7 @@
         <p class="font-bold text-amber-300">📢 Official Contest Update:</p>
         <p>20-minute window ke andar <strong>kam se kam 20 participants nahi jude</strong>, isliye yeh round cancel kar diya gaya hai.</p>
         <p class="text-emerald-400 font-bold border-t border-slate-800 pt-2">
-          💰 100% Refund Assured: Aapka ₹50 entry fee aapke PhonePe number (<span id="cancelledStudentPhoneDisplay" class="font-mono text-white"></span>) par refund kar diya jayega.
+          💰 100% Refund Assured: Aapka ₹50 entry fee aapke PhonePe number (<span id="cancelledStudentPhoneDisplay" class="font-mono text-white"></span>) par jald hi refund kar diya jayega.
         </p>
       </div>
 
@@ -343,7 +343,7 @@
           <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">📊 All-in-One Excel Ledger</h3>
           <p class="text-[10px] text-slate-400">All Rounds, Scores, Winners & Refunds</p>
         </div>
-        <button onclick="downloadAdminExcelReport()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-3.5 py-2 rounded-lg shadow-lg flex items-center gap-1.5 transition">
+        <button onclick="downloadBuiltinExcelReport()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-3.5 py-2 rounded-lg shadow-lg flex items-center gap-1.5 transition">
           📥 Export Excel (.CSV)
         </button>
       </div>
@@ -352,18 +352,18 @@
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
         <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">⚡ Quick Actions</h3>
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="adminAction('forceStart')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs shadow">
+          <button onclick="adminForceStartQuiz()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs shadow">
             🚀 Force Start Now
           </button>
-          <button onclick="adminAction('cancelRound')" class="bg-red-700 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
+          <button onclick="adminForceCancelQuiz()" class="bg-red-700 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
             🛑 Cancel Round & Refund
           </button>
         </div>
         <div class="grid grid-cols-2 gap-2 pt-1">
-          <button onclick="adminAction('restartRound')" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-black py-2 rounded-xl text-xs shadow">
+          <button onclick="adminRestartSameRound()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-black py-2 rounded-xl text-xs shadow">
             🔄 Restart Same Round
           </button>
-          <button onclick="adminAction('nextRound')" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 rounded-xl text-xs shadow">
+          <button onclick="adminAdvanceNextRound()" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 rounded-xl text-xs shadow">
             ⏭️ Next Round (After End)
           </button>
         </div>
@@ -373,7 +373,7 @@
       <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals</h3>
-          <button onclick="pollAdminState()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
+          <button onclick="manualRefreshAdmin()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
         </div>
         <div id="adminPendingUtrWrapper" class="space-y-2 max-h-52 overflow-y-auto">
           <p class="placeholder-msg text-xs text-slate-500 py-2">No pending UTRs right now.</p>
@@ -398,7 +398,7 @@
             <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🏆 Top 5 Winners Payout</h3>
             <p class="text-[9px] text-emerald-400">Total ₹800 Payout • ₹200 Guaranteed Profit</p>
           </div>
-          <button onclick="pollAdminState()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
+          <button onclick="manualRefreshAdmin()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
         </div>
         <div id="adminWinnersPayoutWrapper" class="space-y-2 max-h-48 overflow-y-auto">
           <p class="text-xs text-slate-500 py-2">Winners appear here when test completes.</p>
@@ -410,57 +410,59 @@
 
   <script>
     // =========================================================================
-    // CBSE QUIZ ARENA - ENTERPRISE BACKEND INTEGRATION
+    // CBSE MEGA QUIZ ARENA - BULLETPROOF GAS V2 PRODUCTION CLIENT
     // =========================================================================
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxp1jd0dFhNHUEPZwvBQw4bM6KsCqvaeNq8ANa4vTHhUtDKKS497R65HEcP9NKNVwEIPw/exec";
-    const LOBBY_DURATION_SEC = 1200;
-    const TEST_DURATION_SEC = 600;
+    const API_URL = "https://script.google.com/macros/s/AKfycbxp1jd0dFhNHUEPZwvBQw4bM6KsCqvaeNq8ANa4vTHhUtDKKS497R65HEcP9NKNVwEIPw/exec";
+    const ADMIN_SECRET_PIN = "103695";
     const MINIMUM_REQUIRED_PLAYERS = 20;
+    const QUIZ_DURATION_SEC = 600;
 
-    let userToken = localStorage.getItem("cbse_user_token") || null;
-    let adminToken = localStorage.getItem("cbse_admin_token") || null;
-
-    let currentRoundData = { round: 1, status: "LOBBY" };
-    let currentParticipantData = null;
-    let currentQuestions = [];
-    let currentStandings = [];
-
-    // Active Quiz
+    let studentToken = localStorage.getItem("cbse_quiz_token") || "";
+    let adminToken = localStorage.getItem("cbse_admin_token") || "";
+    let activeRoundNumber = 1;
+    let localRoundState = "LOBBY";
+    let activeTestQuestions = [];
     let currentQuestionPointer = 0;
     let studentChosenAnswers = {};
     let isTestCurrentlyActive = false;
     let antiCheatViolationCounter = 0;
     let testExactStartTimestamp = 0;
     let testCountdownIntervalHandle = null;
-    let testRemainingSeconds = TEST_DURATION_SEC;
+    let testRemainingSeconds = QUIZ_DURATION_SEC;
     let secretTapCount = 0;
     let secretTapTimeout = null;
+    let currentParticipantData = null;
 
     // =========================================================================
-    // DUAL-FALLBACK BACKEND CALL (AVOIDS ALL CORS / PREFLIGHT ISSUES)
+    // BULLETPROOF API CALL (BYPASSES CORS & PREFLIGHT VIA TEXT/PLAIN + GET FALLBACK)
     // =========================================================================
-    async function callBackend(payload) {
+    async function apiCall(payload) {
       try {
-        const res = await fetch(BACKEND_URL, {
+        const res = await fetch(API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
-        return await res.json();
-      } catch (e) {
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Server responded with an error");
+        return data;
+      } catch (err) {
+        // Fallback to GET URL Query if POST gets blocked by mobile network
         try {
-          const getUrl = BACKEND_URL + "?data=" + encodeURIComponent(JSON.stringify(payload));
-          const res2 = await fetch(getUrl);
-          return await res2.json();
-        } catch (e2) {
-          console.error("Backend error:", e2);
-          return { ok: false, error: e2.message };
+          const fallbackUrl = API_URL + "?data=" + encodeURIComponent(JSON.stringify(payload));
+          const res2 = await fetch(fallbackUrl);
+          const data2 = await res2.json();
+          if (!data2.ok) throw new Error(data2.error || "Server error");
+          return data2;
+        } catch (err2) {
+          throw new Error(err.message || "Failed to connect to Quiz Server");
         }
       }
     }
 
-    // =========================================================================
-    // SCREEN NAVIGATION
-    // =========================================================================
+    // ==========================================
+    // SCREEN SWITCHER
+    // ==========================================
     function switchScreen(screenId) {
       const screens = [
         "screen1Lobby", "screen2Payment", "screen3Verification", 
@@ -473,60 +475,34 @@
       });
       const target = document.getElementById(screenId);
       if (target) target.classList.remove("hidden");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function handleAdminSecretTap() {
-      secretTapCount++;
-      clearTimeout(secretTapTimeout);
-      secretTapTimeout = setTimeout(() => { secretTapCount = 0; }, 1200);
-
-      if (secretTapCount >= 3) {
-        secretTapCount = 0;
-        openAdminAuthModal();
-      }
-    }
-
-    async function openAdminAuthModal() {
-      const pin = prompt("👑 Enter 6-Digit Admin Secret PIN:");
-      if (!pin) return;
-      const res = await callBackend({ action: "adminLogin", pin: pin.trim() });
-      if (res.ok && res.adminToken) {
-        adminToken = res.adminToken;
-        localStorage.setItem("cbse_admin_token", adminToken);
-        document.getElementById("adminHeaderBtn").classList.remove("hidden");
-        switchScreen("screen8AdminDashboard");
-        pollAdminState();
-      } else {
-        alert("❌ Access Denied: " + (res.error || "Incorrect PIN!"));
-      }
-    }
-
-    // =========================================================================
-    // STUDENT REGISTRATION & UTR FLOW
-    // =========================================================================
+    // ==========================================
+    // USER REGISTRATION & PAYMENT
+    // ==========================================
     async function handleStudentInfoSubmit() {
       const name = document.getElementById("inputStudentName").value.trim();
       const phone = document.getElementById("inputStudentPhone").value.trim();
+      const btn = document.getElementById("btnSaveStudentInfo");
 
       if (!name) { alert("Please enter Student Full Name!"); return; }
       if (!/^[6-9]\d{9}$/.test(phone)) { alert("Please enter a valid 10-digit PhonePe number!"); return; }
 
-      const btn = document.getElementById("btnProceedPayment");
       btn.disabled = true;
-      btn.innerText = "Saving... ⏳";
+      btn.innerText = "Registering... ⏳";
 
-      const res = await callBackend({ action: "register", name, phone });
-      btn.disabled = false;
-      btn.innerText = "Save Details & Proceed to Pay ₹50 ➔";
-
-      if (res.ok && res.token) {
-        userToken = res.token;
-        localStorage.setItem("cbse_user_token", userToken);
+      try {
+        const res = await apiCall({ action: "register", name: name, phone: phone });
+        studentToken = res.token;
+        localStorage.setItem("cbse_quiz_token", studentToken);
         document.getElementById("displayVerifiedStudent").innerText = `${name} (${phone})`;
         switchScreen("screen2Payment");
-      } else {
-        alert("Registration Error: " + (res.error || "Please try again"));
+      } catch (err) {
+        alert("Registration Error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Save Details & Proceed to Pay ₹50 ➔";
       }
     }
 
@@ -538,9 +514,8 @@
         alert("UTR must be exactly 12 numeric digits!");
         return;
       }
-
-      if (!userToken) {
-        alert("Session missing. Please register again.");
+      if (!studentToken) {
+        alert("Session expired. Please fill student details again.");
         switchScreen("screen1Lobby");
         return;
       }
@@ -548,117 +523,128 @@
       btn.disabled = true;
       btn.innerText = "Submitting... ⏳";
 
-      const res = await callBackend({ action: "submitUTR", token: userToken, utr: utr });
-      btn.disabled = false;
-      btn.innerText = "Submit UTR for Verification ➔";
-
-      if (res.ok) {
-        pollBackendState();
-        switchScreen("screen3Verification");
-      } else {
-        alert("Submission failed: " + (res.error || "Unknown error"));
+      try {
+        await apiCall({ action: "submitUTR", token: studentToken, utr: utr });
+        syncPoll();
+      } catch (err) {
+        alert("Error submitting UTR: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Submit UTR for Verification ➔";
       }
     }
 
-    // =========================================================================
-    // REAL-TIME STATE SYNC & LOBBY TIMER
-    // =========================================================================
-    async function pollBackendState() {
-      const res = await callBackend({ action: "getState", token: userToken });
-      if (!res.ok) return;
+    // ==========================================
+    // CLIENT SYNC & POLLING (GAS STATE LOOP)
+    // ==========================================
+    async function syncPoll() {
+      try {
+        const res = await apiCall({ action: "getState", token: studentToken });
+        if (!res || !res.ok) return;
 
-      currentRoundData = res.round || {};
-      currentParticipantData = res.participant || null;
-      currentQuestions = res.questions || [];
-      currentStandings = res.standings || [];
+        const round = res.round;
+        activeRoundNumber = round.round;
+        localRoundState = round.status;
 
-      // Update Header & Round Badges
-      const roundNum = currentRoundData.round || 1;
-      document.getElementById("roundHeaderBadge").innerText = `ROUND ${roundNum}`;
-      document.getElementById("adminActiveRoundLabel").innerText = `Round ${roundNum}`;
+        document.getElementById("roundHeaderBadge").innerText = `ROUND ${activeRoundNumber}`;
+        document.getElementById("approvedPlayerCountDisplay").innerText = res.counts ? res.counts.approved : 0;
+        
+        const count = res.counts ? res.counts.approved : 0;
+        document.getElementById("lobbyProgressBar").style.width = `${Math.min(100, Math.floor((count / MINIMUM_REQUIRED_PLAYERS) * 100))}%`;
 
-      // Update Lobby Counts
-      const approvedCount = (res.counts && res.counts.approved) || 0;
-      document.getElementById("approvedPlayerCountDisplay").innerText = approvedCount;
-      document.getElementById("lobbyProgressBar").style.width = `${Math.min(100, Math.floor((approvedCount / MINIMUM_REQUIRED_PLAYERS) * 100))}%`;
+        // Countdown Calculations
+        if (round.status === "LOBBY" && round.lobbyStarted) {
+          const elapsed = Math.floor((Date.now() - Number(round.lobbyStarted)) / 1000);
+          let remaining = Number(round.lobbyDuration) - elapsed;
+          if (remaining < 0) remaining = 0;
+          const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+          const s = String(remaining % 60).padStart(2, '0');
+          document.getElementById("landingPageCountdown").innerText = `${m}:${s}`;
+          document.getElementById("waitingRoomCountdown").innerText = `${m}:${s}`;
+        }
 
-      // Update Synchronized Lobby Timer
-      if (currentRoundData.lobbyStarted) {
-        const elapsedSec = Math.floor((Date.now() - Number(currentRoundData.lobbyStarted)) / 1000);
-        let remaining = LOBBY_DURATION_SEC - elapsedSec;
-        if (remaining < 0) remaining = 0;
-        const m = String(Math.floor(remaining / 60)).padStart(2, "0");
-        const s = String(remaining % 60).padStart(2, "0");
-        const timeStr = `${m}:${s}`;
-        document.getElementById("landingPageCountdown").innerText = timeStr;
-        document.getElementById("waitingRoomCountdown").innerText = timeStr;
-      }
+        // Student Specific State Transition
+        if (res.participant) {
+          currentParticipantData = res.participant;
+          const p = res.participant;
 
-      // Check Student Progress
-      if (currentParticipantData) {
-        document.getElementById("verifDisplayStudent").innerText = currentParticipantData.name || "";
-        document.getElementById("verifDisplayPhone").innerText = currentParticipantData.phone || "";
-        document.getElementById("verifDisplayUtr").innerText = currentParticipantData.utr || "";
+          document.getElementById("displayVerifiedStudent").innerText = `${p.name} (${p.phone})`;
+          document.getElementById("verifDisplayStudent").innerText = p.name;
+          document.getElementById("verifDisplayPhone").innerText = p.phone;
+          document.getElementById("verifDisplayUtr").innerText = p.utr || "Pending";
 
-        const status = currentParticipantData.status;
-
-        if (status === "APPROVED" && !isTestCurrentlyActive) {
-          if (!document.getElementById("screen4WaitingRoom").classList.contains("hidden")) {
-            // Already in waiting room
-          } else if (document.getElementById("screen3Verification").classList.contains("hidden") === false ||
-                     document.getElementById("screen2Payment").classList.contains("hidden") === false) {
-            switchScreen("screen4WaitingRoom");
-          }
-        } else if (status === "REJECTED") {
-          alert("❌ Your payment was rejected by Admin. Please re-check your UTR.");
-          switchScreen("screen2Payment");
-        } else if (status === "CANCELLED") {
-          document.getElementById("cancelledStudentPhoneDisplay").innerText = currentParticipantData.phone || "";
-          switchScreen("screen7Cancelled");
-        } else if ((status === "QUIZ" || currentRoundData.status === "QUIZ") && status === "APPROVED" && !isTestCurrentlyActive) {
-          triggerQuizStart();
-        } else if (status === "FINISHED" || status === "DISQUALIFIED") {
-          if (!isTestCurrentlyActive) {
-            renderStudentResults(currentParticipantData);
+          if (p.status === "REGISTERED") {
+            if (isCurrentScreenHidden("screen2Payment")) switchScreen("screen2Payment");
+          } else if (p.status === "PENDING") {
+            if (isCurrentScreenHidden("screen3Verification")) switchScreen("screen3Verification");
+          } else if (p.status === "APPROVED") {
+            if (round.status === "LOBBY") {
+              if (isCurrentScreenHidden("screen4WaitingRoom")) switchScreen("screen4WaitingRoom");
+            } else if (round.status === "QUIZ") {
+              if (!isTestCurrentlyActive && isCurrentScreenHidden("screen5ActiveQuiz")) {
+                startStudentQuizSession(res.questions);
+              }
+            }
+          } else if (p.status === "QUIZ") {
+            if (!isTestCurrentlyActive && isCurrentScreenHidden("screen5ActiveQuiz")) {
+              startStudentQuizSession(res.questions);
+            }
+          } else if (p.status === "FINISHED" || p.status === "DISQUALIFIED") {
+            if (isCurrentScreenHidden("screen6Results")) {
+              displayFinalResults(p, res.standings);
+            }
+          } else if (p.status === "CANCELLED") {
+            document.getElementById("cancelledStudentPhoneDisplay").innerText = p.phone;
+            switchScreen("screen7Cancelled");
+          } else if (p.status === "REJECTED") {
+            alert("❌ Payment Rejected! Fake or invalid UTR. Re-check your PhonePe.");
+            switchScreen("screen2Payment");
           }
         }
-      }
 
-      // Render Standings
-      renderLeaderboard(currentStandings);
+        // Live Standings update if results screen is active
+        if (!isCurrentScreenHidden("screen6Results") && res.standings) {
+          renderStandings(res.standings);
+        }
+
+      } catch (err) {}
     }
 
-    // =========================================================================
-    // ACTIVE QUIZ ENGINE & ANTI-CHEAT
-    // =========================================================================
-    async function triggerQuizStart() {
-      if (isTestCurrentlyActive) return;
-      const res = await callBackend({ action: "startQuiz", token: userToken });
-      if (!res.ok && res.error && !res.error.includes("already")) {
-        console.warn("Could not start quiz:", res.error);
-      }
+    function isCurrentScreenHidden(id) {
+      const el = document.getElementById(id);
+      return el ? el.classList.contains("hidden") : true;
+    }
 
+    // ==========================================
+    // ACTIVE QUIZ ENGINE & ANTI-CHEAT
+    // ==========================================
+    async function startStudentQuizSession(questions) {
+      if (!questions || questions.length === 0) return;
+      activeTestQuestions = questions;
       isTestCurrentlyActive = true;
       antiCheatViolationCounter = 0;
       studentChosenAnswers = {};
       currentQuestionPointer = 0;
-      testRemainingSeconds = TEST_DURATION_SEC;
+      testRemainingSeconds = QUIZ_DURATION_SEC;
 
       document.getElementById("activeTestLiveTimerBadge").classList.remove("hidden");
       switchScreen("screen5ActiveQuiz");
       testExactStartTimestamp = performance.now();
 
+      try {
+        await apiCall({ action: "startQuiz", token: studentToken });
+      } catch (e) {}
+
       clearInterval(testCountdownIntervalHandle);
       testCountdownIntervalHandle = setInterval(() => {
         testRemainingSeconds--;
-        const m = String(Math.floor(testRemainingSeconds / 60)).padStart(2, "0");
-        const s = String(testRemainingSeconds % 60).padStart(2, "0");
+        const m = String(Math.floor(testRemainingSeconds / 60)).padStart(2, '0');
+        const s = String(testRemainingSeconds % 60).padStart(2, '0');
         document.getElementById("activeQuizClockBadge").innerText = `${m}:${s}`;
         document.getElementById("activeTestLiveTimerBadge").innerText = `${m}:${s}`;
 
         if (testRemainingSeconds <= 0) {
           clearInterval(testCountdownIntervalHandle);
-          alert("⏰ Time is up! Submitting answers automatically.");
           finishStudentQuiz(false);
         }
       }, 1000);
@@ -667,12 +653,11 @@
     }
 
     function renderCurrentQuestionCard() {
-      if (!currentQuestions || currentQuestions.length === 0) return;
-      const q = currentQuestions[currentQuestionPointer];
+      const q = activeTestQuestions[currentQuestionPointer];
       if (!q) return;
 
-      document.getElementById("activeQuestionCounter").innerText = `Question ${currentQuestionPointer + 1} / 10`;
-      document.getElementById("activeSubjectBadge").innerText = q.subject || "Science";
+      document.getElementById("activeQuestionCounter").innerText = `Question ${currentQuestionPointer + 1} / ${activeTestQuestions.length}`;
+      document.getElementById("activeSubjectBadge").innerText = q.subject || "CBSE";
       document.getElementById("activeQuestionPrompt").innerText = q.q;
 
       const optsBox = document.getElementById("activeQuizOptionsWrapper");
@@ -688,18 +673,17 @@
         }`;
         btn.innerText = `${String.fromCharCode(65 + oIdx)}. ${optText}`;
         btn.onclick = async () => {
-          optsBox.style.pointerEvents = "none";
           studentChosenAnswers[q.id] = oIdx;
           renderCurrentQuestionCard();
-          // Save in background
-          callBackend({ action: "saveAnswer", token: userToken, questionId: q.id, answerIndex: oIdx });
-          setTimeout(() => { optsBox.style.pointerEvents = "auto"; }, 150);
+          try {
+            await apiCall({ action: "saveAnswer", token: studentToken, questionId: q.id, answerIndex: oIdx });
+          } catch(e) {}
         };
         optsBox.appendChild(btn);
       });
 
       document.getElementById("btnPrevQuestion").disabled = currentQuestionPointer === 0;
-      if (currentQuestionPointer === currentQuestions.length - 1) {
+      if (currentQuestionPointer === activeTestQuestions.length - 1) {
         document.getElementById("btnNextQuestion").classList.add("hidden");
         document.getElementById("btnSubmitTestFinal").classList.remove("hidden");
       } else {
@@ -711,11 +695,11 @@
     function navigateActiveQuestion(step) {
       currentQuestionPointer += step;
       if (currentQuestionPointer < 0) currentQuestionPointer = 0;
-      if (currentQuestionPointer >= currentQuestions.length) currentQuestionPointer = currentQuestions.length - 1;
+      if (currentQuestionPointer >= activeTestQuestions.length) currentQuestionPointer = activeTestQuestions.length - 1;
       renderCurrentQuestionCard();
     }
 
-    // Anti-Cheat Engine
+    // Anti-Cheat Triggers
     window.addEventListener("blur", handleAntiCheatTrigger);
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) handleAntiCheatTrigger();
@@ -729,14 +713,18 @@
     async function handleAntiCheatTrigger() {
       if (!isTestCurrentlyActive) return;
       antiCheatViolationCounter++;
+      try {
+        const res = await apiCall({ action: "antiCheat", token: studentToken });
+        if (res.disqualified) {
+          alert("❌ DISQUALIFIED: Multiple cheating attempts detected. Auto-submitting 0 score.");
+          finishStudentQuiz(true);
+          return;
+        }
+      } catch (e) {}
+
       if (antiCheatViolationCounter === 1) {
         document.getElementById("activeCheatWarningAlert").classList.remove("hidden");
         alert("⚠️ ANTI-CHEAT VIOLATION DETECTED!\nSplit-screen, window blur, or tab switch detected.\nNext violation causes immediate DISQUALIFICATION!");
-        callBackend({ action: "antiCheat", token: userToken });
-      } else if (antiCheatViolationCounter >= 2) {
-        alert("❌ DISQUALIFIED: Multiple cheating attempts detected. Auto-submitting 0 score.");
-        await callBackend({ action: "antiCheat", token: userToken });
-        finishStudentQuiz(true);
       }
     }
 
@@ -745,20 +733,21 @@
       clearInterval(testCountdownIntervalHandle);
       document.getElementById("activeTestLiveTimerBadge").classList.add("hidden");
 
-      const res = await callBackend({ action: "finishQuiz", token: userToken, answers: studentChosenAnswers });
-      if (res.ok && res.participant) {
-        renderStudentResults(res.participant);
-      } else {
-        pollBackendState();
-        switchScreen("screen6Results");
+      try {
+        const res = await apiCall({ action: "finishQuiz", token: studentToken, answers: studentChosenAnswers });
+        if (res && res.participant) {
+          displayFinalResults(res.participant, res.standings);
+        }
+      } catch (e) {
+        syncPoll();
       }
     }
 
-    function renderStudentResults(participant) {
-      document.getElementById("userScoreDisplay").innerText = `${participant.score || 0} / 10`;
-      document.getElementById("userTimeDisplay").innerText = `Time Taken: ${Number(participant.timeTaken || 0).toFixed(2)}s`;
+    function displayFinalResults(p, standings) {
+      document.getElementById("userScoreDisplay").innerText = `${p.score} / 10`;
+      document.getElementById("userTimeDisplay").innerText = `Time Taken: ${p.timeTaken}s`;
 
-      if (participant.disqualified) {
+      if (p.disqualified) {
         document.getElementById("resultStatusEmoji").innerText = "❌";
         document.getElementById("resultStatusHeading").innerText = "Disqualified (Cheating)";
       } else {
@@ -766,16 +755,12 @@
         document.getElementById("resultStatusHeading").innerText = "Quiz Completed!";
       }
 
-      // Detailed answer key
-      const keyBox = document.getElementById("detailedAnswerKeyBox");
-      keyBox.innerHTML = "";
-      if (participant.answerKey && Array.isArray(participant.answerKey)) {
-        participant.answerKey.forEach((item, idx) => {
-          const chosenIdx = participant.answers ? participant.answers[item.id] : undefined;
-          const isRight = chosenIdx !== undefined && Number(chosenIdx) === Number(item.answer);
-          const chosenText = chosenIdx !== undefined ? item.options[chosenIdx] : "Unanswered";
-          const correctText = item.options[item.answer];
-
+      if (p.answerKey) {
+        const box = document.getElementById("detailedAnswerKeyBox");
+        box.innerHTML = "";
+        p.answerKey.forEach((item, idx) => {
+          const chosenIdx = p.answers ? p.answers[item.id] : undefined;
+          const isRight = chosenIdx === item.answer;
           const div = document.createElement("div");
           div.className = `p-3 rounded-xl border text-xs space-y-1 ${isRight ? 'bg-emerald-950/40 border-emerald-600/40' : 'bg-red-950/40 border-red-600/40'}`;
           div.innerHTML = `
@@ -783,17 +768,18 @@
               <span class="text-white">Q${idx + 1}. ${item.q}</span>
               <span>${isRight ? '✅ Correct' : '❌ Wrong'}</span>
             </div>
-            <p class="${isRight ? 'text-emerald-300' : 'text-red-300'}">Your Choice: ${chosenText}</p>
-            ${!isRight ? `<p class="text-emerald-400 font-bold">Correct Answer: ${correctText}</p>` : ''}
+            <p class="${isRight ? 'text-emerald-300' : 'text-red-300'}">Your Choice: ${chosenIdx !== undefined ? item.options[chosenIdx] : 'Unanswered'}</p>
+            ${!isRight ? `<p class="text-emerald-400 font-bold">Correct Answer: ${item.options[item.answer]}</p>` : ''}
           `;
-          keyBox.appendChild(div);
+          box.appendChild(div);
         });
       }
 
+      if (standings) renderStandings(standings);
       switchScreen("screen6Results");
     }
 
-    function renderLeaderboard(standings) {
+    function renderStandings(standings) {
       const box = document.getElementById("fullLeaderboardBox");
       if (!box) return;
       if (!standings || standings.length === 0) {
@@ -802,7 +788,6 @@
       }
       box.innerHTML = "";
       const prizeTiers = ["₹300 🥇", "₹200 🥈", "₹150 🥉", "₹100 🎖️", "₹50 🎖️"];
-
       standings.forEach((player, idx) => {
         const isWinner = idx < 5;
         const row = document.createElement("div");
@@ -812,197 +797,299 @@
             <span class="font-black ${idx === 0 ? 'text-amber-400' : 'text-slate-400'}">#${idx + 1}</span>
             <div>
               <p class="font-bold text-white text-xs">${player.name} ${isWinner ? `<span class="text-amber-400 font-bold">(${prizeTiers[idx]})</span>` : ''}</p>
-              <p class="text-[10px] text-slate-400">⏱️ ${Number(player.timeTaken || 0).toFixed(2)}s</p>
+              <p class="text-[10px] text-slate-400">⏱️ ${player.timeTaken}s</p>
             </div>
           </div>
           <div class="text-right">
             <span class="font-black text-emerald-400">${player.score} / 10</span>
+            <p class="text-[9px] text-slate-500">${player.disqualified ? 'Disqualified' : 'Rank ' + (idx + 1)}</p>
           </div>
         `;
         box.appendChild(row);
       });
     }
 
+    function fetchLeaderboardStandings() {
+      syncPoll();
+    }
+
     // =========================================================================
-    // ADMIN DASHBOARD ACTIONS & POLLING
+    // ADMIN DASHBOARD CONTROLS (GAS V2 REALTIME)
     // =========================================================================
-    async function pollAdminState() {
+    function handleAdminSecretTap() {
+      secretTapCount++;
+      clearTimeout(secretTapTimeout);
+      secretTapTimeout = setTimeout(() => { secretTapCount = 0; }, 1200);
+      if (secretTapCount >= 3) {
+        secretTapCount = 0;
+        openAdminAuthModal();
+      }
+    }
+
+    async function openAdminAuthModal() {
+      const pin = prompt("👑 Enter 6-Digit Admin Secret PIN:");
+      if (!pin) return;
+      try {
+        const res = await apiCall({ action: "adminLogin", pin: pin });
+        adminToken = res.adminToken;
+        localStorage.setItem("cbse_admin_token", adminToken);
+        document.getElementById("adminHeaderBtn").classList.remove("hidden");
+        switchScreen("screen8AdminDashboard");
+        fetchAdminState();
+      } catch (err) {
+        alert("❌ Access Denied: " + err.message);
+      }
+    }
+
+    async function fetchAdminState() {
       if (!adminToken) return;
-      const res = await callBackend({ action: "adminState", adminToken: adminToken });
-      if (!res.ok) return;
+      try {
+        const res = await apiCall({ action: "adminState", adminToken: adminToken });
+        document.getElementById("adminActiveRoundLabel").innerText = `Round ${res.round.round}`;
 
-      // Pending UTRs
-      const pendingBox = document.getElementById("adminPendingUtrWrapper");
-      pendingBox.innerHTML = "";
-      if (!res.pending || res.pending.length === 0) {
-        pendingBox.innerHTML = `<p class="placeholder-msg text-xs text-slate-500 py-2">No pending UTRs right now.</p>`;
-      } else {
-        res.pending.forEach(req => {
-          const div = document.createElement("div");
-          div.className = "p-3 bg-slate-900 border border-slate-700 rounded-xl flex justify-between items-center text-xs";
-          div.innerHTML = `
-            <div>
-              <p class="font-bold text-white">${req.name}</p>
-              <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${req.phone}</p>
-              <p class="text-amber-400 font-mono font-bold">UTR: ${req.utr}</p>
-            </div>
-            <div class="flex flex-col gap-1.5">
-              <button onclick="adminApprove('${req.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg shadow active:scale-95 transition">
-                Approve ✅
-              </button>
-              <button onclick="adminReject('${req.id}')" class="bg-red-700 hover:bg-red-600 text-white font-bold px-3 py-1.5 rounded-lg shadow active:scale-95 transition">
-                Reject ❌
-              </button>
-            </div>
-          `;
-          pendingBox.appendChild(div);
-        });
-      }
+        // Render Pending UTRs
+        const pendingBox = document.getElementById("adminPendingUtrWrapper");
+        if (res.pending && res.pending.length > 0) {
+          pendingBox.innerHTML = "";
+          res.pending.forEach(req => {
+            const div = document.createElement("div");
+            div.className = "p-3 bg-slate-900 border border-slate-700 rounded-xl flex justify-between items-center text-xs";
+            div.innerHTML = `
+              <div>
+                <p class="font-bold text-white">${req.name}</p>
+                <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${req.phone}</p>
+                <p class="text-amber-400 font-mono font-bold">UTR: ${req.utr}</p>
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <button onclick="adminApproveParticipant('${req.id}', this)" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg shadow active:scale-95 transition">
+                  Approve ✅
+                </button>
+                <button onclick="adminRejectParticipant('${req.id}', this)" class="bg-red-700 hover:bg-red-600 text-white font-bold px-3 py-1.5 rounded-lg shadow active:scale-95 transition">
+                  Reject ❌
+                </button>
+              </div>
+            `;
+            pendingBox.appendChild(div);
+          });
+        } else {
+          pendingBox.innerHTML = `<p class="placeholder-msg text-xs text-slate-500 py-2">No pending UTRs right now.</p>`;
+        }
 
-      // Pending Refunds
-      const refundBox = document.getElementById("adminPendingRefundsWrapper");
-      refundBox.innerHTML = "";
-      document.getElementById("adminRefundCountBadge").innerText = res.refunds ? res.refunds.length : 0;
-      if (!res.refunds || res.refunds.length === 0) {
-        refundBox.innerHTML = `<p class="text-xs text-slate-500 py-2">No pending refunds.</p>`;
-      } else {
-        res.refunds.forEach(rf => {
-          const div = document.createElement("div");
-          div.className = "p-2.5 bg-slate-900 border border-red-900/60 rounded-xl flex justify-between items-center text-xs";
-          div.innerHTML = `
-            <div>
-              <p class="font-bold text-red-300">${rf.name}</p>
-              <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${rf.phone}</p>
-              <p class="text-[10px] text-amber-400 font-bold">₹${rf.amount} Refund (${rf.status})</p>
-            </div>
-            <button onclick="copyToClipboard('${rf.phone}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">
-              📋 Copy
-            </button>
-          `;
-          refundBox.appendChild(div);
-        });
-      }
+        // Render Refunds
+        const refundBox = document.getElementById("adminPendingRefundsWrapper");
+        document.getElementById("adminRefundCountBadge").innerText = res.refunds ? res.refunds.length : 0;
+        if (res.refunds && res.refunds.length > 0) {
+          refundBox.innerHTML = "";
+          res.refunds.forEach(r => {
+            const div = document.createElement("div");
+            div.className = "p-2.5 bg-slate-900 border border-red-900/60 rounded-xl flex justify-between items-center text-xs";
+            div.innerHTML = `
+              <div>
+                <p class="font-bold text-red-300">${r.name}</p>
+                <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${r.phone}</p>
+                <p class="text-[10px] text-slate-400 font-mono">Amount: ₹${r.amount} (${r.status})</p>
+              </div>
+              <button onclick="copyToClipboard('${r.phone}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                📋 Copy
+              </button>
+            `;
+            refundBox.appendChild(div);
+          });
+        } else {
+          refundBox.innerHTML = `<p class="text-xs text-slate-500 py-2">No pending refunds.</p>`;
+        }
 
-      // Top 5 Winners
-      const winBox = document.getElementById("adminWinnersPayoutWrapper");
-      winBox.innerHTML = "";
-      const dueWinners = res.winners ? res.winners.filter(w => w.status === "DUE") : [];
-      if (dueWinners.length === 0) {
-        winBox.innerHTML = `<p class="text-xs text-slate-500 py-2">Winners appear here when test completes.</p>`;
-      } else {
-        dueWinners.forEach(w => {
-          const div = document.createElement("div");
-          div.className = "p-2.5 bg-slate-900 border border-amber-500/40 rounded-xl flex justify-between items-center text-xs";
-          div.innerHTML = `
-            <div>
-              <p class="font-bold text-amber-300">${w.name} — <span class="text-emerald-400 font-black">₹${w.prize}</span></p>
-              <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${w.phone}</p>
-            </div>
-            <div class="flex items-center gap-1">
-              <button onclick="copyToClipboard('${w.phone}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded text-[10px] font-bold">
-                📋
-              </button>
-              <button onclick="adminMarkPaid('${w.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-2.5 py-1 rounded shadow text-[11px] active:scale-95 transition">
-                Paid ✅
-              </button>
-              <button onclick="adminRemoveWinner('${w.id}')" class="bg-red-900/80 hover:bg-red-700 text-red-200 border border-red-700 font-bold px-2 py-1 rounded text-[10px] active:scale-95 transition">
-                Remove ❌
-              </button>
-            </div>
-          `;
-          winBox.appendChild(div);
-        });
-      }
+        // Render Winners
+        const winnerBox = document.getElementById("adminWinnersPayoutWrapper");
+        if (res.winners && res.winners.length > 0) {
+          winnerBox.innerHTML = "";
+          res.winners.forEach((w, idx) => {
+            const div = document.createElement("div");
+            div.className = "p-2.5 bg-slate-900 border border-amber-500/40 rounded-xl flex justify-between items-center text-xs";
+            div.innerHTML = `
+              <div>
+                <p class="font-bold text-amber-300">#${idx + 1} ${w.name} — <span class="text-emerald-400 font-black">₹${w.prize}</span></p>
+                <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${w.phone}</p>
+                <p class="text-[10px] text-slate-400 font-mono">Status: ${w.status}</p>
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center gap-1">
+                  <button onclick="copyToClipboard('${w.phone}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded text-[10px] font-bold">
+                    📋
+                  </button>
+                  <button onclick="adminMarkWinnerPaid('${w.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-2.5 py-1 rounded shadow text-[11px] active:scale-95 transition">
+                    ${w.status === 'PAID' ? 'PAID! ✓' : 'Paid ✅'}
+                  </button>
+                </div>
+                <button onclick="adminRemoveWinner('${w.id}')" class="bg-red-900/80 hover:bg-red-700 text-red-200 border border-red-700 font-bold px-2 py-0.5 rounded text-[10px] active:scale-95 transition">
+                  Remove ❌
+                </button>
+              </div>
+            `;
+            winnerBox.appendChild(div);
+          });
+        } else {
+          winnerBox.innerHTML = `<p class="text-xs text-slate-500 py-2">Winners appear here when test completes.</p>`;
+        }
+
+      } catch (err) {}
     }
 
-    async function adminApprove(pId) {
-      await callBackend({ action: "approve", adminToken, participantId: pId });
-      pollAdminState();
-      pollBackendState();
+    async function manualRefreshAdmin() {
+      const btn = event ? event.target : null;
+      if (btn && btn.tagName === "BUTTON") {
+        btn.innerText = "Updated! ✓";
+        btn.classList.add("text-emerald-400");
+        setTimeout(() => {
+          btn.innerText = "Refresh 🔄";
+          btn.classList.remove("text-emerald-400");
+        }, 1000);
+      }
+      await fetchAdminState();
     }
 
-    async function adminReject(pId) {
-      if (confirm("Reject this participant's UTR?")) {
-        await callBackend({ action: "reject", adminToken, participantId: pId });
-        pollAdminState();
-      }
+    async function adminApproveParticipant(id, btn) {
+      if (btn) { btn.disabled = true; btn.innerText = "Approving... ⏳"; }
+      try {
+        await apiCall({ action: "approve", adminToken: adminToken, participantId: id });
+        fetchAdminState();
+      } catch (err) { alert("Error: " + err.message); }
     }
 
-    async function adminAction(actionType) {
-      if (confirm(`Confirm ${actionType}?`)) {
-        await callBackend({ action: actionType, adminToken });
-        pollAdminState();
-        pollBackendState();
-      }
+    async function adminRejectParticipant(id, btn) {
+      if (!confirm("Are you sure you want to reject this UTR?")) return;
+      if (btn) { btn.disabled = true; btn.innerText = "Rejecting... ⏳"; }
+      try {
+        await apiCall({ action: "reject", adminToken: adminToken, participantId: id });
+        fetchAdminState();
+      } catch (err) { alert("Error: " + err.message); }
     }
 
-    async function adminMarkPaid(winnerId) {
-      if (confirm("Mark this winner as PAID?")) {
-        await callBackend({ action: "markPaid", adminToken, winnerId });
-        pollAdminState();
-      }
+    async function adminForceStartQuiz() {
+      if (!confirm("Force start this round immediately for all approved students?")) return;
+      try {
+        await apiCall({ action: "forceStart", adminToken: adminToken });
+        alert("Round Started! Quiz is live.");
+        fetchAdminState();
+      } catch (err) { alert("Error: " + err.message); }
     }
 
-    async function adminRemoveWinner(winnerId) {
-      if (confirm("Remove/Disqualify this winner?")) {
-        await callBackend({ action: "removeWinner", adminToken, winnerId });
-        pollAdminState();
-      }
+    async function adminForceCancelQuiz() {
+      if (!confirm("Cancel current round? Approved students will be routed to the refund queue.")) return;
+      try {
+        await apiCall({ action: "cancelRound", adminToken: adminToken });
+        alert("Round Cancelled. Refunds logged.");
+        fetchAdminState();
+      } catch (err) { alert("Error: " + err.message); }
+    }
+
+    async function adminRestartSameRound() {
+      if (!confirm("Archive and restart the same round fresh?")) return;
+      try {
+        await apiCall({ action: "restartRound", adminToken: adminToken });
+        alert("Round restarted fresh!");
+        fetchAdminState();
+      } catch (err) { alert("Error: " + err.message); }
+    }
+
+    async function adminAdvanceNextRound() {
+      if (!confirm("Archive current round and move to NEXT round?")) return;
+      try {
+        await apiCall({ action: "nextRound", adminToken: adminToken });
+        alert("Moved to next round!");
+        fetchAdminState();
+      } catch (err) { alert("Error: " + err.message); }
+    }
+
+    async function adminMarkWinnerPaid(id) {
+      try {
+        await apiCall({ action: "markPaid", adminToken: adminToken, winnerId: id });
+        fetchAdminState();
+      } catch (err) { alert("Error: " + err.message); }
+    }
+
+    async function adminRemoveWinner(id) {
+      if (!confirm("Remove this winner?")) return;
+      try {
+        await apiCall({ action: "removeWinner", adminToken: adminToken, winnerId: id });
+        fetchAdminState();
+      } catch (err) { alert("Error: " + err.message); }
     }
 
     // =========================================================================
-    // EXCEL EXPORT (5 CATEGORIES)
+    // COMPREHENSIVE ORGANIZED EXCEL (.CSV) BUILDER (5 DISTINCT CATEGORIES)
     // =========================================================================
-    async function downloadAdminExcelReport() {
-      const res = await callBackend({ action: "exportData", adminToken });
-      if (!res.ok) { alert("Export failed: " + res.error); return; }
+    async function downloadBuiltinExcelReport() {
+      if (!adminToken) { alert("Admin login required!"); return; }
+      try {
+        const res = await apiCall({ action: "exportData", adminToken: adminToken });
+        let csv = `=== CBSE MEGA QUIZ ARENA - MASTER AUDIT LEDGER ===\n`;
+        csv += `Generated On: ${new Date().toLocaleString()}\n\n`;
 
-      let csv = `=== CBSE MEGA QUIZ ARENA - MASTER AUDIT LEDGER ===\n`;
-      csv += `Generated On: ${new Date().toLocaleString()}\n\n`;
+        // SECTION 1: PAID WINNERS
+        csv += `--- [SECTION 1: TOP WINNERS - CASH TRANSFERRED (PAID)] ---\n`;
+        csv += `Round,Winner ID,Student Name,PhonePe Number,Prize,Status\n`;
+        if (res.paidWinners && res.paidWinners.length > 0) {
+          res.paidWinners.forEach(r => {
+            csv += `"${r.round}","${r.id}","${r.name}","'${r.phone}","₹${r.prize}","${r.status}"\n`;
+          });
+        } else { csv += `No winners marked as Paid yet.\n`; }
+        csv += `\n`;
 
-      csv += `--- [SECTION 1: TOP WINNERS - CASH TRANSFERRED (PAID)] ---\n`;
-      csv += `Round,Name,PhonePe,Prize,Status\n`;
-      (res.paidWinners || []).forEach(w => {
-        csv += `"${w.round}","${w.name}","'${w.phone}","₹${w.prize}","PAID"\n`;
-      });
-      csv += `\n`;
+        // SECTION 2: UNPAID WINNERS
+        csv += `--- [SECTION 2: TOP WINNERS - UNPAID / DUE PAYOUTS] ---\n`;
+        csv += `Round,Winner ID,Student Name,PhonePe Number,Prize Due,Status\n`;
+        if (res.dueWinners && res.dueWinners.length > 0) {
+          res.dueWinners.forEach(r => {
+            csv += `"${r.round}","${r.id}","${r.name}","'${r.phone}","₹${r.prize}","${r.status}"\n`;
+          });
+        } else { csv += `No unpaid winners pending.\n`; }
+        csv += `\n`;
 
-      csv += `--- [SECTION 2: TOP WINNERS - UNPAID / DUE PAYOUTS] ---\n`;
-      csv += `Round,Name,PhonePe,Prize,Status\n`;
-      (res.dueWinners || []).forEach(w => {
-        csv += `"${w.round}","${w.name}","'${w.phone}","₹${w.prize}","DUE"\n`;
-      });
-      csv += `\n`;
+        // SECTION 3: REMOVED WINNERS
+        csv += `--- [SECTION 3: DISQUALIFIED / REMOVED WINNERS LIST] ---\n`;
+        csv += `Round,Winner ID,Student Name,PhonePe Number,Prize,Status\n`;
+        if (res.removed && res.removed.length > 0) {
+          res.removed.forEach(r => {
+            csv += `"${r.round}","${r.id}","${r.name}","'${r.phone}","₹${r.prize}","REMOVED"\n`;
+          });
+        } else { csv += `No winners removed.\n`; }
+        csv += `\n`;
 
-      csv += `--- [SECTION 3: DISQUALIFIED / REMOVED WINNERS LIST] ---\n`;
-      csv += `Round,Name,PhonePe,Prize,Status\n`;
-      (res.removed || []).forEach(w => {
-        csv += `"${w.round}","${w.name}","'${w.phone}","₹${w.prize}","REMOVED"\n`;
-      });
-      csv += `\n`;
+        // SECTION 4: REFUNDS
+        csv += `--- [SECTION 4: 100% REFUNDS LOG (CANCELLED ROUNDS)] ---\n`;
+        csv += `Round,Refund ID,Student Name,PhonePe Number,Refund Amount,Status\n`;
+        if (res.refunds && res.refunds.length > 0) {
+          res.refunds.forEach(r => {
+            csv += `"${r.round}","${r.id}","${r.name}","'${r.phone}","₹${r.amount}","${r.status}"\n`;
+          });
+        } else { csv += `No refunds pending.\n`; }
+        csv += `\n`;
 
-      csv += `--- [SECTION 4: 100% REFUNDS LOG (CANCELLED ROUNDS)] ---\n`;
-      csv += `Round,Name,PhonePe,Amount,Status\n`;
-      (res.refunds || []).forEach(r => {
-        csv += `"${r.round}","${r.name}","'${r.phone}","₹${r.amount}","${r.status}"\n`;
-      });
-      csv += `\n`;
+        // SECTION 5: GENERAL PARTICIPATION
+        csv += `--- [SECTION 5: GENERAL PARTICIPATION LOG (RANKS 6+)] ---\n`;
+        csv += `Round,Rank,Student Name,PhonePe Number,Score,Time Taken,Status\n`;
+        if (res.participation && res.participation.length > 0) {
+          res.participation.forEach(r => {
+            csv += `"${r.round}","${r.rank}","${r.name}","'${r.phone}","${r.score}/10","${r.timeTaken}s","${r.status}"\n`;
+          });
+        } else { csv += `No general participants logged.\n`; }
 
-      csv += `--- [SECTION 5: GENERAL PARTICIPATION LOG (RANKS 6+)] ---\n`;
-      csv += `Round,Rank,Name,PhonePe,Score,TimeTaken,Status\n`;
-      (res.participation || []).forEach(p => {
-        csv += `"${p.round}","${p.rank}","${p.name}","'${p.phone}","${p.score}","${p.timeTaken}s","${p.status}"\n`;
-      });
-
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `CBSE_Quiz_Audited_Report_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", `CBSE_Quiz_Audited_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        alert("Failed to export data: " + err.message);
+      }
     }
 
+    // ==========================================
+    // UTILITIES & STARTUP
+    // ==========================================
     function copyToClipboard(text, btnElement) {
       navigator.clipboard.writeText(text).then(() => {
         const original = btnElement.innerText;
@@ -1011,14 +1098,14 @@
       });
     }
 
-    // Auto-Sync Polling
-    pollBackendState();
-    setInterval(pollBackendState, 3000);
+    // Startup Poll Loop
+    syncPoll();
+    setInterval(syncPoll, 3500);
     setInterval(() => {
-      if (!document.getElementById("screen8AdminDashboard").classList.contains("hidden")) {
-        pollAdminState();
+      if (!isCurrentScreenHidden("screen8AdminDashboard") && adminToken) {
+        fetchAdminState();
       }
-    }, 3000);
+    }, 4000);
   </script>
 </body>
 </html>
