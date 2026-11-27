@@ -1,1070 +1,2035 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CBSE Mega Quiz Arena (Class 6-10)</title>
-  <link rel="icon" type="image/png" href="https://img.icons8.com/color/512/trophy.png" />
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f5f7ff',
+              100: '#ebf0fe',
+              500: '#4f46e5',
+              600: '#4338ca',
+              700: '#3730a3',
+              900: '#1e1b4b',
+            }
+          },
+          animation: {
+            'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    .no-select { -webkit-user-select: none; user-select: none; }
+    /* Smooth transitions and scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    .fade-out { transition: all 0.4s ease-out; opacity: 0; transform: scale(0.95); }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen no-select">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
 
-  <!-- TOP APP BAR -->
-  <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
-    <div>
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-40 glass-card border-b border-slate-800/80 px-4 py-3 shadow-lg shadow-black/40">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+      
+      <!-- Trophy Icon with 3-Tap Admin Trigger -->
+      <div class="flex items-center gap-3">
+        <div id="trophy-btn" class="cursor-pointer select-none p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 active:scale-95 transition-all text-amber-400 flex items-center justify-center shadow-inner" title="Click 3 times for Admin Gateway">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1a5.01 5.01 0 003.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-black tracking-tight bg-gradient-to-r from-amber-400 via-yellow-200 to-indigo-400 bg-clip-text text-transparent leading-none">
+            CBSE MEGA QUIZ
+          </h1>
+          <p class="text-[10px] sm:text-xs text-slate-400 font-medium">Classes 6 to 10 • Grand Arena</p>
+        </div>
+      </div>
+
+      <!-- Center Status Badges -->
       <div class="flex items-center gap-2">
-        <span onclick="handleAdminSecretTap()" class="cursor-pointer text-xl" title="Admin Triple Tap">🏆</span>
-        <h1 class="font-black text-sm md:text-base text-amber-400 tracking-wider">CBSE QUIZ ARENA</h1>
-        <span id="roundHeaderBadge" class="text-[10px] bg-emerald-950 border border-emerald-500 text-emerald-300 px-2 py-0.5 rounded font-black">ROUND 1</span>
-      </div>
-      <div class="flex items-center gap-2 mt-0.5">
-        <span id="cloudStatusDot" class="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-mono">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> GAS Cloud V2
+        <span id="active-round-badge" class="px-2.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-500/20 border border-indigo-500/40 text-indigo-300">
+          ROUND 1
         </span>
-        <span class="text-[10px] text-slate-500">•</span>
-        <p class="text-[10px] text-slate-400">Class 6-10 CBSE • Min 20 to Start</p>
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span class="hidden sm:inline">LIVE CLOUD</span>
+        </div>
+        <!-- Live Quiz Active 10:00 Timer Header Badge (Hidden unless quiz screen is active) -->
+        <div id="quiz-header-timer" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-rose-500/20 border border-rose-500/50 text-rose-300 animate-pulse">
+          ⏱️ <span id="quiz-header-clock">10:00</span>
+        </div>
       </div>
-    </div>
 
-    <div class="flex items-center gap-2">
-      <div id="activeTestLiveTimerBadge" class="hidden bg-red-600 font-mono font-bold text-white px-2.5 py-1 rounded-full text-xs animate-pulse">
-        10:00
+      <!-- Right Action / Admin Access Button -->
+      <div class="flex items-center gap-2">
+        <button id="admin-panel-btn" class="hidden px-3 py-1.5 text-xs font-bold bg-amber-500 text-slate-950 rounded-lg hover:bg-amber-400 transition-all shadow-md active:scale-95">
+          Admin Dashboard ⚙️
+        </button>
       </div>
-      <button id="adminHeaderBtn" onclick="openAdminAuthModal()" class="hidden bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-3 py-1.5 rounded-lg font-black shadow-lg">
-        Admin 👑
-      </button>
+
     </div>
   </header>
 
-  <main class="max-w-md mx-auto p-4 pb-20">
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed top-16 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- ==================== SCREEN 1: REGISTRATION & RULES ==================== -->
-    <section id="screen1Lobby" class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
-      
-      <!-- RULES -->
-      <div class="bg-indigo-950/70 border border-indigo-500/40 p-4 rounded-2xl space-y-2.5 shadow-md">
-        <div class="flex items-center justify-between border-b border-indigo-500/30 pb-2">
-          <h2 class="font-black text-amber-300 text-xs md:text-sm tracking-wide flex items-center gap-1.5">
-            📜 OFFICIAL CONTEST RULES
-          </h2>
-          <span class="text-[10px] bg-indigo-900 text-indigo-200 px-2 py-0.5 rounded font-bold uppercase">Mandatory</span>
-        </div>
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
 
-        <ul class="text-xs text-indigo-100 space-y-2.5 leading-relaxed">
-          <li class="flex items-start gap-2">
-            <span class="text-red-400 font-bold">1.</span>
-            <span><strong>Strict Anti-Cheating:</strong> Google, ChatGPT, split-screen ya tab switch karne par instant disqualification aur zero score hoga.</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="text-emerald-400 font-bold">2.</span>
-            <span><strong>10 MCQs in 10 Minutes:</strong> Top 5 ranks ko direct PhonePe cash: 🥇 Rank 1: ₹300 | 🥈 Rank 2: ₹200 | 🥉 Rank 3: ₹150 | 🎖️ Rank 4: ₹100 | 🎖️ Rank 5: ₹50.</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="text-amber-400 font-bold">3.</span>
-            <span><strong>Minimum 20 Students Policy:</strong> Contest tabhi shuru hoga jab <strong>kam se kam 20 students</strong> judenge. 20 se kam par <strong>100% full refund</strong> (₹50 PhonePe par wapas).</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="text-cyan-400 font-bold">4.</span>
-            <span><strong>20-Minute Waiting Window:</strong> ₹50 payment ka UTR verify hone ke baad aap live waiting room me enter honge.</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- 20-MIN REVERSE TIMER -->
-      <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-center space-y-1">
-        <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Round Registration Closes In</p>
-        <div id="landingPageCountdown" class="font-mono text-3xl font-black text-amber-400 tracking-wider">
-          20:00
-        </div>
-        <p class="text-[10px] text-slate-500">Universal server synchronized lobby countdown</p>
-      </div>
-
-      <!-- STUDENT INFO FORM -->
-      <div id="registrationFormContainer" class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Step 1: Student Information</h3>
-          <span class="text-[10px] bg-amber-950 text-amber-300 px-2 py-0.5 rounded font-bold">Step 1 of 2</span>
-        </div>
-
-        <div>
-          <label class="block text-xs text-slate-300 mb-1 font-bold">Student Full Name *</label>
-          <input id="inputStudentName" type="text" placeholder="e.g. Aryan Kulkarni" 
-                 class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white outline-none focus:border-amber-400" />
-        </div>
-
-        <div>
-          <label class="block text-xs text-amber-400 mb-1 font-bold">PhonePe Mobile Number (For Cash Prize / Refund) *</label>
-          <input id="inputStudentPhone" type="tel" maxlength="10" placeholder="10-digit PhonePe number" 
-                 class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white font-mono outline-none focus:border-amber-400 tracking-wider" />
-          <p class="text-[10px] text-slate-400 mt-1">Cash prizes aur refunds isi number par transfer honge.</p>
-        </div>
-
-        <button id="btnSubmitStudentInfo" onclick="handleStudentInfoSubmit()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg text-sm transition mt-2">
-          Save Details & Proceed to Pay ₹50 ➔
-        </button>
-      </div>
-    </section>
-
-    <!-- ==================== SCREEN 2: PAYMENT & UTR SUBMISSION ==================== -->
-    <section id="screen2Payment" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-        <div>
-          <h2 class="text-sm font-black text-emerald-400 uppercase tracking-wider">Step 2: Pay Entry Fee ₹50</h2>
-          <p class="text-[11px] text-slate-400">Student: <span id="displayVerifiedStudent" class="text-white font-bold"></span></p>
-        </div>
-        <button onclick="switchScreen('screen1Lobby')" class="text-[11px] text-indigo-400 hover:underline">
-          ✏️ Edit Details
-        </button>
-      </div>
-
-      <!-- DIRECT PHONEPE APP INTENT -->
-      <a href="upi://pay?pa=7756804720@ybl&pn=CBSE%20Quiz%20Master&am=50&cu=INR&tn=CBSEQuizEntry" 
-         class="inline-block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl shadow-lg text-sm text-center transition">
-        ⚡ Open PhonePe / UPI App to Pay ₹50
-      </a>
-
-      <!-- SCAN DYNAMIC QR CODE -->
-      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center space-y-2">
-        <p class="text-xs text-slate-300 font-bold">Or Scan QR Code to Pay ₹50</p>
-        <div class="inline-block bg-white p-2 rounded-xl shadow-md">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=upi%3A%2F%2Fpay%3Fpa%3D7756804720%40ybl%26am%3D50%26tn%3DCBSEQuizEntry" 
-               alt="Pay ₹50 QR" class="w-40 h-40 rounded-lg" />
-        </div>
-      </div>
-
-      <!-- COPY UPI & NUMBER -->
-      <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
-        <div class="flex items-center justify-between bg-slate-900 p-2 rounded-lg border border-slate-700 text-xs">
-          <div>
-            <p class="text-[10px] text-slate-400">UPI ID:</p>
-            <span class="font-mono text-amber-400 font-bold">7756804720@ybl</span>
-          </div>
-          <button onclick="copyToClipboard('7756804720@ybl', this)" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-200">
-            📋 Copy UPI
-          </button>
-        </div>
-
-        <div class="flex items-center justify-between bg-slate-900 p-2 rounded-lg border border-slate-700 text-xs">
-          <div>
-            <p class="text-[10px] text-slate-400">PhonePe Number:</p>
-            <span class="font-mono text-emerald-400 font-bold">7756804720</span>
-          </div>
-          <button onclick="copyToClipboard('7756804720', this)" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-200">
-            📋 Copy Number
-          </button>
-        </div>
-      </div>
-
-      <!-- UTR SUBMISSION -->
-      <div class="bg-slate-950 p-4 rounded-xl border-2 border-amber-500/70 space-y-3">
-        <div>
-          <label class="block text-xs text-amber-400 mb-1 font-bold">Enter 12-Digit Payment UTR / Ref Number *</label>
-          <input id="inputUtrNumber" type="text" maxlength="12" placeholder="e.g. 402918273645" 
-                 class="w-full bg-slate-900 border-2 border-amber-500/80 rounded-lg p-2.5 text-sm text-white font-mono text-center tracking-widest font-bold outline-none focus:border-amber-400" />
-        </div>
-
-        <button id="btnSubmitUtr" onclick="handleUtrSubmission()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl shadow-lg text-sm tracking-wide transition">
-          Submit UTR for Verification ➔
-        </button>
-      </div>
-    </section>
-
-    <!-- ==================== SCREEN 3: VERIFICATION GATEWAY ==================== -->
-    <section id="screen3Verification" class="hidden bg-slate-900 border-2 border-amber-500/60 p-6 rounded-2xl shadow-2xl text-center space-y-4">
-      <div class="text-4xl animate-bounce">⏳</div>
-      <h2 class="text-base md:text-lg font-black text-amber-400">Payment Verification in Progress</h2>
-      <p class="text-xs text-slate-300 leading-relaxed font-medium">
-        Aapka UTR verify hone ke liye Admin ke paas bhej diya gaya hai. Please 10-30 seconds wait karein.
-      </p>
-
-      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left space-y-1.5 text-xs font-mono">
-        <p class="text-slate-400">Student: <span id="verifDisplayStudent" class="text-white font-bold"></span></p>
-        <p class="text-slate-400">PhonePe: <span id="verifDisplayPhone" class="text-emerald-400 font-bold"></span></p>
-        <p class="text-slate-400">Submitted UTR: <span id="verifDisplayUtr" class="text-amber-400 font-bold"></span></p>
-      </div>
-
-      <div class="p-3 bg-indigo-950/80 rounded-xl border border-indigo-500/40 text-xs text-indigo-200 animate-pulse">
-        ⚡ Admin dwara approve hote hi aap apne aap Live Waiting Room me enter ho jayenge.
-      </div>
-    </section>
-
-    <!-- ==================== SCREEN 4: APPROVED LIVE WAITING LOBBY ==================== -->
-    <section id="screen4WaitingRoom" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl text-center space-y-4">
-      <div class="inline-block bg-emerald-950 border border-emerald-500/50 text-emerald-300 px-3 py-1 rounded-full text-xs font-bold">
-        ✅ PAYMENT APPROVED
-      </div>
-
-      <div class="space-y-1">
-        <h2 class="text-lg font-black text-white">Live Quiz Waiting Lobby</h2>
-        <p class="text-xs text-slate-400">Timer 00:00 hote hi ya 20 log judte hi sabhi ka test ek sath start hoga.</p>
-      </div>
-
-      <!-- TIMER DISPLAY -->
-      <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
-        <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Time Remaining in Lobby</p>
-        <div id="waitingRoomCountdown" class="font-mono text-4xl font-black text-amber-400 tracking-wider">
-          20:00
-        </div>
-        <p class="text-[10px] text-slate-500">Universal server synchronized clock</p>
-      </div>
-
-      <!-- PARTICIPANTS COUNTER -->
-      <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
-        <div class="flex justify-between items-center text-xs">
-          <span class="text-slate-300 font-bold">Approved Participants:</span>
-          <span class="font-mono font-black text-amber-400"><span id="approvedPlayerCountDisplay">0</span> / 20 Required</span>
-        </div>
-        <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
-          <div id="lobbyProgressBar" class="bg-gradient-to-r from-amber-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
-        </div>
+    <!-- ========================================== -->
+    <!-- SCREEN 1: REGISTRATION LOBBY               -->
+    <!-- ========================================== -->
+    <section id="screen-registration" class="screen-view">
+      <div class="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-800">
         
-        <!-- WHATSAPP INVITE -->
-        <a href="whatsapp://send?text=🏆 CBSE Mega Quiz Arena! Join Round now, Win Cash Prizes directly on PhonePe: https://lutere571.github.io/Quiz-arena-1/index.html" 
-           class="inline-block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs text-center shadow transition mt-1">
-          📲 Invite Friends on WhatsApp
+        <!-- Rules Banner -->
+        <div class="bg-gradient-to-br from-indigo-950/80 to-slate-900 border border-indigo-500/30 rounded-xl p-5 mb-6 shadow-inner">
+          <div class="flex items-center justify-between mb-3 border-b border-indigo-500/20 pb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Official Contest Rules</span>
+            <span class="text-xs text-slate-400">Entry: ₹50 | Class 6-10</span>
+          </div>
+          <ul class="text-xs sm:text-sm text-slate-300 space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span><strong>Quorum Requirement:</strong> Minimum <strong>20 approved students</strong> required to trigger test. If 20 is not reached within 20 mins, round automatically cancels with <strong>100% instant refund (₹50)</strong> to your PhonePe.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-amber-400 font-bold">🏆</span>
+              <span><strong>₹1,000 Prize Pool:</strong> Rank 1: ₹300 🥇 | Rank 2: ₹200 🥈 | Rank 3: ₹150 🥉 | Rank 4: ₹100 🎖️ | Rank 5: ₹50 🎖️</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-rose-400 font-bold">🛡️</span>
+              <span><strong>Anti-Cheat Engine:</strong> 10 MCQs in 10 Minutes. Tab switching, split screen or app minimizing gives 1 warning; 2nd offense causes auto-disqualification with zero score!</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Reverse Lobby Timer -->
+        <div class="text-center mb-6 bg-slate-900/90 py-3 px-4 rounded-xl border border-slate-800">
+          <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Lobby Countdown Timer</p>
+          <div id="lobby-countdown-reg" class="text-3xl sm:text-4xl font-mono font-black text-amber-400 mt-1">20:00</div>
+          <p class="text-[11px] text-slate-500 mt-0.5">Round automatically starts or refunds when timer runs out</p>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="reg-form" class="space-y-4 max-w-md mx-auto">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5" for="reg-name">Student Full Name</label>
+            <input type="text" id="reg-name" required placeholder="e.g. Aarav Sharma" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5" for="reg-phone">10-Digit PhonePe Number</label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-3.5 text-sm font-semibold text-slate-500">+91</span>
+              <input type="tel" id="reg-phone" pattern="[0-9]{10}" maxlength="10" required placeholder="9876543210" class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:border-indigo-500 transition-colors font-mono">
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1">Cash prizes and guaranteed refunds are credited directly to this number.</p>
+          </div>
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition-all active:scale-98 flex items-center justify-center gap-2">
+            <span>Continue to Payment (₹50)</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </form>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 2: PAYMENT & UTR ENTRY              -->
+    <!-- ========================================== -->
+    <section id="screen-payment" class="screen-view hidden">
+      <div class="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-800 max-w-lg mx-auto">
+        <div class="text-center mb-5">
+          <span class="px-3 py-1 rounded-full text-[11px] font-bold tracking-widest uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">Step 2: Pay ₹50 Entry Fee</span>
+          <h2 class="text-xl sm:text-2xl font-bold mt-2">Scan & Pay via UPI / PhonePe</h2>
+          <p class="text-xs text-slate-400 mt-1">Pay ₹50 directly, then enter the 12-digit UTR below</p>
+        </div>
+
+        <!-- Direct UPI Intent Button -->
+        <a id="upi-intent-link" href="upi://pay?pa=7756804720@ybl&pn=CBSE%20Quiz%20Master&am=50" class="mb-5 flex items-center justify-center gap-2 w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all active:scale-95 text-sm">
+          <span>⚡ Open PhonePe / UPI App to Pay ₹50</span>
         </a>
-      </div>
 
-      <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-left text-xs space-y-1 text-slate-400">
-        <p class="text-white font-bold">Rules for this stage:</p>
-        <p>• Is page ko refresh ya close mat karein.</p>
-        <p>• Countdown complete hone par test screen apne aap khulegi.</p>
-        <p>• 20 se kam bacchon par round auto-cancel hokar ₹50 refund mil jayega.</p>
+        <!-- Dynamic QR Box -->
+        <div class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-inner max-w-[200px] mx-auto mb-5 border-4 border-indigo-600/40">
+          <img id="upi-qr-image" src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=upi://pay?pa=7756804720@ybl%26pn=CBSE%20Quiz%20Master%26am=50" alt="UPI QR Code" class="w-40 h-40 object-contain rounded-lg">
+          <span class="text-[10px] text-slate-800 font-bold mt-1">Scan with any UPI App</span>
+        </div>
+
+        <!-- UPI ID & Phone with Copy Buttons -->
+        <div class="space-y-2 mb-6">
+          <div class="flex items-center justify-between bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-500">UPI ID</p>
+              <p class="text-xs font-mono font-semibold text-slate-200">7756804720@ybl</p>
+            </div>
+            <button onclick="copyText('7756804720@ybl', 'UPI ID Copied!')" class="px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-lg transition-all border border-slate-700">Copy</button>
+          </div>
+          <div class="flex items-center justify-between bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-500">PhonePe Number</p>
+              <p class="text-xs font-mono font-semibold text-slate-200">7756804720</p>
+            </div>
+            <button onclick="copyText('7756804720', 'PhonePe Number Copied!')" class="px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-lg transition-all border border-slate-700">Copy</button>
+          </div>
+        </div>
+
+        <!-- UTR Entry Form -->
+        <form id="utr-form" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1" for="input-utr">12-Digit UPI Transaction / UTR Number</label>
+            <input type="text" id="input-utr" pattern="[0-9]{12}" maxlength="12" required placeholder="e.g. 408512345678" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 font-mono tracking-widest transition-colors">
+            <p class="text-[11px] text-slate-500 mt-1">Found in PhonePe transaction history / receipt.</p>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="showScreen('screen-registration')" class="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl text-xs transition-colors">Back</button>
+            <button type="submit" class="w-2/3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-600/30 transition-all active:scale-98 text-sm">Submit UTR for Verification ✅</button>
+          </div>
+        </form>
       </div>
     </section>
 
-    <!-- ==================== SCREEN 5: ACTIVE QUIZ TEST ==================== -->
-    <section id="screen5ActiveQuiz" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
-      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
-        <span id="activeQuestionCounter" class="text-xs font-bold text-amber-400 font-mono">Question 1 / 10</span>
-        <div class="flex items-center gap-2">
-          <span class="text-[10px] bg-red-950 border border-red-600 text-red-300 font-bold px-2 py-0.5 rounded animate-pulse">
-            🛡️ Anti-Cheat ON
-          </span>
-          <span id="activeQuizClockBadge" class="bg-red-600 font-mono font-bold text-white px-2.5 py-0.5 rounded-full text-xs">
-            10:00
-          </span>
+    <!-- ========================================== -->
+    <!-- SCREEN 3: VERIFICATION GATEWAY             -->
+    <!-- ========================================== -->
+    <section id="screen-verification" class="screen-view hidden">
+      <div class="glass-card rounded-2xl p-8 shadow-2xl border border-slate-800 max-w-md mx-auto text-center">
+        <div class="w-20 h-20 mx-auto mb-4 relative flex items-center justify-center bg-indigo-500/10 rounded-full border border-indigo-500/30">
+          <span class="text-4xl animate-bounce">⏳</span>
         </div>
-      </div>
+        <h2 class="text-2xl font-black text-slate-100">Verifying Payment...</h2>
+        <p class="text-xs text-slate-400 mt-1">Your payment proof has been submitted to the admin team.</p>
 
-      <!-- CHEAT WARNING NOTICE -->
-      <div id="activeCheatWarningAlert" class="hidden p-2.5 bg-red-900/80 border border-red-500 rounded-xl text-[11px] text-red-200 font-bold text-center">
-        ⚠️ Warning: Screen blur / Split-screen detected! Agli baar cheating par instant Disqualification hoga!
-      </div>
-
-      <div class="min-h-[60px]">
-        <span id="activeSubjectBadge" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-mono font-bold uppercase">Science</span>
-        <h2 id="activeQuestionPrompt" class="text-sm md:text-base font-bold text-white mt-1.5 leading-relaxed"></h2>
-      </div>
-
-      <!-- 4 OPTIONS WITH DEBOUNCE -->
-      <div id="activeQuizOptionsWrapper" class="space-y-2.5 pt-1"></div>
-
-      <!-- NAV BUTTONS -->
-      <div class="flex gap-2 pt-3">
-        <button id="btnPrevQuestion" onclick="navigateActiveQuestion(-1)" class="w-1/2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">
-          ⬅ Previous
-        </button>
-        <button id="btnNextQuestion" onclick="navigateActiveQuestion(1)" class="w-1/2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition">
-          Next ➔
-        </button>
-      </div>
-
-      <button id="btnSubmitTestFinal" onclick="finishStudentQuiz(false)" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-xs shadow-lg hidden transition">
-        Submit Quiz Answers ✅
-      </button>
-    </section>
-
-    <!-- ==================== SCREEN 6: RESULTS & LEADERBOARD ==================== -->
-    <section id="screen6Results" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
-      <div class="bg-slate-950 p-5 rounded-2xl border border-amber-500/40 text-center space-y-2">
-        <div id="resultStatusEmoji" class="text-3xl">🎉</div>
-        <h2 id="resultStatusHeading" class="text-base font-black text-white">Quiz Completed!</h2>
-        <div id="userScoreDisplay" class="font-mono text-3xl font-black text-amber-400">0 / 10</div>
-        <p id="userTimeDisplay" class="font-mono text-xs text-emerald-400 font-bold">Time Taken: 00.000s</p>
-        <p class="text-[10px] text-slate-400">Top 5 winners ko cash prize PhonePe par transfer kiya jayega.</p>
-      </div>
-
-      <!-- DETAILED REVIEW -->
-      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">📝 Detailed Answer Key</h3>
-          <span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded font-bold">100% Transparent</span>
+        <!-- Submitted Summary Card -->
+        <div class="my-6 bg-slate-900/90 border border-slate-800 p-4 rounded-xl text-left space-y-2 text-xs">
+          <div class="flex justify-between border-b border-slate-800 pb-1.5">
+            <span class="text-slate-500">Student Name:</span>
+            <span id="gateway-name" class="font-bold text-slate-200">Aarav Sharma</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-800 pb-1.5">
+            <span class="text-slate-500">PhonePe Number:</span>
+            <span id="gateway-phone" class="font-mono text-slate-200">9876543210</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-800 pb-1.5">
+            <span class="text-slate-500">Submitted UTR:</span>
+            <span id="gateway-utr" class="font-mono font-bold text-amber-400 tracking-wider">408512345678</span>
+          </div>
+          <div class="flex justify-between items-center pt-1">
+            <span class="text-slate-500">Status:</span>
+            <span id="gateway-status" class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse">Awaiting Admin Approval</span>
+          </div>
         </div>
-        <div id="detailedAnswerKeyBox" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
-      </div>
 
-      <!-- LIVE FULL LEADERBOARD -->
-      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">🏆 Live Contest Standings</h3>
-          <button onclick="pollBackendState()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
-        </div>
-        <div id="fullLeaderboardBox" class="space-y-2 max-h-72 overflow-y-auto font-mono text-xs"></div>
-      </div>
-    </section>
-
-    <!-- ==================== SCREEN 7: ROUND CANCELLED & REFUND NOTICE ==================== -->
-    <section id="screen7Cancelled" class="hidden bg-slate-900 border-2 border-red-500/60 p-6 rounded-2xl shadow-2xl text-center space-y-4">
-      <div class="text-4xl animate-pulse">⚠️</div>
-      <h2 class="text-base md:text-lg font-black text-red-400">Round Cancelled (Under 20 Participants)</h2>
-      
-      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left space-y-2 text-xs text-slate-300 leading-relaxed">
-        <p class="font-bold text-amber-300">📢 Official Contest Update:</p>
-        <p>20-minute window ke andar <strong>kam se kam 20 participants nahi jude</strong>, isliye yeh round cancel kar diya gaya hai.</p>
-        <p class="text-emerald-400 font-bold border-t border-slate-800 pt-2">
-          💰 100% Refund Assured: Aapka ₹50 entry fee aapke PhonePe number (<span id="cancelledStudentPhoneDisplay" class="font-mono text-white"></span>) par jald hi refund kar diya jayega.
+        <p class="text-xs text-slate-400 animate-pulse">
+          Please keep this tab open. This screen will <strong>automatically transition</strong> as soon as the Admin approves your UTR.
         </p>
       </div>
-
-      <button onclick="switchScreen('screen1Lobby')" class="w-full bg-slate-800 text-slate-300 font-bold py-2.5 rounded-xl text-xs">
-        Return to Home Screen
-      </button>
     </section>
 
-    <!-- ==================== SCREEN 8: ADMIN LIVE DASHBOARD ==================== -->
-    <section id="screen8AdminDashboard" class="hidden bg-slate-900 border-2 border-amber-500/60 p-5 rounded-2xl shadow-2xl space-y-4">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-        <div>
-          <h2 class="text-sm font-black text-amber-400 uppercase tracking-wider">👑 Admin Live Control</h2>
-          <span id="adminActiveRoundLabel" class="text-[10px] text-emerald-400 font-mono font-bold">Round 1</span>
+    <!-- ========================================== -->
+    <!-- SCREEN 4: APPROVED LIVE WAITING LOBBY      -->
+    <!-- ========================================== -->
+    <section id="screen-waiting-lobby" class="screen-view hidden">
+      <div class="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-800 max-w-xl mx-auto text-center">
+        
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 mb-4">
+          <span>Payment Approved ✅</span>
         </div>
-        <button onclick="switchScreen('screen1Lobby')" class="text-xs text-red-400 font-bold bg-slate-800 px-2.5 py-1 rounded">
-          Close ✖
-        </button>
-      </div>
 
-      <!-- DIRECT EXCEL EXPORT -->
-      <div class="bg-slate-950 p-3.5 rounded-xl border border-emerald-500/60 flex justify-between items-center">
-        <div>
-          <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">📊 All-in-One Excel Ledger</h3>
-          <p class="text-[10px] text-slate-400">All Rounds, Scores, Winners & Refunds</p>
-        </div>
-        <button onclick="downloadBuiltinExcelReport()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-3.5 py-2 rounded-lg shadow-lg flex items-center gap-1.5 transition">
-          📥 Export Excel (.CSV)
-        </button>
-      </div>
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-100">Waiting for Quorum</h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-md mx-auto">
+          The mega quiz starts automatically when 20 approved students enter or countdown concludes!
+        </p>
 
-      <!-- TIMER & FORCE CONTROLS -->
-      <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
-        <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">⚡ Quick Actions</h3>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="adminForceStartQuiz()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs shadow">
-            🚀 Force Start Now
-          </button>
-          <button onclick="adminForceCancelQuiz()" class="bg-red-700 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-            🛑 Cancel Round & Refund
-          </button>
+        <!-- Synchronized Lobby Timer -->
+        <div class="my-6 bg-slate-900 border border-slate-800 p-4 rounded-xl inline-block w-full max-w-sm">
+          <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Synchronized Lobby Timer</p>
+          <div id="lobby-countdown-waiting" class="text-4xl sm:text-5xl font-mono font-black text-amber-400 mt-1">20:00</div>
+          <p class="text-[11px] text-slate-500 mt-1">Auto-starts if 20 joined • Auto-refunds if under 20</p>
         </div>
-        <div class="grid grid-cols-2 gap-2 pt-1">
-          <button onclick="adminRestartSameRound()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-black py-2 rounded-xl text-xs shadow">
-            🔄 Restart Same Round
-          </button>
-          <button onclick="adminAdvanceNextRound()" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 rounded-xl text-xs shadow">
-            ⏭️ Next Round (After End)
-          </button>
-        </div>
-      </div>
 
-      <!-- PENDING UTRs -->
-      <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🔔 Pending UTR Approvals</h3>
-          <button onclick="adminPollState()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
-        </div>
-        <div id="adminPendingUtrWrapper" class="space-y-2 max-h-52 overflow-y-auto">
-          <p class="placeholder-msg text-xs text-slate-500 py-2">No pending UTRs right now.</p>
-        </div>
-      </div>
-
-      <!-- PENDING REFUNDS -->
-      <div class="bg-slate-950 p-3.5 rounded-xl border border-red-900/50 space-y-2">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xs font-bold text-red-400 uppercase tracking-wider">💸 Pending Refunds (₹50 Each)</h3>
-          <span id="adminRefundCountBadge" class="bg-red-950 text-red-300 border border-red-700 text-[10px] px-2 py-0.5 rounded font-mono font-bold">0</span>
-        </div>
-        <div id="adminPendingRefundsWrapper" class="space-y-2 max-h-48 overflow-y-auto">
-          <p class="text-xs text-slate-500 py-2">No pending refunds.</p>
-        </div>
-      </div>
-
-      <!-- TOP 5 WINNERS PAYOUT -->
-      <div class="bg-slate-950 p-3.5 rounded-xl border border-amber-500/40 space-y-2">
-        <div class="flex justify-between items-center">
-          <div>
-            <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🏆 Top 5 Winners Payout</h3>
-            <p class="text-[9px] text-emerald-400">Total ₹800 Payout • ₹200 Guaranteed Profit</p>
+        <!-- Participants Counter and Gradient Progress Bar -->
+        <div class="mb-6 max-w-md mx-auto">
+          <div class="flex justify-between items-center text-xs font-bold mb-2">
+            <span class="text-slate-400">Approved Participants:</span>
+            <span id="waiting-counter" class="text-amber-400 text-sm font-mono font-black">1 / 20 Required</span>
           </div>
-          <button onclick="adminPollState()" class="text-[10px] text-amber-400 underline font-bold">Refresh 🔄</button>
+          <div class="w-full bg-slate-900 h-4 rounded-full overflow-hidden border border-slate-800 p-0.5">
+            <div id="waiting-progress-bar" class="h-full bg-gradient-to-r from-amber-500 via-indigo-500 to-emerald-400 rounded-full transition-all duration-500" style="width: 5%;"></div>
+          </div>
         </div>
-        <div id="adminWinnersPayoutWrapper" class="space-y-2 max-h-48 overflow-y-auto">
-          <p class="text-xs text-slate-500 py-2">Winners appear here when test completes.</p>
+
+        <!-- WhatsApp Invite Button -->
+        <a id="whatsapp-invite-btn" href="#" target="_blank" class="inline-flex items-center justify-center gap-2 w-full max-w-md bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-emerald-600/30 transition-all active:scale-95 text-sm mb-4">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          <span>Invite Friends on WhatsApp (+1 Player)</span>
+        </a>
+
+        <div class="text-[11px] text-slate-500">
+          Tip: Quorum needed is 20 students. Share to start faster!
         </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 5: ACTIVE QUIZ ARENA (ANTI-CHEAT)   -->
+    <!-- ========================================== -->
+    <section id="screen-quiz" class="screen-view hidden">
+      <div class="glass-card rounded-2xl p-5 sm:p-7 shadow-2xl border border-slate-800">
+        
+        <!-- Quiz Header Info -->
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+          <div class="flex items-center gap-2">
+            <span id="quiz-question-counter" class="text-xs font-mono font-bold bg-slate-800 text-slate-300 px-3 py-1 rounded-lg border border-slate-700">Question 1 of 10</span>
+            <span id="quiz-subject-badge" class="text-[11px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-2.5 py-1 rounded-lg">Physics</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="text-right">
+              <span class="text-[10px] text-slate-500 uppercase block leading-none">Time Left</span>
+              <span id="quiz-active-timer" class="text-lg sm:text-xl font-mono font-black text-rose-400">10:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Prompt -->
+        <div class="min-h-[90px] flex items-center mb-6">
+          <h3 id="quiz-question-text" class="text-base sm:text-lg font-semibold text-slate-100 leading-relaxed">
+            Loading question...
+          </h3>
+        </div>
+
+        <!-- 4 MCQ Options Buttons -->
+        <div id="quiz-options-container" class="grid grid-cols-1 gap-3 mb-6">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between items-center pt-3 border-t border-slate-800">
+          <button id="btn-quiz-prev" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            ← Previous
+          </button>
+          <div class="text-[11px] text-slate-500 font-medium hidden sm:block">
+            Anti-Cheat Protected Arena 🛡️
+          </div>
+          <button id="btn-quiz-next" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-md shadow-indigo-600/30">
+            Next →
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 6: RESULTS & LEADERBOARD           -->
+    <!-- ========================================== -->
+    <section id="screen-results" class="screen-view hidden">
+      <div class="space-y-6">
+        
+        <!-- Score Card -->
+        <div class="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-800 text-center">
+          <div class="inline-block p-3 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-3">
+            <span class="text-4xl">🎉</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black">Quiz Completed!</h2>
+          <p class="text-xs text-slate-400 mt-1">Your score has been verified and registered on the live leaderboard.</p>
+
+          <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto my-6">
+            <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl">
+              <span class="text-[10px] text-slate-500 uppercase font-bold">Your Score</span>
+              <div id="result-score" class="text-2xl sm:text-3xl font-mono font-black text-emerald-400 mt-0.5">0 / 10</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl">
+              <span class="text-[10px] text-slate-500 uppercase font-bold">Time Taken</span>
+              <div id="result-time" class="text-2xl sm:text-3xl font-mono font-black text-amber-400 mt-0.5">00.000s</div>
+            </div>
+          </div>
+
+          <div id="result-prize-alert" class="hidden max-w-sm mx-auto p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold animate-pulse">
+            🌟 CONGRATULATIONS! You placed in the Top 5 Cash Prize Zone! Payout will be sent via PhonePe.
+          </div>
+        </div>
+
+        <!-- Detailed Answer Key Accordion/Card -->
+        <div class="glass-card rounded-2xl p-5 sm:p-6 shadow-xl border border-slate-800">
+          <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">Detailed Answer Key (10 Questions)</h3>
+            <span class="text-xs text-slate-500">Official CBSE Solutions</span>
+          </div>
+          <div id="result-answer-key" class="space-y-3">
+            <!-- Dynamic Answer Key Items -->
+          </div>
+        </div>
+
+        <!-- Live Standings Leaderboard -->
+        <div class="glass-card rounded-2xl p-5 sm:p-6 shadow-xl border border-slate-800">
+          <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400">Live Round Standings</h3>
+              <p class="text-[11px] text-slate-500">Top 5 win guaranteed cash directly to PhonePe</p>
+            </div>
+            <button id="btn-refresh-standings" class="px-3 py-1.5 rounded-lg text-xs bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700 flex items-center gap-1.5 transition-all">
+              <span>Refresh</span> 🔄
+            </button>
+          </div>
+
+          <!-- Standings Table Container -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="text-[10px] text-slate-500 uppercase bg-slate-900/60 border-b border-slate-800">
+                <tr>
+                  <th class="py-2.5 px-3">Rank</th>
+                  <th class="py-2.5 px-3">Student Name</th>
+                  <th class="py-2.5 px-3">Score</th>
+                  <th class="py-2.5 px-3">Time</th>
+                  <th class="py-2.5 px-3 text-right">Prize</th>
+                </tr>
+              </thead>
+              <tbody id="standings-table-body" class="divide-y divide-slate-800/60 font-medium">
+                <!-- Dynamically populated without flicker -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 7: ROUND CANCELLED & REFUND SCREEN  -->
+    <!-- ========================================== -->
+    <section id="screen-cancelled" class="screen-view hidden">
+      <div class="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl border border-rose-900/40 max-w-lg mx-auto text-center">
+        <div class="w-16 h-16 mx-auto mb-4 bg-rose-500/10 border border-rose-500/30 rounded-full flex items-center justify-center text-3xl">
+          🛑
+        </div>
+        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/40">Round Cancelled</span>
+        <h2 class="text-2xl font-black text-slate-100 mt-3">Minimum Quorum Not Reached</h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-2">
+          As per official policy, fewer than 20 approved students joined this round within 20 minutes. The round has closed safely.
+        </p>
+
+        <!-- 100% Refund Assurance Card -->
+        <div class="my-6 bg-slate-900/90 border border-emerald-500/30 p-4 rounded-xl text-left">
+          <div class="flex items-center gap-2 mb-2 text-emerald-400 font-bold text-sm">
+            <span>✅ 100% Refund Assured (₹50)</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Your full entry fee of <strong>₹50</strong> has been queued for immediate refund to your PhonePe mobile number:
+          </p>
+          <div class="mt-3 p-2.5 bg-slate-950 border border-slate-800 rounded-lg flex items-center justify-between">
+            <span class="text-xs text-slate-500">Refund PhonePe:</span>
+            <span id="refund-display-phone" class="text-sm font-mono font-bold text-amber-400">9876543210</span>
+          </div>
+        </div>
+
+        <button onclick="window.location.reload()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 rounded-xl text-xs transition-colors">
+          Return to Arena Lobby
+        </button>
       </div>
     </section>
 
   </main>
 
+  <!-- ========================================== -->
+  <!-- ADMIN PIN AUTHENTICATION MODAL             -->
+  <!-- ========================================== -->
+  <div id="admin-pin-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-xs w-full p-6 rounded-2xl border border-slate-700 shadow-2xl text-center">
+      <div class="text-2xl mb-2">🔐</div>
+      <h3 class="text-base font-bold text-slate-100">Admin Secret Gateway</h3>
+      <p class="text-xs text-slate-400 mb-4">Enter Master Admin PIN to open dashboard</p>
+      
+      <form id="admin-pin-form" class="space-y-3">
+        <input type="password" id="admin-pin-input" maxlength="6" placeholder="Enter PIN" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-center text-lg font-mono tracking-widest focus:outline-none focus:border-amber-400">
+        <div class="flex gap-2">
+          <button type="button" onclick="closeAdminPinModal()" class="w-1/2 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400">Cancel</button>
+          <button type="submit" class="w-1/2 py-2 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl">Unlock</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- SCREEN 8: SECRET ADMIN LIVE DASHBOARD      -->
+  <!-- ========================================== -->
+  <div id="admin-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col p-3 sm:p-6 overflow-y-auto hidden">
+    <div class="max-w-6xl w-full mx-auto glass-card rounded-2xl border border-slate-800 p-5 sm:p-7 shadow-2xl flex-1 flex flex-col">
+      
+      <!-- Admin Header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-6">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-xl sm:text-2xl font-black text-amber-400">Admin Live Control Dashboard</h2>
+            <span id="admin-round-indicator" class="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-2 py-0.5 rounded font-mono font-bold">ROUND 1</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">Live Round Manager, Instant UTR Approver &amp; Cash Payout Registry</p>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <!-- 1-Click Master Audited CSV Export -->
+          <button id="btn-export-csv" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 flex items-center gap-1.5 transition-all">
+            <span>📥 Export Master Audited CSV</span>
+          </button>
+          <button onclick="closeAdminDashboard()" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
+            Close ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <button id="btn-force-start" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/40 p-3 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all">
+          <span class="text-base">🚀</span>
+          <span>Force Start Now</span>
+        </button>
+
+        <button id="btn-cancel-refund" class="bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/40 p-3 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all">
+          <span class="text-base">🛑</span>
+          <span>Cancel Round &amp; Refund</span>
+        </button>
+
+        <button id="btn-restart-round" class="bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 border border-amber-500/40 p-3 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all">
+          <span class="text-base">🔄</span>
+          <span>Restart Same Round</span>
+        </button>
+
+        <button id="btn-next-round" class="bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/40 p-3 rounded-xl text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all">
+          <span class="text-base">⏭️</span>
+          <span>Next Round (R+1)</span>
+        </button>
+      </div>
+
+      <!-- Main Dashboard Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1">
+        
+        <!-- PENDING UTR APPROVALS CARD -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+            <div class="flex items-center gap-2">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200">Pending UTR Approvals</h3>
+              <span id="pending-utr-count-badge" class="px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 rounded-full">0</span>
+            </div>
+            <button id="btn-refresh-utrs" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded text-slate-300 border border-slate-700 flex items-center gap-1">
+              <span>Refresh</span> 🔄
+            </button>
+          </div>
+
+          <div id="pending-utrs-list" class="space-y-2 flex-1 overflow-y-auto max-h-96 pr-1">
+            <!-- Non-flickering keyed cards populated dynamically -->
+          </div>
+        </div>
+
+        <!-- TOP 5 WINNERS PAYOUT CARD -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+            <div>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">Top 5 Winners Payouts (₹800 Pool)</h3>
+              <p class="text-[10px] text-slate-500">Rank 1: ₹300 | 2: ₹200 | 3: ₹150 | 4: ₹100 | 5: ₹50</p>
+            </div>
+            <button id="btn-refresh-winners" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded text-slate-300 border border-slate-700 flex items-center gap-1">
+              <span>Refresh</span> 🔄
+            </button>
+          </div>
+
+          <div id="winners-payout-list" class="space-y-2 flex-1 overflow-y-auto max-h-96 pr-1">
+            <!-- Non-flickering keyed cards populated dynamically -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM PENDING REFUNDS SECTION -->
+      <div class="mt-6 bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+        <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-rose-400">Pending 100% Refunds Ledger (Cancelled Rounds &amp; Rejections)</h3>
+          <span id="refunds-count-badge" class="px-2 py-0.5 text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 rounded-full">0</span>
+        </div>
+        <div id="pending-refunds-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ANTI-CHEAT WARNING OVERLAY -->
+  <div id="anti-cheat-overlay" class="fixed inset-0 z-50 bg-rose-950/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-sm w-full p-6 rounded-2xl border-2 border-rose-500 text-center shadow-2xl">
+      <div class="text-4xl mb-2">⚠️</div>
+      <h3 class="text-lg font-black text-rose-400">ANTI-CHEAT WARNING! (Offense 1/2)</h3>
+      <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+        Tab switch, split-screen or screen blur detected! 
+        <br><br>
+        <span class="text-amber-300 font-bold">A second offense will lead to IMMEDIATE DISQUALIFICATION and auto-submission with a score of 0.</span>
+      </p>
+      <button onclick="dismissAntiCheatWarning()" class="mt-5 w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl text-xs transition-colors">
+        I Understand. Resume Quiz
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- COMPLETE APPLICATION JAVASCRIPT CODE       -->
+  <!-- ========================================== -->
   <script>
-    // =========================================================================
-    // CBSE QUIZ ARENA - CORS-PROOF ENTERPRISE FRONTEND
-    // =========================================================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbxp1jd0dFhNHUEPZwvBQw4bM6KsCqvaeNq8ANa4vTHhUtDKKS497R65HEcP9NKNVwEIPw/exec";
-    const ADMIN_SECRET_PIN = "103695";
+    /**
+     * CBSE MEGA QUIZ ARENA - FULL STANDALONE APPLICATION
+     * Zero external runtime frameworks. Pure Vanilla JS & Tailwind CSS.
+     */
 
-    let studentToken = localStorage.getItem("cbse_student_token") || "";
-    let adminToken = localStorage.getItem("cbse_admin_token") || "";
-    let currentUserSession = { name: "", phone: "", utr: "" };
+    // --- 1. QUESTION BANK DATABASE (150 CBSE MCQS: 15 ROUNDS X 10 QUESTIONS) ---
+    const QUESTION_BANK = {
+      1: [
+        { q: "An object is placed at 20 cm in front of a concave mirror of focal length 15 cm. The nature and position of the image is:", options: ["Real, inverted, at 60 cm", "Virtual, erect, at 60 cm", "Real, inverted, at 30 cm", "Virtual, erect, at 30 cm"], ans: 0, subject: "Physics (Class 10)" },
+        { q: "Which chemical compound is the active ingredient in bleaching powder?", options: ["Ca(OH)2", "CaOCl2", "CaCO3", "CaCl2"], ans: 1, subject: "Chemistry (Class 10)" },
+        { q: "If the roots of the quadratic equation 2x² - kx + 3 = 0 are equal, find the value of k.", options: ["±2√6", "±√6", "±4√3", "±6"], ans: 0, subject: "Maths (Class 10)" },
+        { q: "In human kidneys, the structural and functional filtration unit is known as:", options: ["Neuron", "Alveolus", "Nephron", "Glomerulus only"], ans: 2, subject: "Biology (Class 10)" },
+        { q: "A cylindrical conductor of length l and uniform cross-section area A has resistance R. Another conductor of length 2l and area A/2 of the same material has resistance:", options: ["R", "2R", "4R", "8R"], ans: 2, subject: "Physics (Class 10)" },
+        { q: "Which of the following metals does not react with cold or hot water but reacts with steam to form hydrogen?", options: ["Sodium", "Iron", "Calcium", "Potassium"], ans: 1, subject: "Chemistry (Class 10)" },
+        { q: "The 10th term of the Arithmetic Progression (AP): 2, 7, 12, ... is:", options: ["45", "47", "50", "52"], ans: 1, subject: "Maths (Class 10)" },
+        { q: "Which plant hormone is predominantly responsible for the promotion of cell division?", options: ["Auxin", "Gibberellin", "Cytokinin", "Abscisic acid"], ans: 2, subject: "Biology (Class 10)" },
+        { q: "A ray of light traveling from a rarer medium to a denser medium will:", options: ["Bend away from the normal", "Bend towards the normal", "Pass undeviated", "Reflect completely"], ans: 1, subject: "Physics (Class 10)" },
+        { q: "What is the pH of pure neutral water at standard room temperature (25°C)?", options: ["0", "5", "7", "14"], ans: 2, subject: "Chemistry (Class 10)" }
+      ],
+      2: [
+        { q: "A particle is moving in a circular path of radius r. What is the displacement after completing half a circle?", options: ["0", "πr", "2r", "2πr"], ans: 2, subject: "Physics (Class 9)" },
+        { q: "The atomic number of an element is 11 and its mass number is 23. The number of neutrons in its nucleus is:", options: ["11", "12", "23", "34"], ans: 1, subject: "Chemistry (Class 9)" },
+        { q: "If p(x) = x³ - 3x² + 4x - 12, what is the value of p(3)?", options: ["0", "3", "-6", "12"], ans: 0, subject: "Maths (Class 9)" },
+        { q: "Which cell organelle contains hydrolytic enzymes and is popularly dubbed the 'suicide bag' of the cell?", options: ["Mitochondria", "Lysosome", "Plastid", "Golgi apparatus"], ans: 1, subject: "Biology (Class 9)" },
+        { q: "What is the value of acceleration due to gravity (g) at the center of the Earth?", options: ["9.8 m/s²", "Infinite", "Zero", "4.9 m/s²"], ans: 2, subject: "Physics (Class 9)" },
+        { q: "Tincture of iodine, an antiseptic solution, contains iodine dissolved in which solvent?", options: ["Water", "Alcohol (Ethanol)", "Acetone", "Ether"], ans: 1, subject: "Chemistry (Class 9)" },
+        { q: "The angles of a quadrilateral are in the ratio 3:5:9:13. The smallest angle measures:", options: ["36°", "45°", "24°", "30°"], ans: 0, subject: "Maths (Class 9)" },
+        { q: "Which plant tissue has dead cells with heavily lignified cell walls providing mechanical rigidity?", options: ["Parenchyma", "Collenchyma", "Sclerenchyma", "Aerenchyma"], ans: 2, subject: "Biology (Class 9)" },
+        { q: "The rate of change of momentum of an object is directly proportional to:", options: ["Applied unbalanced force", "Inertia", "Velocity", "Mass"], ans: 0, subject: "Physics (Class 9)" },
+        { q: "Dry ice is the solid state form of:", options: ["Carbon monoxide", "Carbon dioxide", "Nitrogen oxide", "Sulfur dioxide"], ans: 1, subject: "Chemistry (Class 9)" }
+      ],
+      3: [
+        { q: "Which friction force is highest in magnitude for two given surfaces in contact?", options: ["Rolling friction", "Sliding friction", "Static friction", "Fluid friction"], ans: 2, subject: "Physics (Class 8)" },
+        { q: "The pure element of carbon formed by destructive distillation of coal used in steel manufacture is:", options: ["Coal tar", "Coal gas", "Coke", "Bitumen"], ans: 2, subject: "Chemistry (Class 8)" },
+        { q: "Solve the linear equation: 5x - 7 = 2x + 8. The value of x is:", options: ["3", "5", "7", "1"], ans: 1, subject: "Maths (Class 8)" },
+        { q: "Which microorganism is responsible for the conversion of milk into curd?", options: ["Lactobacillus", "Rhizobium", "Penicillium", "Aspergillus"], ans: 0, subject: "Biology (Class 8)" },
+        { q: "Sound cannot propagate through which of the following media?", options: ["Solids", "Liquids", "Gases", "Vacuum"], ans: 3, subject: "Physics (Class 8)" },
+        { q: "Which non-metal is stored under liquid water to prevent combustion with atmospheric oxygen?", options: ["Sodium", "Phosphorus", "Sulfur", "Carbon"], ans: 1, subject: "Chemistry (Class 8)" },
+        { q: "What is the sum of all interior angles of a regular hexagon?", options: ["360°", "540°", "720°", "1080°"], ans: 2, subject: "Maths (Class 8)" },
+        { q: "Which gland in the human endocrine system produces insulin to regulate blood glucose?", options: ["Thyroid", "Adrenal", "Pancreas", "Pituitary"], ans: 2, subject: "Biology (Class 8)" },
+        { q: "The unit of frequency of a vibrating object is:", options: ["Hertz (Hz)", "Decibel (dB)", "Meter/second", "Pascal"], ans: 0, subject: "Physics (Class 8)" },
+        { q: "Which gas burns with a characteristic 'pop' sound when a burning splint is introduced?", options: ["Oxygen", "Carbon dioxide", "Hydrogen", "Nitrogen"], ans: 2, subject: "Chemistry (Class 8)" }
+      ],
+      4: [
+        { q: "In green autotrophs, which cellular structure traps solar energy for photosynthesis?", options: ["Chlorophyll", "Stomata", "Mitochondria", "Ribosome"], ans: 0, subject: "Biology (Class 7)" },
+        { q: "Normal human body temperature on the Celsius scale is approximately:", options: ["35°C", "37°C", "39°C", "98.6°C"], ans: 1, subject: "Science (Class 7)" },
+        { q: "What is the product of (-15) and (-8)?", options: ["-120", "120", "-130", "130"], ans: 1, subject: "Maths (Class 7)" },
+        { q: "Which acid is naturally present in curd and sour milk?", options: ["Oxalic acid", "Acetic acid", "Lactic acid", "Citric acid"], ans: 2, subject: "Chemistry (Class 7)" },
+        { q: "Heat transfer in liquids and gases primarily takes place through the process of:", options: ["Conduction", "Convection", "Radiation", "Insulation"], ans: 1, subject: "Physics (Class 7)" },
+        { q: "If the angle of a triangle is 50° and the other two angles are equal, each equal angle is:", options: ["65°", "70°", "60°", "55°"], ans: 0, subject: "Maths (Class 7)" },
+        { q: "The rhythmic contraction and expansion of heart ventricles generates:", options: ["Blood pressure and pulse", "Digestion", "Peristalsis", "Sweating"], ans: 0, subject: "Biology (Class 7)" },
+        { q: "Rusting of iron requires the presence of both:", options: ["Nitrogen and heat", "Oxygen and water moisture", "Carbon dioxide and oil", "Hydrogen and sunlight"], ans: 1, subject: "Chemistry (Class 7)" },
+        { q: "A simple pendulum takes 32 seconds to complete 20 oscillations. What is its time period?", options: ["1.6 s", "0.625 s", "2.0 s", "1.2 s"], ans: 0, subject: "Physics (Class 7)" },
+        { q: "What kind of mirror is used as a rear-view mirror in automobiles?", options: ["Concave mirror", "Convex mirror", "Plane mirror", "Parabolic concave mirror"], ans: 1, subject: "Physics (Class 7)" }
+      ],
+      5: [
+        { q: "Which vitamin deficiency is primarily responsible for night blindness?", options: ["Vitamin A", "Vitamin B1", "Vitamin C", "Vitamin D"], ans: 0, subject: "Science (Class 6)" },
+        { q: "Which process is used to separate grains from stalks after harvesting?", options: ["Winnowing", "Threshing", "Sieving", "Sedimentation"], ans: 1, subject: "Science (Class 6)" },
+        { q: "The perimeter of a regular pentagon with side length 6 cm is:", options: ["24 cm", "30 cm", "36 cm", "40 cm"], ans: 1, subject: "Maths (Class 6)" },
+        { q: "Which of the following is an example of an abiotic component in an ecosystem?", options: ["Microbes", "Sunlight", "Earthworms", "Fungi"], ans: 1, subject: "Science (Class 6)" },
+        { q: "In an electrical circuit, an electric switch is used to:", options: ["Generate electricity", "Complete or break the circuit", "Measure current", "Increase voltage"], ans: 1, subject: "Science (Class 6)" },
+        { q: "Which fraction is equivalent to 3/4?", options: ["6/10", "9/12", "12/20", "15/25"], ans: 1, subject: "Maths (Class 6)" },
+        { q: "Animals that consume both plants and other animals are classified as:", options: ["Herbivores", "Carnivores", "Omnivores", "Autotrophs"], ans: 2, subject: "Science (Class 6)" },
+        { q: "How many millimeters (mm) are there in 2.5 meters?", options: ["250 mm", "2500 mm", "25000 mm", "25 mm"], ans: 1, subject: "Maths (Class 6)" },
+        { q: "The joint in our shoulders allowing movement in all directions is a:", options: ["Hinge joint", "Ball and socket joint", "Pivot joint", "Fixed joint"], ans: 1, subject: "Science (Class 6)" },
+        { q: "Which substance allows light to pass through completely without scattering?", options: ["Opaque material", "Translucent material", "Transparent material", "Frosted glass"], ans: 2, subject: "Science (Class 6)" }
+      ],
+      6: [
+        { q: "Which gas is released when dilute hydrochloric acid reacts with active zinc metal granules?", options: ["Oxygen", "Chlorine", "Hydrogen", "Carbon dioxide"], ans: 2, subject: "Chemistry (Class 10)" },
+        { q: "If sin θ = 3/5, what is the value of tan θ for acute angle θ?", options: ["3/4", "4/3", "4/5", "5/3"], ans: 0, subject: "Maths (Class 10)" },
+        { q: "In Mendel's dihybrid cross, the phenotypic ratio observed in the F2 generation is:", options: ["3:1", "9:3:3:1", "1:2:1", "9:7"], ans: 1, subject: "Biology (Class 10)" },
+        { q: "The power of a convex lens having a focal length of +25 cm is:", options: ["+2 D", "+4 D", "-4 D", "+0.25 D"], ans: 1, subject: "Physics (Class 10)" },
+        { q: "Ethanoic acid reacts with absolute ethanol in the presence of acid catalyst to form an ester with:", options: ["Pungent smell", "Fruity sweet odor", "Rotten egg smell", "Bleaching smell"], ans: 1, subject: "Chemistry (Class 10)" },
+        { q: "The distance of point P(3, 4) from the origin (0, 0) is:", options: ["3 units", "4 units", "5 units", "7 units"], ans: 2, subject: "Maths (Class 10)" },
+        { q: "Anaerobic respiration in human muscle cells during strenuous sprint exercise produces:", options: ["Ethanol + CO2", "Lactic acid + Energy", "Water + CO2", "Urea"], ans: 1, subject: "Biology (Class 10)" },
+        { q: "The magnetic field inside a long straight current-carrying solenoid is:", options: ["Zero", "Uniform throughout", "Decreases towards center", "Increases towards ends"], ans: 1, subject: "Physics (Class 10)" },
+        { q: "The functional group present in propanone (CH3COCH3) is:", options: ["Aldehyde", "Carboxylic acid", "Ketone", "Alcohol"], ans: 2, subject: "Chemistry (Class 10)" },
+        { q: "Two concentric circles have radii 5 cm and 3 cm. The length of the chord of the larger circle touching the smaller circle is:", options: ["4 cm", "6 cm", "8 cm", "10 cm"], ans: 2, subject: "Maths (Class 10)" }
+      ],
+      7: [
+        { q: "Work done by a centripetal force acting on an object revolving in a uniform circular path is:", options: ["Positive", "Negative", "Zero", "Infinite"], ans: 2, subject: "Physics (Class 9)" },
+        { q: "What is the molar mass of water (H2O)? (Atomic mass: H=1 u, O=16 u)", options: ["16 g/mol", "17 g/mol", "18 g/mol", "20 g/mol"], ans: 2, subject: "Chemistry (Class 9)" },
+        { q: "The point (-4, 5) lies in which quadrant of the Cartesian plane?", options: ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"], ans: 1, subject: "Maths (Class 9)" },
+        { q: "Which complex plant tissue is primarily responsible for the transport of synthesized sugars and amino acids?", options: ["Xylem tracheids", "Xylem vessels", "Phloem", "Cambium"], ans: 2, subject: "Biology (Class 9)" },
+        { q: "The kinetic energy of an object of mass m moving with velocity 2v is:", options: ["½ mv²", "2 mv²", "4 mv²", "8 mv²"], ans: 1, subject: "Physics (Class 9)" },
+        { q: "What is the chemical formula of copper (II) sulphate?", options: ["CuSO4", "Cu2SO4", "Cu(SO4)2", "CuS"], ans: 0, subject: "Chemistry (Class 9)" },
+        { q: "If the radius of a sphere is 7 cm, its total surface area is: (use π = 22/7)", options: ["616 cm²", "154 cm²", "308 cm²", "1232 cm²"], ans: 0, subject: "Maths (Class 9)" },
+        { q: "The cellular organelle known as the 'powerhouse of the cell' due to ATP production is:", options: ["Chloroplast", "Mitochondria", "Ribosome", "Endoplasmic Reticulum"], ans: 1, subject: "Biology (Class 9)" },
+        { q: "Newton's first law of motion is also known as:", options: ["Law of conservation of energy", "Law of gravitation", "Law of inertia", "Law of action and reaction"], ans: 2, subject: "Physics (Class 9)" },
+        { q: "A colloidal solution shows scattering of light beam. This optical effect is known as:", options: ["Raman effect", "Tyndall effect", "Doppler effect", "Photoelectric effect"], ans: 1, subject: "Chemistry (Class 9)" }
+      ],
+      8: [
+        { q: "The audible frequency range for a healthy normal human ear is:", options: ["2 Hz to 2,000 Hz", "20 Hz to 20,000 Hz", "200 Hz to 200,000 Hz", "Below 20 Hz"], ans: 1, subject: "Physics (Class 8)" },
+        { q: "Which metal is liquid at room temperature?", options: ["Bromine", "Mercury", "Gallium", "Cesium"], ans: 1, subject: "Chemistry (Class 8)" },
+        { q: "The total surface area of a cube whose edge measures 5 cm is:", options: ["125 cm²", "150 cm²", "100 cm²", "175 cm²"], ans: 1, subject: "Maths (Class 8)" },
+        { q: "The process of transfer of ovum into female fallopian tube for fertilisation takes place during:", options: ["Menstruation", "Ovulation", "Gestation", "Lactation"], ans: 1, subject: "Biology (Class 8)" },
+        { q: "When an electric current is passed through copper sulphate solution, copper deposits on the electrode connected to the:", options: ["Positive terminal", "Negative terminal (Cathode)", "Ground wire", "Top of solution"], ans: 1, subject: "Physics (Class 8)" },
+        { q: "A quadrilateral with opposite sides parallel and equal, but angles not 90°, and all 4 sides equal is a:", options: ["Rectangle", "Rhombus", "Trapezium", "Kite"], ans: 1, subject: "Maths (Class 8)" },
+        { q: "Which gas is primarily responsible for global warming and enhanced greenhouse effect?", options: ["Oxygen", "Carbon dioxide", "Nitrogen", "Argon"], ans: 1, subject: "Science (Class 8)" },
+        { q: "The angle of reflection is equal to the angle of incidence:", options: ["Only on polished mirrors", "Always on all reflecting surfaces", "Never on rough surfaces", "Only at 45° angle"], ans: 1, subject: "Physics (Class 8)" },
+        { q: "Which synthetic fiber is also referred to as artificial silk?", options: ["Nylon", "Rayon", "Polyester", "Acrylic"], ans: 1, subject: "Chemistry (Class 8)" },
+        { q: "What is the square root of 0.0064?", options: ["0.8", "0.08", "0.008", "0.0008"], ans: 1, subject: "Maths (Class 8)" }
+      ],
+      9: [
+        { q: "During intense aerobic cellular respiration, which molecule is broken down into pyruvic acid in the cytoplasm?", options: ["Fatty acid", "Glucose", "Protein", "Cellulose"], ans: 1, subject: "Biology (Class 7)" },
+        { q: "What is the reciprocal of the rational number -7/11?", options: ["11/7", "-11/7", "7/11", "-7/11"], ans: 1, subject: "Maths (Class 7)" },
+        { q: "The transfer of pollen grains from the anther to the stigma of a flower is known as:", options: ["Fertilisation", "Pollination", "Germination", "Transpiration"], ans: 1, subject: "Biology (Class 7)" },
+        { q: "The image formed by a plane mirror is always:", options: ["Real and inverted", "Virtual and laterally inverted", "Real and magnified", "Virtual and upside down"], ans: 1, subject: "Physics (Class 7)" },
+        { q: "Which pigment imparts red color to human blood?", options: ["Chlorophyll", "Hemoglobin", "Carotene", "Bilirubin"], ans: 1, subject: "Biology (Class 7)" },
+        { q: "If 15% of a number is 45, what is the number?", options: ["300", "250", "450", "350"], ans: 0, subject: "Maths (Class 7)" },
+        { q: "Litmus indicator solution is naturally extracted from which organism?", options: ["Algae", "Lichen", "Bryophyte", "Fungi"], ans: 1, subject: "Chemistry (Class 7)" },
+        { q: "The instrument used in motor vehicles to record the distance traveled is called:", options: ["Speedometer", "Odometer", "Manometer", "Barometer"], ans: 1, subject: "Physics (Class 7)" },
+        { q: "Which blood vessels have thick elastic walls to carry oxygenated blood under high pressure away from the heart?", options: ["Veins", "Arteries", "Capillaries", "Vena Cava"], ans: 1, subject: "Biology (Class 7)" },
+        { q: "The value of (-1) raised to an odd positive integer power is:", options: ["1", "-1", "0", "Undefined"], ans: 1, subject: "Maths (Class 7)" }
+      ],
+      10: [
+        { q: "Which device is used to detect and confirm the presence of electric charge on a body?", options: ["Barometer", "Electroscope", "Ammeter", "Galvanometer"], ans: 1, subject: "Physics (Class 6)" },
+        { q: "What is the Roman numeral for 94?", options: ["XCIV", "CXIV", "LXXXXIV", "CIV"], ans: 0, subject: "Maths (Class 6)" },
+        { q: "The process by which plants lose water vapor through their leaf stomata is called:", options: ["Respiration", "Transpiration", "Condensation", "Guttation"], ans: 1, subject: "Science (Class 6)" },
+        { q: "The SI unit of length in the metric measurement system is:", options: ["Centimeter", "Kilometer", "Meter", "Millimeter"], ans: 2, subject: "Science (Class 6)" },
+        { q: "Which of the following is a prime number?", options: ["51", "57", "59", "63"], ans: 2, subject: "Maths (Class 6)" },
+        { q: "Earthworms breathe through which physiological structure?", options: ["Moist skin", "Trachea", "Gills", "Lungs"], ans: 0, subject: "Science (Class 6)" },
+        { q: "Which part of the electric bulb glows when electric current passes through it?", options: ["Glass casing", "Thick lead wires", "Thin tungsten filament", "Metal base"], ans: 2, subject: "Science (Class 6)" },
+        { q: "What is the HCF of 18 and 48?", options: ["3", "6", "9", "12"], ans: 1, subject: "Maths (Class 6)" },
+        { q: "A shadow is formed when a beam of light falls on:", options: ["A transparent object", "An opaque object", "A luminous flame", "Clean water"], ans: 1, subject: "Science (Class 6)" },
+        { q: "The boiling point of pure water under standard atmospheric pressure is:", options: ["0°C", "50°C", "100°C", "212°C"], ans: 2, subject: "Science (Class 6)" }
+      ],
+      11: [
+        { q: "The chemical formula of Plaster of Paris is:", options: ["CaSO4·2H2O", "CaSO4·½H2O", "CaSO4·H2O", "2CaSO4·H2O"], ans: 1, subject: "Chemistry (Class 10)" },
+        { q: "A convex mirror of focal length f produces an image 1/n times the size of the object. The distance of the object is:", options: ["(n - 1)f", "(n + 1)f", "(n - 1)/f", "f/n"], ans: 0, subject: "Physics (Class 10)" },
+        { q: "The modern periodic table organizes chemical elements based on their increasing:", options: ["Atomic mass", "Atomic number", "Valency", "Density"], ans: 1, subject: "Chemistry (Class 10)" },
+        { q: "If the perimeter and area of a circle are numerically equal, what is the radius of the circle?", options: ["2 units", "π units", "4 units", "7 units"], ans: 0, subject: "Maths (Class 10)" },
+        { q: "Which involuntary action is strictly coordinated by the medulla in the hindbrain?", options: ["Thinking", "Salivation and Vomiting", "Walking in a line", "Picking up a pencil"], ans: 1, subject: "Biology (Class 10)" },
+        { q: "Commercial electric energy unit kilowatt-hour (kWh) equals how many Joules?", options: ["3.6 × 10⁵ J", "3.6 × 10⁶ J", "36 × 10⁶ J", "1000 J"], ans: 1, subject: "Physics (Class 10)" },
+        { q: "The hydrocarbon with formula C3H6 belongs to which homologous series?", options: ["Alkane", "Alkene", "Alkyne", "Alcohol"], ans: 1, subject: "Chemistry (Class 10)" },
+        { q: "The probability of getting a prime number on throwing an unbiased six-sided die is:", options: ["1/6", "1/3", "1/2", "2/3"], ans: 2, subject: "Maths (Class 10)" },
+        { q: "Which endocrine gland is attached to the kidneys and secretes the fight-or-flight hormone?", options: ["Pituitary", "Adrenal", "Thyroid", "Thymus"], ans: 1, subject: "Biology (Class 10)" },
+        { q: "The split-ring commutator in an electric motor acts to:", options: ["Reverse current direction every half rotation", "Maintain constant voltage", "Produce magnetic field", "Prevent overheating"], ans: 0, subject: "Physics (Class 10)" }
+      ],
+      12: [
+        { q: "According to the 10% law of energy transfer in an ecosystem, if producers have 10,000 J of energy, the secondary consumers receive:", options: ["1000 J", "100 J", "10 J", "1 J"], ans: 1, subject: "Biology (Class 10)" },
+        { q: "The mean and mode of a frequency distribution are 28 and 16. Using empirical relation, the median is:", options: ["22", "24", "26", "20"], ans: 1, subject: "Maths (Class 10)" },
+        { q: "Which gas shields life on Earth from harmful solar ultraviolet (UV) radiation?", options: ["Carbon dioxide", "Oxygen", "Ozone (O3)", "Methane"], ans: 2, subject: "Science (Class 10)" },
+        { q: "How many electrons are shared in the formation of a single triple covalent bond in N2 molecule?", options: ["2", "4", "6", "3"], ans: 2, subject: "Chemistry (Class 10)" },
+        { q: "An electric iron draws 5 A of current from a 220 V supply line. The electrical power rating is:", options: ["44 W", "1100 W", "220 W", "550 W"], ans: 1, subject: "Physics (Class 10)" },
+        { q: "The pair of sex chromosomes present in a biological normal human male is:", options: ["XX", "XY", "YY", "XO"], ans: 1, subject: "Biology (Class 10)" },
+        { q: "The discriminant of the quadratic equation 3x² - 5x + 2 = 0 is:", options: ["1", "-1", "25", "49"], ans: 0, subject: "Maths (Class 10)" },
+        { q: "Which metal displacement reaction occurs spontaneously?", options: ["Cu + FeSO4", "Fe + CuSO4", "Ag + CuSO4", "Cu + ZnSO4"], ans: 1, subject: "Chemistry (Class 10)" },
+        { q: "Which optical phenomenon causes the twinkling of stars in the night sky?", options: ["Total internal reflection", "Atmospheric refraction", "Dispersion", "Scattering of light"], ans: 1, subject: "Physics (Class 10)" },
+        { q: "Which component of blood is primarily responsible for blood clotting at injury sites?", options: ["RBCs", "WBCs", "Platelets", "Plasma protein"], ans: 2, subject: "Biology (Class 10)" }
+      ],
+      13: [
+        { q: "Pressure exerted by a liquid on the base of a container depends on:", options: ["Height of liquid column", "Shape of container", "Volume of liquid", "Atmospheric color"], ans: 0, subject: "Physics (Class 8)" },
+        { q: "Which zone of a candle flame is the hottest and shows complete combustion?", options: ["Innermost dark zone", "Middle luminous yellow zone", "Outermost non-luminous blue zone", "Wick core"], ans: 2, subject: "Chemistry (Class 8)" },
+        { q: "What is the value of 5⁰ + 3⁰ - 7⁰?", options: ["0", "1", "2", "-1"], ans: 1, subject: "Maths (Class 8)" },
+        { q: "The female gamete produced by ovaries in humans is called:", options: ["Sperm", "Ovum (Egg)", "Zygote", "Embryo"], ans: 1, subject: "Biology (Class 8)" },
+        { q: "Friction always acts in a direction:", options: ["Parallel to velocity", "Opposite to the relative motion", "Perpendicular to surface", "Along the applied weight"], ans: 1, subject: "Physics (Class 8)" },
+        { q: "The voice box in humans which protrudes in adolescent males as Adam's apple is:", options: ["Pharynx", "Larynx", "Trachea", "Bronchus"], ans: 1, subject: "Biology (Class 8)" },
+        { q: "An iron nail dipped in copper sulfate solution changes the solution color from blue to:", options: ["Yellow", "Light Green", "Pink", "Colorless"], ans: 1, subject: "Chemistry (Class 7)" },
+        { q: "A dice is rolled once. What is the probability of rolling an odd composite number?", options: ["1/6 (which is 9)", "0", "1/6", "1/2"], ans: 1, subject: "Maths (Class 8)" },
+        { q: "The unit of electric potential difference is:", options: ["Ampere", "Volt", "Ohm", "Coulomb"], ans: 1, subject: "Physics (Class 10)" },
+        { q: "Which chemical compound causes permanent hardness in water?", options: ["Sodium chloride", "Calcium and magnesium sulfates/chlorides", "Calcium bicarbonate", "Potassium nitrate"], ans: 1, subject: "Chemistry (Class 9)" }
+      ],
+      14: [
+        { q: "The movement of food down the human esophagus into the stomach is propelled by:", options: ["Gravity alone", "Peristalsis", "Diffusion", "Osmosis"], ans: 1, subject: "Biology (Class 7)" },
+        { q: "The value of (-2)³ × (-3)² is:", options: ["-72", "72", "-36", "36"], ans: 0, subject: "Maths (Class 7)" },
+        { q: "Which of the following is an example of an exothermic reaction?", options: ["Photosynthesis", "Dissolving ammonium chloride", "Respiration", "Evaporation of water"], ans: 2, subject: "Science (Class 10)" },
+        { q: "The focal length of a plane mirror is:", options: ["Zero", "Infinity", "1 meter", "Negative"], ans: 1, subject: "Physics (Class 10)" },
+        { q: "What is the simplest form of the ratio 250 ml to 2 liters?", options: ["1 : 4", "1 : 8", "1 : 10", "1 : 5"], ans: 1, subject: "Maths (Class 6)" },
+        { q: "Plants synthesize carbohydrates via photosynthesis storing excess energy primarily as:", options: ["Glycogen", "Starch", "Cellulose", "Fructose"], ans: 1, subject: "Biology (Class 6)" },
+        { q: "Which gas extinguishes fire by cutting off oxygen contact?", options: ["Hydrogen", "Carbon dioxide", "Oxygen", "Methane"], ans: 1, subject: "Chemistry (Class 8)" },
+        { q: "A car travels 180 km in 3 hours. Its speed in SI units (m/s) is:", options: ["60 m/s", "16.67 m/s", "25 m/s", "20 m/s"], ans: 1, subject: "Physics (Class 9)" },
+        { q: "In human females, fertilisation of the egg by sperm normally occurs in the:", options: ["Uterus", "Fallopian tube (Oviduct)", "Ovary", "Cervix"], ans: 1, subject: "Biology (Class 10)" },
+        { q: "If x = 2 and y = -1, what is the value of 3x²y - 2xy²?", options: ["-16", "-12", "-8", "-14"], ans: 0, subject: "Maths (Class 8)" }
+      ],
+      15: [
+        { q: "The speed of light in a glass medium of refractive index 1.5 is: (c = 3 × 10⁸ m/s)", options: ["1.5 × 10⁸ m/s", "2.0 × 10⁸ m/s", "2.25 × 10⁸ m/s", "3.0 × 10⁸ m/s"], ans: 1, subject: "Physics (Class 10)" },
+        { q: "Which gas is formed when baking soda is heated or mixed with edible tartaric acid?", options: ["Oxygen", "Carbon monoxide", "Carbon dioxide", "Hydrogen"], ans: 2, subject: "Chemistry (Class 10)" },
+        { q: "The diagonal of a square is 10√2 cm. The perimeter of the square is:", options: ["20 cm", "40 cm", "50 cm", "80 cm"], ans: 1, subject: "Maths (Class 9)" },
+        { q: "A cross between a tall pea plant (TT) and a short pea plant (tt) produces F1 progeny that are:", options: ["All tall (Tt)", "All dwarf (tt)", "50% tall, 50% dwarf", "Medium height"], ans: 0, subject: "Biology (Class 10)" },
+        { q: "The force of attraction between two bodies of masses m1 and m2 separated by distance r is inversely proportional to:", options: ["r", "r²", "r³", "√r"], ans: 1, subject: "Physics (Class 9)" },
+        { q: "A solution turns red litmus blue. Its pH is likely to be:", options: ["1", "4", "5", "10"], ans: 3, subject: "Chemistry (Class 10)" },
+        { q: "If the radius of a cylinder is doubled and its height is halved, its curved surface area will:", options: ["Be halved", "Double", "Remain unchanged", "Quadruple"], ans: 2, subject: "Maths (Class 9)" },
+        { q: "The breakdown of pyruvate to give carbon dioxide, water and ATP energy takes place in:", options: ["Cytoplasm", "Mitochondria", "Chloroplast", "Nucleus"], ans: 1, subject: "Biology (Class 10)" },
+        { q: "A 100 W bulb operates on 220 V. The current drawn by the bulb is approximately:", options: ["0.45 A", "2.2 A", "4.5 A", "0.22 A"], ans: 0, subject: "Physics (Class 10)" },
+        { q: "Which element has electronic configuration 2, 8, 7?", options: ["Fluorine", "Chlorine", "Argon", "Sulfur"], ans: 1, subject: "Chemistry (Class 10)" }
+      ]
+    };
 
-    let currentServerState = null;
-    let activeQuestions = [];
-    let currentQuestionPointer = 0;
-    let studentChosenAnswers = {};
-    let isTestCurrentlyActive = false;
-    let antiCheatViolationCounter = 0;
-    let testExactStartTimestamp = 0;
-    let testCountdownIntervalHandle = null;
-    let testRemainingSeconds = 600;
-    let secretTapCount = 0;
-    let secretTapTimeout = null;
+    // --- 2. GLOBAL CONSTANTS & DEFAULT STATE ---
+    const ADMIN_PIN = "103695";
+    const LOBBY_DURATION_SEC = 20 * 60; // 20:00 (1200 seconds)
+    const QUIZ_DURATION_SEC = 10 * 60;  // 10:00 (600 seconds)
+    const REQUIRED_QUORUM = 20;
 
-    // --- BULLETPROOF CORS-SAFE API BRIDGE (POST + GET FALLBACK) ---
-    async function callApi(payload) {
+    const DEFAULT_STATE = {
+      round: 1,
+      status: "lobby", // 'lobby' | 'active' | 'cancelled' | 'completed'
+      lobbyStartTime: Date.now(),
+      quizStartTime: null,
+      participants: [],
+      winners: [], // Top 5: { id, name, phone, rank, prize, status: 'unpaid'|'paid'|'removed' }
+      refunds: [], // { id, name, phone, utr, amount: 50, reason, timestamp }
+      archives: [] // Audited past round history
+    };
+
+    // Current student active session in memory
+    let currentSession = {
+      studentId: null,
+      name: "",
+      phone: "",
+      utr: "",
+      answers: new Array(10).fill(null),
+      currentQuestionIdx: 0,
+      quizStartTime: null,
+      quizEndTime: null,
+      antiCheatViolations: 0,
+      disqualified: false,
+      submitted: false
+    };
+
+    let trophyTapCount = 0;
+    let trophyTapTimer = null;
+    let isAdminAuthenticated = false;
+    let clockInterval = null;
+
+    // --- 3. PERSISTENCE & LOCALSTORAGE SYNC ENGINE ---
+    function loadAppState() {
       try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload),
-          redirect: "follow"
-        });
-        if (!response.ok) throw new Error("HTTP Status " + response.status);
-        const data = await response.json();
-        return data;
-      } catch (err) {
-        try {
-          const getUrl = API_URL + "?data=" + encodeURIComponent(JSON.stringify(payload));
-          const response = await fetch(getUrl, { method: "GET", redirect: "follow" });
-          const data = await response.json();
-          return data;
-        } catch (err2) {
-          throw new Error("Server communication failed. Please check internet connection.");
-        }
-      }
-    }
-
-    // ==========================================
-    // SCREEN NAVIGATION & UTILITIES
-    // ==========================================
-    function switchScreen(screenId) {
-      const screens = [
-        "screen1Lobby", "screen2Payment", "screen3Verification", 
-        "screen4WaitingRoom", "screen5ActiveQuiz", "screen6Results", 
-        "screen7Cancelled", "screen8AdminDashboard"
-      ];
-      screens.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.add("hidden");
-      });
-      const target = document.getElementById(screenId);
-      if (target) target.classList.remove("hidden");
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function copyToClipboard(text, btnElement) {
-      navigator.clipboard.writeText(text).then(() => {
-        const original = btnElement.innerText;
-        btnElement.innerText = "✓";
-        setTimeout(() => { btnElement.innerText = original; }, 1500);
-      });
-    }
-
-    function handleAdminSecretTap() {
-      secretTapCount++;
-      clearTimeout(secretTapTimeout);
-      secretTapTimeout = setTimeout(() => { secretTapCount = 0; }, 1200);
-
-      if (secretTapCount >= 3) {
-        secretTapCount = 0;
-        openAdminAuthModal();
-      }
-    }
-
-    async function openAdminAuthModal() {
-      const pin = prompt("👑 Enter 6-Digit Admin Secret PIN:");
-      if (!pin) return;
-      try {
-        const res = await callApi({ action: "adminLogin", pin: pin.trim() });
-        if (res.ok && res.adminToken) {
-          adminToken = res.adminToken;
-          localStorage.setItem("cbse_admin_token", adminToken);
-          const btn = document.getElementById("adminHeaderBtn");
-          if (btn) btn.classList.remove("hidden");
-          switchScreen("screen8AdminDashboard");
-          adminPollState();
-        } else {
-          alert("❌ Access Denied: " + (res.error || "Incorrect PIN"));
+        const raw = localStorage.getItem("cbse_quiz_arena_master_state");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return { ...DEFAULT_STATE, ...parsed };
         }
       } catch (e) {
-        alert("❌ Error: " + e.message);
+        console.error("Failed to load local state", e);
+      }
+      return { ...DEFAULT_STATE };
+    }
+
+    function saveAppState(state) {
+      try {
+        localStorage.setItem("cbse_quiz_arena_master_state", JSON.stringify(state));
+      } catch (e) {
+        console.error("Failed to save local state", e);
       }
     }
 
-    // ==========================================
-    // REGISTRATION & UTR FLOW
-    // ==========================================
-    async function handleStudentInfoSubmit() {
-      const name = document.getElementById("inputStudentName").value.trim();
-      const phone = document.getElementById("inputStudentPhone").value.trim();
-      const btn = document.getElementById("btnSubmitStudentInfo");
+    let appState = loadAppState();
 
-      if (!name) { alert("Please enter Student Full Name!"); return; }
-      if (!/^[6-9]\d{9}$/.test(phone)) { alert("Please enter a valid 10-digit PhonePe number!"); return; }
-
-      btn.disabled = true;
-      btn.innerText = "Saving... ⏳";
-
-      try {
-        const res = await callApi({ action: "register", name, phone });
-        if (res.ok && res.token) {
-          studentToken = res.token;
-          localStorage.setItem("cbse_student_token", studentToken);
-          currentUserSession.name = name;
-          currentUserSession.phone = phone;
-
-          document.getElementById("displayVerifiedStudent").innerText = `${name} (${phone})`;
-          switchScreen("screen2Payment");
-        } else {
-          alert("Registration Notice: " + (res.error || "Unable to register"));
-        }
-      } catch (err) {
-        alert("Registration Error: " + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "Save Details & Proceed to Pay ₹50 ➔";
+    // Cross-tab Synchronization Event Listener (Prevents cycle-id mismatch across windows)
+    window.addEventListener("storage", (event) => {
+      if (event.key === "cbse_quiz_arena_master_state") {
+        appState = loadAppState();
+        handleStateUpdateNotification();
       }
-    }
+    });
 
-    async function handleUtrSubmission() {
-      const utr = document.getElementById("inputUtrNumber").value.trim();
-      const btn = document.getElementById("btnSubmitUtr");
+    // --- 4. TOAST NOTIFICATION UTILITY ---
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `px-4 py-2.5 rounded-xl text-xs font-bold shadow-xl border pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0 flex items-center gap-2 ${
+        type === "success" ? "bg-emerald-950 border-emerald-500 text-emerald-200" :
+        type === "error" ? "bg-rose-950 border-rose-500 text-rose-200" :
+        type === "warning" ? "bg-amber-950 border-amber-500 text-amber-200" :
+        "bg-slate-900 border-slate-700 text-slate-200"
+      }`;
+      toast.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}</span><span>${message}</span>`;
+      container.appendChild(toast);
 
-      if (!/^\d{12}$/.test(utr)) {
-        alert("UTR must be exactly 12 numeric digits!");
-        return;
-      }
-
-      btn.disabled = true;
-      btn.innerText = "Submitting... ⏳";
-
-      try {
-        const res = await callApi({ action: "submitUTR", token: studentToken, utr: utr });
-        if (res.ok) {
-          currentUserSession.utr = utr;
-          document.getElementById("verifDisplayStudent").innerText = currentUserSession.name || "Student";
-          document.getElementById("verifDisplayPhone").innerText = currentUserSession.phone || "PhonePe";
-          document.getElementById("verifDisplayUtr").innerText = utr;
-
-          switchScreen("screen3Verification");
-          pollBackendState();
-        } else {
-          alert("UTR Notice: " + (res.error || "Failed to submit"));
-        }
-      } catch (err) {
-        alert("Submission Error: " + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "Submit UTR for Verification ➔";
-      }
-    }
-
-    // ==========================================
-    // REAL-TIME STATE SYNC & LOBBY TICKER
-    // ==========================================
-    async function pollBackendState() {
-      try {
-        const res = await callApi({ action: "getState", token: studentToken });
-        if (!res.ok) return;
-
-        currentServerState = res;
-        const round = res.round;
-        const part = res.participant;
-
-        document.getElementById("roundHeaderBadge").innerText = `ROUND ${round.round}`;
-        document.getElementById("adminActiveRoundLabel").innerText = `Round ${round.round}`;
-
-        if (round.lobbyStarted && round.lobbyDuration) {
-          const elapsed = Math.floor((Date.now() - Number(round.lobbyStarted)) / 1000);
-          let rem = Number(round.lobbyDuration) - elapsed;
-          if (rem < 0) rem = 0;
-          const m = String(Math.floor(rem / 60)).padStart(2, '0');
-          const s = String(rem % 60).padStart(2, '0');
-          document.getElementById("landingPageCountdown").innerText = `${m}:${s}`;
-          document.getElementById("waitingRoomCountdown").innerText = `${m}:${s}`;
-        }
-
-        const approvedCount = (res.counts && res.counts.approved) || 0;
-        document.getElementById("approvedPlayerCountDisplay").innerText = approvedCount;
-        document.getElementById("lobbyProgressBar").style.width = `${Math.min(100, Math.floor((approvedCount / 20) * 100))}%`;
-
-        if (part) {
-          if (part.status === "APPROVED") {
-            const isWaitingHidden = document.getElementById("screen4WaitingRoom").classList.contains("hidden");
-            const isQuizHidden = document.getElementById("screen5ActiveQuiz").classList.contains("hidden");
-            if (isWaitingHidden && isQuizHidden) {
-              switchScreen("screen4WaitingRoom");
-            }
-          } else if (part.status === "REJECTED") {
-            alert("❌ Payment Rejected! Fake or invalid UTR. Re-check your PhonePe.");
-            switchScreen("screen2Payment");
-          } else if (part.status === "CANCELLED" || round.status === "CANCELLED") {
-            document.getElementById("cancelledStudentPhoneDisplay").innerText = part.phone || "";
-            switchScreen("screen7Cancelled");
-          }
-
-          if (round.status === "QUIZ" && (part.status === "APPROVED" || part.status === "QUIZ")) {
-            if (!isTestCurrentlyActive && part.status !== "FINISHED" && part.status !== "DISQUALIFIED") {
-              startStudentQuiz(res.questions);
-            }
-          }
-
-          if (part.status === "FINISHED" || part.status === "DISQUALIFIED") {
-            renderTestSummary(part, res.standings);
-          }
-        }
-
-        renderLeaderboard(res.standings || []);
-      } catch (e) {}
-    }
-
-    // ==========================================
-    // ACTIVE QUIZ ENGINE & ANTI-CHEAT
-    // ==========================================
-    async function startStudentQuiz(questions) {
-      if (!questions || questions.length === 0) return;
-      isTestCurrentlyActive = true;
-      activeQuestions = questions;
-      studentChosenAnswers = {};
-      currentQuestionPointer = 0;
-      antiCheatViolationCounter = 0;
-
-      try {
-        await callApi({ action: "startQuiz", token: studentToken });
-      } catch (e) {}
-
-      document.getElementById("activeTestLiveTimerBadge").classList.remove("hidden");
-      switchScreen("screen5ActiveQuiz");
-      testExactStartTimestamp = performance.now();
-      testRemainingSeconds = 600;
-
-      clearInterval(testCountdownIntervalHandle);
-      testCountdownIntervalHandle = setInterval(() => {
-        testRemainingSeconds--;
-        const m = String(Math.floor(testRemainingSeconds / 60)).padStart(2, '0');
-        const s = String(testRemainingSeconds % 60).padStart(2, '0');
-        document.getElementById("activeQuizClockBadge").innerText = `${m}:${s}`;
-        document.getElementById("activeTestLiveTimerBadge").innerText = `${m}:${s}`;
-
-        if (testRemainingSeconds <= 0) {
-          clearInterval(testCountdownIntervalHandle);
-          finishStudentQuiz(false);
-        }
-      }, 1000);
-
-      renderCurrentQuestionCard();
-    }
-
-    function renderCurrentQuestionCard() {
-      const q = activeQuestions[currentQuestionPointer];
-      document.getElementById("activeQuestionCounter").innerText = `Question ${currentQuestionPointer + 1} / 10`;
-      document.getElementById("activeSubjectBadge").innerText = q.subject || "Science";
-      document.getElementById("activeQuestionPrompt").innerText = q.q;
-
-      const optsBox = document.getElementById("activeQuizOptionsWrapper");
-      optsBox.innerHTML = "";
-
-      q.options.forEach((optText, oIdx) => {
-        const isSelected = studentChosenAnswers[q.id] === oIdx;
-        const btn = document.createElement("button");
-        btn.className = `w-full text-left p-3.5 rounded-xl border text-xs font-semibold transition ${
-          isSelected 
-            ? "bg-amber-400 text-slate-950 font-bold border-amber-300 ring-2 ring-amber-400" 
-            : "bg-slate-950 border-slate-800 text-slate-200 hover:bg-slate-850"
-        }`;
-        btn.innerText = `${String.fromCharCode(65 + oIdx)}. ${optText}`;
-        btn.onclick = () => {
-          optsBox.style.pointerEvents = "none";
-          studentChosenAnswers[q.id] = oIdx;
-          callApi({ action: "saveAnswer", token: studentToken, questionId: q.id, answerIndex: oIdx });
-          renderCurrentQuestionCard();
-          setTimeout(() => { optsBox.style.pointerEvents = "auto"; }, 150);
-        };
-        optsBox.appendChild(btn);
+      requestAnimationFrame(() => {
+        toast.classList.remove("translate-y-2", "opacity-0");
       });
 
-      document.getElementById("btnPrevQuestion").disabled = currentQuestionPointer === 0;
-      if (currentQuestionPointer === 9) {
-        document.getElementById("btnNextQuestion").classList.add("hidden");
-        document.getElementById("btnSubmitTestFinal").classList.remove("hidden");
+      setTimeout(() => {
+        toast.classList.add("translate-y-2", "opacity-0");
+        setTimeout(() => toast.remove(), 350);
+      }, 3000);
+    }
+
+    function copyText(text, msg = "Copied to clipboard!") {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(msg, "success");
+      }).catch(() => {
+        // Fallback
+        const el = document.createElement("textarea");
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        showToast(msg, "success");
+      });
+    }
+
+    // --- 5. SCREEN VIEW CONTROLLER ---
+    function showScreen(screenId) {
+      document.querySelectorAll(".screen-view").forEach(el => el.classList.add("hidden"));
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Quiz header clock toggle
+      const quizHeaderTimer = document.getElementById("quiz-header-timer");
+      if (screenId === "screen-quiz") {
+        quizHeaderTimer.classList.remove("hidden");
+        quizHeaderTimer.classList.add("flex");
       } else {
-        document.getElementById("btnNextQuestion").classList.remove("hidden");
-        document.getElementById("btnSubmitTestFinal").classList.add("hidden");
+        quizHeaderTimer.classList.add("hidden");
+        quizHeaderTimer.classList.remove("flex");
       }
     }
 
-    function navigateActiveQuestion(step) {
-      currentQuestionPointer += step;
-      if (currentQuestionPointer < 0) currentQuestionPointer = 0;
-      if (currentQuestionPointer > 9) currentQuestionPointer = 9;
-      renderCurrentQuestionCard();
+    // --- 6. TIMERS AND CLOCKS ENGINE ---
+    function formatTime(seconds) {
+      const s = Math.max(0, Math.floor(seconds));
+      const m = Math.floor(s / 60);
+      const remS = s % 60;
+      return `${String(m).padStart(2, '0')}:${String(remS).padStart(2, '0')}`;
     }
 
-    window.addEventListener("blur", handleAntiCheatViolation);
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) handleAntiCheatViolation();
-    });
-    window.addEventListener("resize", () => {
-      if (isTestCurrentlyActive && window.innerHeight < screen.height * 0.55) {
-        handleAntiCheatViolation();
-      }
-    });
+    function startSystemClock() {
+      if (clockInterval) clearInterval(clockInterval);
 
-    async function handleAntiCheatViolation() {
-      if (!isTestCurrentlyActive) return;
-      antiCheatViolationCounter++;
-      if (antiCheatViolationCounter === 1) {
-        document.getElementById("activeCheatWarningAlert").classList.remove("hidden");
-        alert("⚠️ ANTI-CHEAT VIOLATION DETECTED!\nSplit-screen, window blur, or tab switch detected.\nNext violation causes immediate DISQUALIFICATION!");
-      } else if (antiCheatViolationCounter >= 2) {
-        alert("❌ DISQUALIFIED: Multiple cheating attempts detected. Auto-submitting 0 score.");
-        finishStudentQuiz(true);
-      }
-    }
+      clockInterval = setInterval(() => {
+        const now = Date.now();
 
-    async function finishStudentQuiz(isDisqualified = false) {
-      isTestCurrentlyActive = false;
-      clearInterval(testCountdownIntervalHandle);
-      document.getElementById("activeTestLiveTimerBadge").classList.add("hidden");
+        // 1. Lobby Countdown Engine
+        if (appState.status === "lobby") {
+          const elapsedSec = Math.floor((now - appState.lobbyStartTime) / 1000);
+          const remainingSec = Math.max(0, LOBBY_DURATION_SEC - elapsedSec);
 
-      if (isDisqualified) {
-        try { await callApi({ action: "antiCheat", token: studentToken }); } catch (e) {}
-      }
+          const timeFormatted = formatTime(remainingSec);
+          const regElem = document.getElementById("lobby-countdown-reg");
+          const waitingElem = document.getElementById("lobby-countdown-waiting");
+          if (regElem) regElem.textContent = timeFormatted;
+          if (waitingElem) waitingElem.textContent = timeFormatted;
 
-      try {
-        const res = await callApi({ action: "finishQuiz", token: studentToken, answers: studentChosenAnswers });
-        if (res.ok && res.participant) {
-          renderTestSummary(res.participant, res.standings || []);
+          // Check automatic timer conclusion
+          if (remainingSec <= 0) {
+            handleLobbyCountdownExpiry();
+          }
         }
-      } catch (e) {}
 
-      switchScreen("screen6Results");
+        // 2. Active Quiz Countdown Engine
+        if (appState.status === "active") {
+          const elapsedQuizSec = Math.floor((now - appState.quizStartTime) / 1000);
+          const remainingQuizSec = Math.max(0, QUIZ_DURATION_SEC - elapsedQuizSec);
+          const quizFormatted = formatTime(remainingQuizSec);
+
+          const quizActiveElem = document.getElementById("quiz-active-timer");
+          const quizHeaderElem = document.getElementById("quiz-header-clock");
+          if (quizActiveElem) quizActiveElem.textContent = quizFormatted;
+          if (quizHeaderElem) quizHeaderElem.textContent = quizFormatted;
+
+          // Auto submit active quiz when 10:00 runs out
+          if (remainingQuizSec <= 0 && currentSession.submitted === false && currentSession.studentId) {
+            submitQuizAnswers(true);
+          }
+        }
+
+        // Update UI dynamically
+        updateWaitingLobbyCounters();
+      }, 1000);
     }
 
-    function renderTestSummary(part, standings) {
-      document.getElementById("userScoreDisplay").innerText = `${part.score || 0} / 10`;
-      document.getElementById("userTimeDisplay").innerText = `Time Taken: ${Number(part.timeTaken || 0).toFixed(2)}s`;
-
-      if (part.disqualified) {
-        document.getElementById("resultStatusEmoji").innerText = "❌";
-        document.getElementById("resultStatusHeading").innerText = "Disqualified (Cheating)";
+    function handleLobbyCountdownExpiry() {
+      const approvedCount = appState.participants.filter(p => p.status === "approved").length;
+      if (approvedCount >= REQUIRED_QUORUM) {
+        // Quorum reached -> Auto start quiz
+        adminTriggerStartQuiz();
+      } else {
+        // Quorum not reached -> Cancel round and refund all
+        adminCancelAndRefund("Lobby timer expired with fewer than 20 approved participants.");
       }
-
-      if (part.answerKey && part.answerKey.length > 0) {
-        const box = document.getElementById("detailedAnswerKeyBox");
-        box.innerHTML = "";
-        part.answerKey.forEach((item, idx) => {
-          const chosenIdx = part.answers ? part.answers[item.id] : undefined;
-          const isCorrect = Number(chosenIdx) === Number(item.answer);
-          const chosenText = chosenIdx !== undefined ? item.options[chosenIdx] : "Unanswered";
-          const correctText = item.options[item.answer];
-
-          const div = document.createElement("div");
-          div.className = `p-3 rounded-xl border text-xs space-y-1 ${isCorrect ? 'bg-emerald-950/40 border-emerald-600/40' : 'bg-red-950/40 border-red-600/40'}`;
-          div.innerHTML = `
-            <div class="flex justify-between font-bold">
-              <span class="text-white">Q${idx + 1}. ${item.q}</span>
-              <span>${isCorrect ? '✅ Correct' : '❌ Wrong'}</span>
-            </div>
-            <p class="${isCorrect ? 'text-emerald-300' : 'text-red-300'}">Your Choice: ${chosenText}</p>
-            ${!isCorrect ? `<p class="text-emerald-400 font-bold">Correct Answer: ${correctText}</p>` : ''}
-          `;
-          box.appendChild(div);
-        });
-      }
-
-      renderLeaderboard(standings);
     }
 
-    function renderLeaderboard(standings) {
-      const box = document.getElementById("fullLeaderboardBox");
-      if (!box) return;
-      if (!standings || standings.length === 0) {
-        box.innerHTML = "<p class='text-xs text-slate-500 text-center py-2'>Standings will appear shortly...</p>";
+    // --- 7. REGISTRATION & PAYMENT USER FLOW ---
+    document.getElementById("reg-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("reg-name").value.trim();
+      const phone = document.getElementById("reg-phone").value.trim();
+
+      if (!name || phone.length !== 10 || isNaN(phone)) {
+        showToast("Please enter a valid Full Name and 10-digit PhonePe number.", "error");
         return;
       }
 
-      box.innerHTML = "";
-      const prizeTiers = ["₹300 🥇", "₹200 🥈", "₹150 🥉", "₹100 🎖️", "₹50 🎖️"];
+      currentSession.name = name;
+      currentSession.phone = phone;
 
-      standings.forEach((player, idx) => {
-        const isWinner = idx < 5;
-        const row = document.createElement("div");
-        row.className = `p-2.5 rounded-xl border flex justify-between items-center ${isWinner ? 'bg-slate-900 border-amber-500/60 ring-1 ring-amber-500/30' : 'bg-slate-950 border-slate-800'}`;
-        row.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="font-black ${idx === 0 ? 'text-amber-400' : 'text-slate-400'}">#${idx + 1}</span>
-            <div>
-              <p class="font-bold text-white text-xs">${player.name} ${isWinner ? `<span class="text-amber-400 font-bold">(${prizeTiers[idx]})</span>` : ''}</p>
-              <p class="text-[10px] text-slate-400">⏱️ ${Number(player.timeTaken || 0).toFixed(2)}s</p>
-            </div>
+      // Update Screen 2 links
+      const upiUrl = `upi://pay?pa=7756804720@ybl&pn=CBSE%20Quiz%20Master&am=50`;
+      document.getElementById("upi-intent-link").href = upiUrl;
+      document.getElementById("upi-qr-image").src = `https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(upiUrl)}`;
+
+      showScreen("screen-payment");
+    });
+
+    document.getElementById("utr-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const utr = document.getElementById("input-utr").value.trim();
+
+      if (utr.length !== 12 || isNaN(utr)) {
+        showToast("Please enter a valid 12-digit numeric UTR/Transaction ID.", "error");
+        return;
+      }
+
+      // Check duplicate UTR in round
+      const exists = appState.participants.some(p => p.utr === utr);
+      if (exists) {
+        showToast("This UTR has already been submitted for this round.", "warning");
+        return;
+      }
+
+      const newId = "STU_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+      currentSession.studentId = newId;
+      currentSession.utr = utr;
+
+      const participant = {
+        id: newId,
+        name: currentSession.name,
+        phone: currentSession.phone,
+        utr: utr,
+        status: "pending", // 'pending' | 'approved' | 'rejected'
+        registeredAt: Date.now(),
+        score: 0,
+        timeTakenSec: 0,
+        disqualified: false,
+        answers: []
+      };
+
+      appState.participants.push(participant);
+      saveAppState(appState);
+
+      // Render Verification Screen
+      document.getElementById("gateway-name").textContent = currentSession.name;
+      document.getElementById("gateway-phone").textContent = currentSession.phone;
+      document.getElementById("gateway-utr").textContent = utr;
+      document.getElementById("gateway-status").textContent = "Awaiting Admin Approval";
+
+      showScreen("screen-verification");
+      showToast("UTR submitted successfully! Awaiting verification.", "success");
+      renderAdminPendingUtrs();
+    });
+
+    // --- 8. STATE UPDATE NOTIFICATION & TRANSITION DISPATCHER ---
+    function handleStateUpdateNotification() {
+      // 1. Sync Active Round Badge
+      const roundBadge = document.getElementById("active-round-badge");
+      if (roundBadge) roundBadge.textContent = `ROUND ${appState.round}`;
+
+      const adminRoundIndicator = document.getElementById("admin-round-indicator");
+      if (adminRoundIndicator) adminRoundIndicator.textContent = `ROUND ${appState.round}`;
+
+      // 2. If student is on Verification screen, check if approved
+      if (currentSession.studentId) {
+        const student = appState.participants.find(p => p.id === currentSession.studentId);
+        if (student) {
+          if (student.status === "approved") {
+            const currentActiveScreen = document.querySelector(".screen-view:not(.hidden)");
+            if (currentActiveScreen && currentActiveScreen.id === "screen-verification") {
+              showToast("Your payment has been Approved! Welcome to Lobby.", "success");
+              showScreen("screen-waiting-lobby");
+            }
+          } else if (student.status === "rejected") {
+            showToast("Your UTR submission was rejected by the admin.", "error");
+            showScreen("screen-payment");
+          }
+        }
+      }
+
+      // 3. If student is in waiting lobby and round is now ACTIVE -> Move to Quiz
+      if (appState.status === "active") {
+        const currentActiveScreen = document.querySelector(".screen-view:not(.hidden)");
+        if (currentActiveScreen && (currentActiveScreen.id === "screen-waiting-lobby" || currentActiveScreen.id === "screen-verification")) {
+          startStudentQuiz();
+        }
+      }
+
+      // 4. If round is CANCELLED -> Move to Cancelled/Refund screen
+      if (appState.status === "cancelled") {
+        const currentActiveScreen = document.querySelector(".screen-view:not(.hidden)");
+        if (currentActiveScreen && currentActiveScreen.id !== "screen-cancelled") {
+          document.getElementById("refund-display-phone").textContent = currentSession.phone || "your registered number";
+          showScreen("screen-cancelled");
+        }
+      }
+
+      // 5. Update waiting counters
+      updateWaitingLobbyCounters();
+
+      // 6. Update Admin and Results tables safely
+      renderAdminPendingUtrs();
+      renderAdminWinners();
+      renderAdminRefunds();
+      renderStandingsTable();
+    }
+
+    function updateWaitingLobbyCounters() {
+      const approvedCount = appState.participants.filter(p => p.status === "approved").length;
+      const counterElem = document.getElementById("waiting-counter");
+      const progressElem = document.getElementById("waiting-progress-bar");
+      const whatsappBtn = document.getElementById("whatsapp-invite-btn");
+
+      if (counterElem) counterElem.textContent = `${approvedCount} / ${REQUIRED_QUORUM} Required`;
+      if (progressElem) {
+        const pct = Math.min(100, Math.round((approvedCount / REQUIRED_QUORUM) * 100));
+        progressElem.style.width = `${Math.max(5, pct)}%`;
+      }
+
+      if (whatsappBtn) {
+        const msg = encodeURIComponent(
+          `🔥 Join CBSE Mega Quiz Arena (Class 6-10)! ₹1,000 Cash Prize Pool (1st: ₹300). Entry ₹50 with 100% refund guarantee if <20 players. Currently ${approvedCount}/20 joined. Start now!`
+        );
+        whatsappBtn.href = `https://api.whatsapp.com/send?text=${msg}`;
+      }
+    }
+
+    // --- 9. QUIZ ARENA & ANTI-CHEAT ENGINE ---
+    function startStudentQuiz() {
+      currentSession.quizStartTime = performance.now();
+      currentSession.currentQuestionIdx = 0;
+      currentSession.answers = new Array(10).fill(null);
+      currentSession.antiCheatViolations = 0;
+      currentSession.disqualified = false;
+      currentSession.submitted = false;
+
+      renderQuizQuestion();
+      showScreen("screen-quiz");
+      showToast("Quiz Round Started! 10 Questions, 10 Minutes.", "info");
+    }
+
+    function getRoundQuestions() {
+      const r = appState.round;
+      return QUESTION_BANK[r] || QUESTION_BANK[1];
+    }
+
+    function renderQuizQuestion() {
+      const questions = getRoundQuestions();
+      const idx = currentSession.currentQuestionIdx;
+      const item = questions[idx];
+
+      document.getElementById("quiz-question-counter").textContent = `Question ${idx + 1} of 10`;
+      document.getElementById("quiz-subject-badge").textContent = item.subject;
+      document.getElementById("quiz-question-text").textContent = `${idx + 1}. ${item.q}`;
+
+      const container = document.getElementById("quiz-options-container");
+      container.innerHTML = "";
+
+      item.options.forEach((optText, optIdx) => {
+        const btn = document.createElement("button");
+        const isSelected = currentSession.answers[idx] === optIdx;
+        btn.className = `w-full text-left p-3.5 sm:p-4 rounded-xl border text-xs sm:text-sm font-medium transition-all flex items-center justify-between ${
+          isSelected
+            ? "bg-indigo-600/30 border-indigo-500 text-indigo-100 shadow-md ring-1 ring-indigo-500"
+            : "bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-850 hover:border-slate-700"
+        }`;
+        btn.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+              isSelected ? "bg-indigo-500 text-white" : "bg-slate-800 text-slate-400"
+            }">${String.fromCharCode(65 + optIdx)}</span>
+            <span>${optText}</span>
           </div>
-          <div class="text-right">
-            <span class="font-black text-emerald-400">${player.score} / 10</span>
-            <p class="text-[9px] ${player.disqualified ? 'text-red-400' : 'text-slate-500'}">${player.disqualified ? 'DISQUALIFIED' : 'ACTIVE'}</p>
+          ${isSelected ? '<span class="text-indigo-400 font-bold">●</span>' : ''}
+        `;
+        btn.onclick = () => selectOption(idx, optIdx);
+        container.appendChild(btn);
+      });
+
+      // Update Navigation Buttons
+      const prevBtn = document.getElementById("btn-quiz-prev");
+      const nextBtn = document.getElementById("btn-quiz-next");
+
+      prevBtn.disabled = (idx === 0);
+      if (idx === 9) {
+        nextBtn.innerHTML = `<span>Submit Quiz Answers ✅</span>`;
+        nextBtn.className = "px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-md shadow-emerald-600/30";
+      } else {
+        nextBtn.innerHTML = `<span>Next →</span>`;
+        nextBtn.className = "px-5 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-md shadow-indigo-600/30";
+      }
+    }
+
+    function selectOption(qIdx, optIdx) {
+      if (currentSession.submitted || currentSession.disqualified) return;
+      currentSession.answers[qIdx] = optIdx;
+      renderQuizQuestion();
+    }
+
+    document.getElementById("btn-quiz-prev").addEventListener("click", () => {
+      if (currentSession.currentQuestionIdx > 0) {
+        currentSession.currentQuestionIdx--;
+        renderQuizQuestion();
+      }
+    });
+
+    document.getElementById("btn-quiz-next").addEventListener("click", () => {
+      if (currentSession.currentQuestionIdx < 9) {
+        currentSession.currentQuestionIdx++;
+        renderQuizQuestion();
+      } else {
+        // Last question -> Submit
+        submitQuizAnswers(false);
+      }
+    });
+
+    // Anti-Cheat Engine Handlers
+    window.addEventListener("visibilitychange", handleAntiCheatTrigger);
+    window.addEventListener("blur", handleAntiCheatTrigger);
+
+    function handleAntiCheatTrigger() {
+      const activeScreen = document.querySelector(".screen-view:not(.hidden)");
+      if (!activeScreen || activeScreen.id !== "screen-quiz") return;
+      if (currentSession.submitted || currentSession.disqualified) return;
+
+      currentSession.antiCheatViolations++;
+
+      if (currentSession.antiCheatViolations === 1) {
+        document.getElementById("anti-cheat-overlay").classList.remove("hidden");
+      } else if (currentSession.antiCheatViolations >= 2) {
+        currentSession.disqualified = true;
+        showToast("Disqualified! 2nd violation detected. Auto-submitting with 0 score.", "error");
+        submitQuizAnswers(true);
+      }
+    }
+
+    function dismissAntiCheatWarning() {
+      document.getElementById("anti-cheat-overlay").classList.add("hidden");
+    }
+
+    // Submit Answers and Compute Score
+    function submitQuizAnswers(forcedDisqualification = false) {
+      if (currentSession.submitted) return;
+      currentSession.submitted = true;
+      currentSession.quizEndTime = performance.now();
+
+      const questions = getRoundQuestions();
+      let calculatedScore = 0;
+
+      if (!forcedDisqualification && !currentSession.disqualified) {
+        questions.forEach((item, index) => {
+          if (currentSession.answers[index] === item.ans) {
+            calculatedScore++;
+          }
+        });
+      } else {
+        calculatedScore = 0;
+      }
+
+      const totalTimeMs = Math.max(100, currentSession.quizEndTime - (currentSession.quizStartTime || currentSession.quizEndTime));
+      const totalTimeSec = (totalTimeMs / 1000);
+
+      // Save into appState participant
+      if (currentSession.studentId) {
+        const p = appState.participants.find(item => item.id === currentSession.studentId);
+        if (p) {
+          p.score = calculatedScore;
+          p.timeTakenSec = parseFloat(totalTimeSec.toFixed(3));
+          p.disqualified = currentSession.disqualified || forcedDisqualification;
+          p.answers = [...currentSession.answers];
+          p.submittedAt = Date.now();
+        }
+      }
+
+      computeWinnersAndPayouts();
+      saveAppState(appState);
+
+      // Render Screen 6 (Results)
+      renderStudentResults(calculatedScore, totalTimeSec, forcedDisqualification || currentSession.disqualified);
+      showScreen("screen-results");
+    }
+
+    function renderStudentResults(score, timeSec, isDisqualified) {
+      document.getElementById("result-score").textContent = isDisqualified ? "DISQUALIFIED (0)" : `${score} / 10`;
+      document.getElementById("result-time").textContent = `${timeSec.toFixed(3)}s`;
+
+      // Answer Key Render
+      const questions = getRoundQuestions();
+      const container = document.getElementById("result-answer-key");
+      container.innerHTML = "";
+
+      questions.forEach((q, idx) => {
+        const studentChoice = currentSession.answers[idx];
+        const isCorrect = (!isDisqualified && studentChoice === q.ans);
+        const card = document.createElement("div");
+        card.className = `p-3 rounded-xl border text-xs ${
+          isCorrect ? "bg-emerald-950/40 border-emerald-500/30" : "bg-rose-950/40 border-rose-500/30"
+        }`;
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <span class="font-bold text-slate-200">${idx + 1}. ${q.q}</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+              isCorrect ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"
+            }">${isCorrect ? "CORRECT ✓" : "INCORRECT ✕"}</span>
+          </div>
+          <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px]">
+            <div class="text-slate-400">Your Answer: <span class="font-semibold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'}">${studentChoice !== null ? q.options[studentChoice] : 'Not Answered'}</span></div>
+            <div class="text-slate-400">Correct Answer: <span class="font-semibold text-emerald-400">${q.options[q.ans]}</span></div>
           </div>
         `;
-        box.appendChild(row);
+        container.appendChild(card);
+      });
+
+      renderStandingsTable();
+    }
+
+    // --- 10. LEADERBOARD COMPUTATION & TIE BREAKING ---
+    function computeWinnersAndPayouts() {
+      // Sort approved participants: Disqualified last, then Score DESC, then Time Taken ASC
+      const validParticipants = appState.participants.filter(p => p.status === "approved");
+
+      validParticipants.sort((a, b) => {
+        if (a.disqualified && !b.disqualified) return 1;
+        if (!a.disqualified && b.disqualified) return -1;
+        if (b.score !== a.score) return b.score - a.score;
+        return a.timeTakenSec - b.timeTakenSec;
+      });
+
+      // Prize tiers: Rank 1: ₹300, Rank 2: ₹200, Rank 3: ₹150, Rank 4: ₹100, Rank 5: ₹50
+      const PRIZES = [300, 200, 150, 100, 50];
+
+      // Maintain existing paid or removed statuses to avoid flicker
+      const currentWinnersMap = new Map();
+      appState.winners.forEach(w => currentWinnersMap.set(w.id, w));
+
+      const updatedWinners = [];
+      for (let i = 0; i < Math.min(5, validParticipants.length); i++) {
+        const p = validParticipants[i];
+        if (p.disqualified) continue; // Disqualified students are excluded from cash prizes
+
+        const existing = currentWinnersMap.get(p.id);
+        updatedWinners.push({
+          id: p.id,
+          name: p.name,
+          phone: p.phone,
+          utr: p.utr,
+          rank: i + 1,
+          score: p.score,
+          timeTakenSec: p.timeTakenSec,
+          prize: PRIZES[i] || 0,
+          status: existing ? existing.status : "unpaid"
+        });
+      }
+
+      appState.winners = updatedWinners;
+
+      // Check if current user is top 5
+      if (currentSession.studentId) {
+        const inTop5 = updatedWinners.some(w => w.id === currentSession.studentId);
+        const alertBox = document.getElementById("result-prize-alert");
+        if (alertBox) {
+          if (inTop5) alertBox.classList.remove("hidden");
+          else alertBox.classList.add("hidden");
+        }
+      }
+    }
+
+    // --- 11. NON-FLICKERING DOM DIFFING RENDERING (ADMIN & LEADERBOARD) ---
+
+    // Standings Table
+    function renderStandingsTable() {
+      const tbody = document.getElementById("standings-table-body");
+      if (!tbody) return;
+
+      const validParticipants = appState.participants.filter(p => p.status === "approved");
+      validParticipants.sort((a, b) => {
+        if (a.disqualified && !b.disqualified) return 1;
+        if (!a.disqualified && b.disqualified) return -1;
+        if (b.score !== a.score) return b.score - a.score;
+        return a.timeTakenSec - b.timeTakenSec;
+      });
+
+      if (validParticipants.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-500 italic">No approved submissions yet.</td></tr>`;
+        return;
+      }
+
+      const PRIZE_TAGS = ["₹300 🥇", "₹200 🥈", "₹150 🥉", "₹100 🎖️", "₹50 🎖️"];
+
+      // Reconcile rows
+      tbody.innerHTML = "";
+      validParticipants.forEach((p, idx) => {
+        const tr = document.createElement("tr");
+        const isCurrent = (p.id === currentSession.studentId);
+        const isTop5 = idx < 5 && !p.disqualified;
+
+        tr.className = `${isCurrent ? 'bg-indigo-950/40 font-bold' : ''} hover:bg-slate-900/50 transition-colors`;
+        tr.innerHTML = `
+          <td class="py-2.5 px-3">
+            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-mono font-bold ${
+              idx === 0 ? 'bg-amber-500 text-slate-950' :
+              idx === 1 ? 'bg-slate-300 text-slate-950' :
+              idx === 2 ? 'bg-amber-700 text-white' :
+              'bg-slate-800 text-slate-300'
+            }">${idx + 1}</span>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="flex items-center gap-1.5">
+              <span>${p.name}</span>
+              ${p.disqualified ? '<span class="text-[9px] px-1 rounded bg-rose-500/20 text-rose-400 font-bold">DISQUALIFIED</span>' : ''}
+              ${isCurrent ? '<span class="text-[9px] px-1 rounded bg-indigo-500 text-white font-bold">YOU</span>' : ''}
+            </div>
+          </td>
+          <td class="py-2.5 px-3 font-mono font-bold ${p.disqualified ? 'text-rose-400' : 'text-emerald-400'}">${p.score}/10</td>
+          <td class="py-2.5 px-3 font-mono text-slate-400">${p.timeTakenSec.toFixed(3)}s</td>
+          <td class="py-2.5 px-3 text-right font-bold ${isTop5 ? 'text-amber-400' : 'text-slate-500'}">
+            ${isTop5 ? PRIZE_TAGS[idx] : '-'}
+          </td>
+        `;
+        tbody.appendChild(tr);
       });
     }
 
-    // ==========================================
-    // ADMIN ACTIONS & BACKEND SYNC
-    // ==========================================
-    async function adminPollState() {
-      if (!adminToken) return;
-      try {
-        const res = await callApi({ action: "adminState", adminToken: adminToken });
-        if (!res.ok) return;
+    // Admin Pending UTRs: Keyed rendering to prevent disappearing cards/flicker
+    function renderAdminPendingUtrs() {
+      const container = document.getElementById("pending-utrs-list");
+      const badge = document.getElementById("pending-utr-count-badge");
+      if (!container) return;
 
-        const utrBox = document.getElementById("adminPendingUtrWrapper");
-        if (utrBox) {
-          if (!res.pending || res.pending.length === 0) {
-            utrBox.innerHTML = `<p class="placeholder-msg text-xs text-slate-500 py-2">No pending UTRs right now.</p>`;
-          } else {
-            utrBox.innerHTML = "";
-            res.pending.forEach(req => {
-              const div = document.createElement("div");
-              div.className = "p-3 bg-slate-900 border border-slate-700 rounded-xl flex justify-between items-center text-xs";
-              div.innerHTML = `
-                <div>
-                  <p class="font-bold text-white">${req.name}</p>
-                  <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${req.phone}</p>
-                  <p class="text-amber-400 font-mono font-bold">UTR: ${req.utr}</p>
-                </div>
-                <div class="flex flex-col gap-1.5">
-                  <button onclick="adminApproveParticipant('${req.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg shadow active:scale-95 transition">
-                    Approve ✅
-                  </button>
-                  <button onclick="adminRejectParticipant('${req.id}')" class="bg-red-700 hover:bg-red-600 text-white font-bold px-3 py-1.5 rounded-lg shadow active:scale-95 transition">
-                    Reject ❌
-                  </button>
-                </div>
-              `;
-              utrBox.appendChild(div);
-            });
+      const pending = appState.participants.filter(p => p.status === "pending");
+      if (badge) badge.textContent = pending.length;
+
+      // Keyed reconciliation
+      const currentDomIds = new Set(Array.from(container.children).map(c => c.getAttribute("data-id")));
+      const newIds = new Set(pending.map(p => p.id));
+
+      // Remove DOM nodes that are no longer pending
+      Array.from(container.children).forEach(child => {
+        const id = child.getAttribute("data-id");
+        if (!newIds.has(id)) {
+          child.remove();
+        }
+      });
+
+      if (pending.length === 0) {
+        if (container.children.length === 0) {
+          container.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 italic">No pending UTR verifications.</div>`;
+        }
+        return;
+      } else {
+        // If placeholder exists, remove it
+        const placeholder = container.querySelector(".italic");
+        if (placeholder) placeholder.remove();
+      }
+
+      // Add or update nodes
+      pending.forEach(p => {
+        let card = container.querySelector(`[data-id="${p.id}"]`);
+        if (!card) {
+          card = document.createElement("div");
+          card.setAttribute("data-id", p.id);
+          card.className = "bg-slate-950/90 border border-slate-800 p-3 rounded-xl transition-all duration-300 flex items-center justify-between gap-3";
+          container.appendChild(card);
+        }
+
+        card.innerHTML = `
+          <div class="space-y-0.5 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-200">${p.name}</span>
+              <span class="font-mono text-slate-400 text-[11px]">+91 ${p.phone}</span>
+            </div>
+            <div class="flex items-center gap-2 text-[11px]">
+              <span class="text-slate-500">UTR:</span>
+              <span class="font-mono font-bold text-amber-400 tracking-wider">${p.utr}</span>
+              <button onclick="copyText('${p.utr}', 'UTR Copied!')" class="text-[10px] text-indigo-400 hover:underline">Copy</button>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 action-buttons">
+            <button onclick="adminApproveUtr('${p.id}')" class="px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-bold transition-all active:scale-95">
+              Approve ✅
+            </button>
+            <button onclick="adminRejectUtr('${p.id}')" class="px-2.5 py-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/40 rounded-lg text-xs font-bold transition-all active:scale-95">
+              Reject ❌
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    // Instant Visual Feedback Admin Approvals
+    function adminApproveUtr(studentId) {
+      const card = document.querySelector(`[data-id="${studentId}"]`);
+      if (card) {
+        card.classList.remove("border-slate-800");
+        card.classList.add("border-emerald-500", "bg-emerald-950/30");
+        const actionBox = card.querySelector(".action-buttons");
+        if (actionBox) actionBox.innerHTML = `<span class="text-xs font-bold text-emerald-400 animate-pulse">Approved! ✅</span>`;
+      }
+
+      setTimeout(() => {
+        if (card) card.classList.add("fade-out");
+        setTimeout(() => {
+          const p = appState.participants.find(item => item.id === studentId);
+          if (p) {
+            p.status = "approved";
+            saveAppState(appState);
+            renderAdminPendingUtrs();
+            updateWaitingLobbyCounters();
+            showToast(`Approved student ${p.name}!`, "success");
           }
-        }
+        }, 400);
+      }, 500);
+    }
 
-        const refundBox = document.getElementById("adminPendingRefundsWrapper");
-        if (refundBox) {
-          const count = res.refunds ? res.refunds.length : 0;
-          document.getElementById("adminRefundCountBadge").innerText = count;
-          if (count === 0) {
-            refundBox.innerHTML = `<p class="text-xs text-slate-500 py-2">No pending refunds.</p>`;
-          } else {
-            refundBox.innerHTML = "";
-            res.refunds.forEach(r => {
-              const div = document.createElement("div");
-              div.className = "p-2.5 bg-slate-900 border border-red-900/60 rounded-xl flex justify-between items-center text-xs";
-              div.innerHTML = `
-                <div>
-                  <p class="font-bold text-red-300">${r.name}</p>
-                  <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${r.phone}</p>
-                  <p class="text-[10px] text-slate-400">Amount: ₹${r.amount} (${r.status})</p>
-                </div>
-                <button onclick="copyToClipboard('${r.phone}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                  📋 Copy
-                </button>
-              `;
-              refundBox.appendChild(div);
+    function adminRejectUtr(studentId) {
+      const card = document.querySelector(`[data-id="${studentId}"]`);
+      if (card) {
+        card.classList.remove("border-slate-800");
+        card.classList.add("border-rose-500", "bg-rose-950/30");
+        const actionBox = card.querySelector(".action-buttons");
+        if (actionBox) actionBox.innerHTML = `<span class="text-xs font-bold text-rose-400">Rejected ❌</span>`;
+      }
+
+      setTimeout(() => {
+        if (card) card.classList.add("fade-out");
+        setTimeout(() => {
+          const p = appState.participants.find(item => item.id === studentId);
+          if (p) {
+            p.status = "rejected";
+            // Add to refunds log
+            appState.refunds.push({
+              id: "REF_" + Date.now(),
+              name: p.name,
+              phone: p.phone,
+              utr: p.utr,
+              amount: 50,
+              reason: "UTR Submission Rejected by Admin",
+              timestamp: Date.now()
             });
+            saveAppState(appState);
+            renderAdminPendingUtrs();
+            renderAdminRefunds();
+            showToast(`Rejected UTR for ${p.name}. Moved to refund queue.`, "warning");
           }
+        }, 400);
+      }, 500);
+    }
+
+    // Top 5 Winners Payouts: Non-flickering keyed cards
+    function renderAdminWinners() {
+      const container = document.getElementById("winners-payout-list");
+      if (!container) return;
+
+      const activeWinners = appState.winners.filter(w => w.status === "unpaid");
+
+      if (activeWinners.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 italic">No unpaid top 5 winners currently pending.</div>`;
+        return;
+      }
+
+      // Reconcile
+      const placeholder = container.querySelector(".italic");
+      if (placeholder) placeholder.remove();
+
+      const newIds = new Set(activeWinners.map(w => w.id));
+      Array.from(container.children).forEach(child => {
+        const id = child.getAttribute("data-winner-id");
+        if (!newIds.has(id)) child.remove();
+      });
+
+      activeWinners.forEach(w => {
+        let card = container.querySelector(`[data-winner-id="${w.id}"]`);
+        if (!card) {
+          card = document.createElement("div");
+          card.setAttribute("data-winner-id", w.id);
+          card.className = "bg-slate-950/90 border border-amber-500/30 p-3 rounded-xl transition-all duration-300 flex items-center justify-between gap-3";
+          container.appendChild(card);
         }
 
-        const winnerBox = document.getElementById("adminWinnersPayoutWrapper");
-        if (winnerBox) {
-          const winners = res.winners ? res.winners.filter(w => w.status === 'DUE') : [];
-          if (winners.length === 0) {
-            winnerBox.innerHTML = `<p class="text-xs text-slate-500 py-2">Winners appear here when test completes.</p>`;
-          } else {
-            winnerBox.innerHTML = "";
-            winners.forEach((w, idx) => {
-              const div = document.createElement("div");
-              div.className = "p-2.5 bg-slate-900 border border-amber-500/40 rounded-xl flex justify-between items-center text-xs";
-              div.innerHTML = `
-                <div>
-                  <p class="font-bold text-amber-300">#${idx + 1} ${w.name} — <span class="text-emerald-400 font-black">₹${w.prize}</span></p>
-                  <p class="text-emerald-400 font-mono font-bold">📱 PhonePe: ${w.phone}</p>
-                </div>
-                <div class="flex flex-col gap-1.5">
-                  <div class="flex items-center gap-1">
-                    <button onclick="copyToClipboard('${w.phone}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded text-[10px] font-bold">📋</button>
-                    <button onclick="adminMarkWinnerPaid('${w.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-2.5 py-1 rounded shadow text-[11px] active:scale-95 transition">Paid ✅</button>
-                  </div>
-                  <button onclick="adminRemoveWinner('${w.id}')" class="bg-red-900/80 hover:bg-red-700 text-red-200 border border-red-700 font-bold px-2 py-0.5 rounded text-[10px] active:scale-95 transition">Remove ❌</button>
-                </div>
-              `;
-              winnerBox.appendChild(div);
-            });
+        card.innerHTML = `
+          <div class="space-y-0.5 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 font-mono">Rank ${w.rank}</span>
+              <span class="font-bold text-slate-200">${w.name}</span>
+            </div>
+            <div class="flex items-center gap-2 text-[11px]">
+              <span class="font-mono text-slate-400">PhonePe: ${w.phone}</span>
+              <button onclick="copyText('${w.phone}', 'PhonePe Number Copied!')" class="text-[10px] text-indigo-400 hover:underline">Copy</button>
+            </div>
+            <div class="text-[11px] font-bold text-amber-400">Cash Prize: ₹${w.prize}</div>
+          </div>
+          <div class="flex items-center gap-1.5 winner-actions">
+            <button onclick="adminMarkWinnerPaid('${w.id}')" class="px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-bold transition-all active:scale-95">
+              Paid ✅
+            </button>
+            <button onclick="adminRemoveWinner('${w.id}')" class="px-2.5 py-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/40 rounded-lg text-xs font-bold transition-all active:scale-95">
+              Remove ❌
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    function adminMarkWinnerPaid(winnerId) {
+      const card = document.querySelector(`[data-winner-id="${winnerId}"]`);
+      if (card) {
+        card.classList.remove("border-amber-500/30");
+        card.classList.add("border-emerald-500", "bg-emerald-950/40");
+        const actionBox = card.querySelector(".winner-actions");
+        if (actionBox) actionBox.innerHTML = `<span class="text-xs font-bold text-emerald-400">PAID! ✅</span>`;
+      }
+
+      setTimeout(() => {
+        if (card) card.classList.add("fade-out");
+        setTimeout(() => {
+          const w = appState.winners.find(item => item.id === winnerId);
+          if (w) {
+            w.status = "paid";
+            w.paidAt = Date.now();
+            saveAppState(appState);
+            renderAdminWinners();
+            showToast(`Marked prize of ₹${w.prize} for ${w.name} as PAID!`, "success");
           }
-        }
-      } catch (e) {}
+        }, 400);
+      }, 500);
     }
 
-    async function adminApproveParticipant(id) {
-      await callApi({ action: "approve", adminToken, participantId: id });
-      adminPollState();
-    }
-
-    async function adminRejectParticipant(id) {
-      if (confirm("Reject this participant?")) {
-        await callApi({ action: "reject", adminToken, participantId: id });
-        adminPollState();
+    function adminRemoveWinner(winnerId) {
+      const card = document.querySelector(`[data-winner-id="${winnerId}"]`);
+      if (card) {
+        card.classList.remove("border-amber-500/30");
+        card.classList.add("border-rose-500", "bg-rose-950/40");
+        const actionBox = card.querySelector(".winner-actions");
+        if (actionBox) actionBox.innerHTML = `<span class="text-xs font-bold text-rose-400">REMOVED ❌</span>`;
       }
+
+      setTimeout(() => {
+        if (card) card.classList.add("fade-out");
+        setTimeout(() => {
+          const w = appState.winners.find(item => item.id === winnerId);
+          if (w) {
+            w.status = "removed";
+            w.removedAt = Date.now();
+            // Also mark participant as disqualified
+            const p = appState.participants.find(item => item.id === winnerId);
+            if (p) p.disqualified = true;
+
+            computeWinnersAndPayouts();
+            saveAppState(appState);
+            renderAdminWinners();
+            renderStandingsTable();
+            showToast(`Removed winner ${w.name}. Standings recalculated.`, "warning");
+          }
+        }, 400);
+      }, 500);
     }
 
-    async function adminForceStartQuiz() {
-      if (confirm("Force start the quiz now for all approved students?")) {
-        const res = await callApi({ action: "forceStart", adminToken });
-        if (!res.ok) alert(res.error || "Cannot force start");
-        adminPollState();
+    // Pending Refunds List
+    function renderAdminRefunds() {
+      const container = document.getElementById("pending-refunds-list");
+      const badge = document.getElementById("refunds-count-badge");
+      if (!container) return;
+
+      const refunds = appState.refunds || [];
+      if (badge) badge.textContent = refunds.length;
+
+      if (refunds.length === 0) {
+        container.innerHTML = `<div class="p-3 text-center text-xs text-slate-500 italic">No pending refunds in queue.</div>`;
+        return;
       }
+
+      container.innerHTML = "";
+      refunds.slice().reverse().forEach(ref => {
+        const item = document.createElement("div");
+        item.className = "p-2.5 bg-slate-950/80 border border-slate-800 rounded-lg flex items-center justify-between text-xs";
+        item.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-200">${ref.name}</span>
+              <span class="font-mono text-amber-400">₹${ref.amount}</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">${ref.reason}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-slate-300 text-[11px]">${ref.phone}</span>
+            <button onclick="copyText('${ref.phone}', 'PhonePe Number Copied!')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded text-[10px] border border-slate-700">Copy Phone</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
     }
 
-    async function adminForceCancelQuiz() {
-      if (confirm("Cancel this round and mark ₹50 refunds for all participants?")) {
-        await callApi({ action: "cancelRound", adminToken });
-        adminPollState();
+    // --- 12. WORKING REFRESH BUTTONS WITH VISUAL FEEDBACK ---
+    function attachRefreshHandler(buttonId, callback) {
+      const btn = document.getElementById(buttonId);
+      if (!btn) return;
+      btn.addEventListener("click", () => {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = `<span class="text-emerald-400 font-bold">Updated! ✓</span>`;
+        btn.disabled = true;
+        callback();
+        setTimeout(() => {
+          btn.innerHTML = originalHtml;
+          btn.disabled = false;
+        }, 1200);
+      });
+    }
+
+    attachRefreshHandler("btn-refresh-standings", () => renderStandingsTable());
+    attachRefreshHandler("btn-refresh-utrs", () => renderAdminPendingUtrs());
+    attachRefreshHandler("btn-refresh-winners", () => renderAdminWinners());
+
+    // --- 13. MASTER AUDITED 5-CATEGORY EXCEL (.CSV) EXPORT ---
+    document.getElementById("btn-export-csv").addEventListener("click", () => {
+      exportAuditedMasterCsv();
+    });
+
+    function cleanCsvCell(str) {
+      if (str === null || str === undefined) return '""';
+      const clean = String(str).replace(/"/g, '""');
+      return `"${clean}"`;
+    }
+
+    function exportAuditedMasterCsv() {
+      const roundNum = appState.round;
+      const validParticipants = appState.participants.filter(p => p.status === "approved");
+      validParticipants.sort((a, b) => {
+        if (a.disqualified && !b.disqualified) return 1;
+        if (!a.disqualified && b.disqualified) return -1;
+        if (b.score !== a.score) return b.score - a.score;
+        return a.timeTakenSec - b.timeTakenSec;
+      });
+
+      const paidWinners = appState.winners.filter(w => w.status === "paid");
+      const unpaidWinners = appState.winners.filter(w => w.status === "unpaid");
+      const removedWinners = appState.winners.filter(w => w.status === "removed");
+      const allRefunds = appState.refunds || [];
+      const generalParticipants = validParticipants.slice(5).filter(p => !p.disqualified);
+
+      let csv = "";
+
+      // SECTION 1
+      csv += "================================================================================\n";
+      csv += "SECTION 1: TOP WINNERS - CASH TRANSFERRED (PAID)\n";
+      csv += "================================================================================\n";
+      csv += "Round,Rank,Student Name,PhonePe Number,Prize (INR),UTR/Transaction ID,Status,Timestamp\n";
+      if (paidWinners.length === 0) {
+        csv += "No records available for this section.\n";
+      } else {
+        paidWinners.forEach(w => {
+          csv += [
+            cleanCsvCell(roundNum),
+            cleanCsvCell(w.rank),
+            cleanCsvCell(w.name),
+            cleanCsvCell(w.phone),
+            cleanCsvCell(w.prize),
+            cleanCsvCell(w.utr),
+            cleanCsvCell("PAID"),
+            cleanCsvCell(new Date(w.paidAt || Date.now()).toISOString())
+          ].join(",") + "\n";
+        });
       }
-    }
+      csv += "\n\n";
 
-    async function adminRestartSameRound() {
-      if (confirm("Archive current round and restart fresh with 20:00 timer?")) {
-        await callApi({ action: "restartRound", adminToken });
-        adminPollState();
+      // SECTION 2
+      csv += "================================================================================\n";
+      csv += "SECTION 2: TOP WINNERS - UNPAID / DUE PAYOUTS\n";
+      csv += "================================================================================\n";
+      csv += "Round,Rank,Student Name,PhonePe Number,Prize (INR),UTR/Transaction ID,Status,Timestamp\n";
+      if (unpaidWinners.length === 0) {
+        csv += "No records available for this section.\n";
+      } else {
+        unpaidWinners.forEach(w => {
+          csv += [
+            cleanCsvCell(roundNum),
+            cleanCsvCell(w.rank),
+            cleanCsvCell(w.name),
+            cleanCsvCell(w.phone),
+            cleanCsvCell(w.prize),
+            cleanCsvCell(w.utr),
+            cleanCsvCell("UNPAID / DUE"),
+            cleanCsvCell(new Date().toISOString())
+          ].join(",") + "\n";
+        });
       }
-    }
+      csv += "\n\n";
 
-    async function adminAdvanceNextRound() {
-      if (confirm("Archive this round and start the NEXT ROUND with fresh questions?")) {
-        await callApi({ action: "nextRound", adminToken });
-        adminPollState();
+      // SECTION 3
+      csv += "================================================================================\n";
+      csv += "SECTION 3: DISQUALIFIED / REMOVED WINNERS LIST\n";
+      csv += "================================================================================\n";
+      csv += "Round,Position/ID,Student Name,PhonePe Number,Reason,Timestamp\n";
+      const disqualifiedAll = appState.participants.filter(p => p.disqualified);
+      if (removedWinners.length === 0 && disqualifiedAll.length === 0) {
+        csv += "No records available for this section.\n";
+      } else {
+        removedWinners.forEach(w => {
+          csv += [
+            cleanCsvCell(roundNum),
+            cleanCsvCell(`Rank ${w.rank}`),
+            cleanCsvCell(w.name),
+            cleanCsvCell(w.phone),
+            cleanCsvCell("Manually Removed by Admin"),
+            cleanCsvCell(new Date(w.removedAt || Date.now()).toISOString())
+          ].join(",") + "\n";
+        });
+        disqualifiedAll.forEach(p => {
+          if (!removedWinners.some(rw => rw.id === p.id)) {
+            csv += [
+              cleanCsvCell(roundNum),
+              cleanCsvCell("Participant"),
+              cleanCsvCell(p.name),
+              cleanCsvCell(p.phone),
+              cleanCsvCell("Anti-Cheat Disqualification (2 Offenses)"),
+              cleanCsvCell(new Date().toISOString())
+            ].join(",") + "\n";
+          }
+        });
       }
-    }
+      csv += "\n\n";
 
-    async function adminMarkWinnerPaid(id) {
-      if (confirm("Confirm: Cash prize transferred?")) {
-        await callApi({ action: "markPaid", adminToken, winnerId: id });
-        adminPollState();
+      // SECTION 4
+      csv += "================================================================================\n";
+      csv += "SECTION 4: 100% REFUNDS LOG (CANCELLED ROUNDS / REJECTIONS)\n";
+      csv += "================================================================================\n";
+      csv += "Round,Student Name,PhonePe Number,Refund Amount (INR),Reason,Timestamp\n";
+      if (allRefunds.length === 0) {
+        csv += "No records available for this section.\n";
+      } else {
+        allRefunds.forEach(ref => {
+          csv += [
+            cleanCsvCell(roundNum),
+            cleanCsvCell(ref.name),
+            cleanCsvCell(ref.phone),
+            cleanCsvCell(ref.amount),
+            cleanCsvCell(ref.reason),
+            cleanCsvCell(new Date(ref.timestamp).toISOString())
+          ].join(",") + "\n";
+        });
       }
-    }
+      csv += "\n\n";
 
-    async function adminRemoveWinner(id) {
-      if (confirm("Remove/Disqualify this winner?")) {
-        await callApi({ action: "removeWinner", adminToken, winnerId: id });
-        adminPollState();
+      // SECTION 5
+      csv += "================================================================================\n";
+      csv += "SECTION 5: GENERAL PARTICIPATION LOG (RANKS 6+)\n";
+      csv += "================================================================================\n";
+      csv += "Round,Rank,Student Name,PhonePe Number,Score (Out of 10),Time Taken (Seconds),Timestamp\n";
+      if (generalParticipants.length === 0) {
+        csv += "No records available for this section.\n";
+      } else {
+        generalParticipants.forEach((p, idx) => {
+          csv += [
+            cleanCsvCell(roundNum),
+            cleanCsvCell(idx + 6),
+            cleanCsvCell(p.name),
+            cleanCsvCell(p.phone),
+            cleanCsvCell(p.score),
+            cleanCsvCell(p.timeTakenSec.toFixed(3)),
+            cleanCsvCell(new Date(p.submittedAt || Date.now()).toISOString())
+          ].join(",") + "\n";
+        });
       }
+
+      // Trigger Direct CSV Download
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `CBSE_Mega_Quiz_Master_Report_Round_${roundNum}_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("Audited Excel (.CSV) Report exported successfully!", "success");
     }
 
-    // ==========================================
-    // 5-CATEGORY EXCEL (.CSV) BUILDER
-    // ==========================================
-    async function downloadBuiltinExcelReport() {
-      try {
-        const res = await callApi({ action: "exportData", adminToken });
-        if (!res.ok) { alert("Unable to export data"); return; }
+    // --- 14. ADMIN QUICK ACTIONS & SCREEN WIPE LOGIC ---
+    function archiveCurrentRoundData(reason) {
+      const archiveRecord = {
+        round: appState.round,
+        reason: reason,
+        archivedAt: Date.now(),
+        participants: [...appState.participants],
+        winners: [...appState.winners],
+        refunds: [...appState.refunds]
+      };
+      if (!appState.archives) appState.archives = [];
+      appState.archives.push(archiveRecord);
+    }
 
-        let csv = `=== CBSE MEGA QUIZ ARENA - MASTER AUDIT LEDGER ===\n`;
-        csv += `Generated On: ${new Date().toLocaleString()}\n\n`;
+    // 1. Force Start Quiz Now
+    document.getElementById("btn-force-start").addEventListener("click", () => {
+      const approvedCount = appState.participants.filter(p => p.status === "approved").length;
+      if (approvedCount < 1) {
+        showToast("Cannot start quiz with 0 approved students.", "error");
+        return;
+      }
+      adminTriggerStartQuiz();
+    });
 
-        csv += `--- [SECTION 1: TOP WINNERS - CASH TRANSFERRED (PAID)] ---\n`;
-        csv += `Round,Winner Name,PhonePe Number,Prize Paid,Status\n`;
-        if (!res.paidWinners || res.paidWinners.length === 0) {
-          csv += `No winners marked as Paid yet.\n`;
-        } else {
-          res.paidWinners.forEach(w => {
-            csv += `"${w.round}","${w.name}","'${w.phone}","₹${w.prize}","${w.status}"\n`;
+    function adminTriggerStartQuiz() {
+      appState.status = "active";
+      appState.quizStartTime = Date.now();
+      saveAppState(appState);
+      showToast("Quiz Round Force Started by Admin!", "success");
+      handleStateUpdateNotification();
+    }
+
+    // 2. Cancel Round & Refund (Complete Screen Wipe + Auto-Archive)
+    document.getElementById("btn-cancel-refund").addEventListener("click", () => {
+      if (confirm("Are you sure you want to CANCEL this round? All approved students will be added to the 100% refund ledger and the live screen will wipe clean.")) {
+        adminCancelAndRefund("Manually cancelled by Admin");
+      }
+    });
+
+    function adminCancelAndRefund(reasonStr) {
+      // Add all approved and pending participants to refund ledger
+      appState.participants.forEach(p => {
+        if (p.status === "approved" || p.status === "pending") {
+          appState.refunds.push({
+            id: "REF_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
+            name: p.name,
+            phone: p.phone,
+            utr: p.utr,
+            amount: 50,
+            reason: reasonStr,
+            timestamp: Date.now()
           });
         }
-        csv += `\n`;
+      });
 
-        csv += `--- [SECTION 2: TOP WINNERS - UNPAID / DUE PAYOUTS] ---\n`;
-        csv += `Round,Winner Name,PhonePe Number,Prize Due,Status\n`;
-        if (!res.dueWinners || res.dueWinners.length === 0) {
-          csv += `No unpaid winners pending.\n`;
-        } else {
-          res.dueWinners.forEach(w => {
-            csv += `"${w.round}","${w.name}","'${w.phone}","₹${w.prize}","${w.status}"\n`;
-          });
-        }
-        csv += `\n`;
+      appState.status = "cancelled";
+      archiveCurrentRoundData(reasonStr);
 
-        csv += `--- [SECTION 3: DISQUALIFIED / REMOVED WINNERS LIST] ---\n`;
-        csv += `Round,Name,PhonePe Number,Prize,Status\n`;
-        if (!res.removed || res.removed.length === 0) {
-          csv += `No winners disqualified or removed.\n`;
-        } else {
-          res.removed.forEach(w => {
-            csv += `"${w.round}","${w.name}","'${w.phone}","₹${w.prize}","REMOVED"\n`;
-          });
-        }
-        csv += `\n`;
+      // Clean live arena state
+      appState.participants = [];
+      appState.winners = [];
+      appState.lobbyStartTime = Date.now();
+      appState.quizStartTime = null;
 
-        csv += `--- [SECTION 4: 100% REFUNDS LOG (CANCELLED ROUNDS)] ---\n`;
-        csv += `Round,Student Name,PhonePe Number,Amount,Status\n`;
-        if (!res.refunds || res.refunds.length === 0) {
-          csv += `No refunds pending.\n`;
-        } else {
-          res.refunds.forEach(r => {
-            csv += `"${r.round}","${r.name}","'${r.phone}","₹${r.amount}","${r.status}"\n`;
-          });
-        }
-        csv += `\n`;
+      saveAppState(appState);
+      handleStateUpdateNotification();
+      showToast("Round Cancelled. 100% refunds queued.", "warning");
+    }
 
-        csv += `--- [SECTION 5: GENERAL PARTICIPATION LOG (RANKS 6+)] ---\n`;
-        csv += `Round,Rank,Student Name,PhonePe Number,Score,Time Taken,Status\n`;
-        if (!res.participation || res.participation.length === 0) {
-          csv += `No general participants logged.\n`;
-        } else {
-          res.participation.forEach(p => {
-            csv += `"${p.round}","${p.rank}","${p.name}","'${p.phone}","${p.score} / 10","${Number(p.timeTaken).toFixed(2)}s","${p.status}"\n`;
-          });
-        }
-
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", `CBSE_Quiz_Audited_Report_${new Date().toISOString().slice(0, 10)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (e) {
-        alert("Export failed: " + e.message);
+    // 3. Restart Same Round (Complete Screen Wipe + Reset Timer to 20:00)
+    document.getElementById("btn-restart-round").addEventListener("click", () => {
+      if (confirm("Restart this round? Current active participants will be archived and screen will wipe clean.")) {
+        archiveCurrentRoundData("Round Restarted");
+        appState.status = "lobby";
+        appState.lobbyStartTime = Date.now();
+        appState.quizStartTime = null;
+        appState.participants = [];
+        appState.winners = [];
+        saveAppState(appState);
+        handleStateUpdateNotification();
+        showScreen("screen-registration");
+        showToast("Round restarted cleanly. Lobby timer reset to 20:00.", "success");
       }
+    });
+
+    // 4. Next Round (R+1, Load Fresh 10 Questions, Complete Screen Wipe)
+    document.getElementById("btn-next-round").addEventListener("click", () => {
+      if (confirm(`Advance to Round ${appState.round + 1}? Previous round will be archived and screen will wipe clean.`)) {
+        archiveCurrentRoundData(`Completed Round ${appState.round}`);
+        appState.round = (appState.round % 15) + 1; // 1 to 15 cycling
+        appState.status = "lobby";
+        appState.lobbyStartTime = Date.now();
+        appState.quizStartTime = null;
+        appState.participants = [];
+        appState.winners = [];
+        saveAppState(appState);
+        handleStateUpdateNotification();
+        showScreen("screen-registration");
+        showToast(`Advanced to Round ${appState.round}! Fresh questions loaded.`, "success");
+      }
+    });
+
+    // --- 15. SECRET ADMIN PIN GATEWAY (3 TAPS ON TROPHY) ---
+    document.getElementById("trophy-btn").addEventListener("click", () => {
+      trophyTapCount++;
+      clearTimeout(trophyTapTimer);
+
+      trophyTapTimer = setTimeout(() => {
+        trophyTapCount = 0;
+      }, 2000);
+
+      if (trophyTapCount === 3) {
+        trophyTapCount = 0;
+        if (isAdminAuthenticated) {
+          openAdminDashboard();
+        } else {
+          openAdminPinModal();
+        }
+      }
+    });
+
+    function openAdminPinModal() {
+      document.getElementById("admin-pin-modal").classList.remove("hidden");
+      document.getElementById("admin-pin-input").value = "";
+      document.getElementById("admin-pin-input").focus();
     }
 
-    // ==========================================
-    // INITIALIZATION & BACKGROUND TICKERS
-    // ==========================================
-    if (adminToken) {
-      const btn = document.getElementById("adminHeaderBtn");
-      if (btn) btn.classList.remove("hidden");
+    function closeAdminPinModal() {
+      document.getElementById("admin-pin-modal").classList.add("hidden");
     }
 
-    pollBackendState();
-    setInterval(pollBackendState, 3000);
+    document.getElementById("admin-pin-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const enteredPin = document.getElementById("admin-pin-input").value.trim();
+      if (enteredPin === ADMIN_PIN) {
+        isAdminAuthenticated = true;
+        closeAdminPinModal();
+        document.getElementById("admin-panel-btn").classList.remove("hidden");
+        openAdminDashboard();
+        showToast("Admin Gateway Unlocked!", "success");
+      } else {
+        showToast("Invalid Master PIN!", "error");
+        document.getElementById("admin-pin-input").value = "";
+      }
+    });
+
+    document.getElementById("admin-panel-btn").addEventListener("click", openAdminDashboard);
+
+    function openAdminDashboard() {
+      renderAdminPendingUtrs();
+      renderAdminWinners();
+      renderAdminRefunds();
+      document.getElementById("admin-modal").classList.remove("hidden");
+    }
+
+    function closeAdminDashboard() {
+      document.getElementById("admin-modal").classList.add("hidden");
+    }
+
+    // --- 16. APPLICATION INITIALIZATION ---
+    function initApp() {
+      startSystemClock();
+      handleStateUpdateNotification();
+
+      // Show initial registration screen
+      showScreen("screen-registration");
+    }
+
+    // Start App
+    window.addEventListener("DOMContentLoaded", initApp);
   </script>
 </body>
 </html>
